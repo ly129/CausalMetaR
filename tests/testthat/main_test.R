@@ -140,19 +140,19 @@ dd <- subset(Data, R == 1)
 test <- CMetafoR(
   X = dd[, 1:10], Y = dd$Y, S = dd$S, A = dd$A,
   source_model = "SL.glmnet.multinom",
-  source_model_args = list(Y = dd$S, X = dd[, 1:10]),
+  source_model_args = list(),
   treatment_model = "SuperLearner",
   treatment_model_args = list(
-    Y = dd$A,
-    X = dd[, 1:10],
+    # Y = dd$A,
+    # X = dd[, 1:10],
     family = binomial(),
     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
     cvControl = list(V = 5L)
   ),
   outcome_model = "SuperLearner",
   outcome_model_args = list(
-    Y = dd$Y,
-    X = dd[, 1:10],
+    # Y = dd$Y,
+    # X = cbind(dd$A, dd[, 1:10]),
     family = gaussian(),
     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
     cvControl = list(V = 5L)
