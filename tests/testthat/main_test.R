@@ -156,7 +156,8 @@ test <- CMetafoR(
     family = gaussian(),
     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
     cvControl = list(V = 5L)
-  )
+  ),
+  x_tilde = 1
 )
 str(test)
 

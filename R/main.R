@@ -9,7 +9,8 @@ CMetafoR <- function(
     treatment_model = "SuperLearner",
     treatment_model_args = list(),
     outcome_model = "SuperLearner",
-    outcome_model_args = list()
+    outcome_model_args = list(),
+    x_tilde
 ) {
   # Total sample size
   n <- nrow(X)
@@ -62,8 +63,60 @@ CMetafoR <- function(
                                   newdata = data.frame(A = 0, X))$pred
   predY_AX <- cbind(pred_Y1, pred_Y0)
 
-  return(list(PrS_X,
-              PrA_XS,
-              predY_AX))
+  # estimators
+
+  eta1 <- PrA_XS * PrS_X
+  eta0 <- (1 - PrA_XS) * PrS_X
+
+  psi <- psi_var <- matrix(nrow = no_S, ncol = 2)
+
+  for (s in unique_S) {
+    tmp1 <- tmp2 <- matrix(0, nrow = n, ncol = 2)
+    I_xs <- which((X[, 1] == x_tilde) & (S == s))
+    kappa <- 1/(length(I_xs)/n)
+    tmp1[I_xs, 1] <- pred_Y1[I_xs]
+    tmp1[I_xs, 2] <- pred_Y0[I_xs]
+
+    I_xa1 <- which((X[, 1] == x_tilde) & (A == 1))
+    I_xa0 <- which((X[, 1] == x_tilde) & (A == 0))
+
+    qs <- PrS_X[, s]
+
+    tmp2[I_xa1, 1] <- qs[I_xa1]/eta1[I_xa1] * (Y[I_xa1] - pred_Y1[I_xa1])
+    tmp2[I_xa0, 2] <- qs[I_xa0]/eta0[I_xa0] * (Y[I_xa0] - pred_Y0[I_xa0])
+
+    tmp <- tmp1 + tmp2
+
+    psi[s, ] <- kappa * colMeans(tmp)
+
+    tmp1[I_xs, 1] <- pred_Y1[I_xs] - psi[s, 1]
+    tmp1[I_xs, 2] <- pred_Y0[I_xs] - psi[s, 2]
+
+    psi_var[s, ] <- kappa/n^2 * colSums((tmp1 + tmp2)^2)
+  }
+
+  rownames(psi) <- paste0("S=", unique_S)
+  colnames(psi) <- paste0("A=", c(1, 0))
+
+  rownames(psi_var) <- paste0("S=", unique_S)
+  colnames(psi_var) <- paste0("A=", c(1, 0))
+
+  lb <- psi - qnorm(p = 0.975) * sqrt(psi_var)
+  ub <- psi + qnorm(p = 0.975) * sqrt(psi_var)
+
+  tmax <- apply(abs(matrix(rnorm(length(unique(X[,1])) * 1e6),
+                           nrow = length(unique(X[,1])), ncol = 1e6)), 2, max)
+  qtmax <- quantile(tmax, 0.95)
+
+  lb_scb <- psi - qtmax * sqrt(psi_var)
+  ub_scb <- psi + qtmax * sqrt(psi_var)
+
+  return(list(Estimates = psi,
+              Variances = psi_var,
+              CI_LB = lb,
+              CI_UB = ub,
+              SCB_LB = lb_scb,
+              SCB_UB = ub_scb))
 }
+
 
