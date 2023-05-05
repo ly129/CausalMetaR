@@ -1,4 +1,4 @@
-CMetafoR <- function(
+CMetafoR.STE <- function(
     X,
     Y,
     S, # integer sequence starting from 1

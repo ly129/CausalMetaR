@@ -137,7 +137,7 @@ hist(Data$Y[which(Data$R==1)]);mean(Data$Y[which(Data$R==1)])
 
 dd <- subset(Data, R == 1)
 
-test <- CMetafoR(
+test.S <- CMetafoR.S(
   X = dd[, 1:10], Y = dd$Y, S = dd$S, A = dd$A,
   source_model = "SL.glmnet.multinom",
   source_model_args = list(),
@@ -159,5 +159,48 @@ test <- CMetafoR(
   ),
   x_tilde = 1
 )
-str(test)
+str(test.S)
 
+
+
+
+X0 <- Data[Data$R == 0, 1:10]
+X <- Data[Data$R == 1, 1:10]
+Y <- Data[Data$R == 1, ]$Y
+A <- Data[Data$R == 1, ]$A
+S <- Data[Data$R == 1, ]$S
+
+summary(A)
+summary(Y)
+summary(S)
+dim(X)
+dim(X0)
+
+
+
+test.R <- CMetafoR.R(
+  X = X, Y = Y, S = S, A = A, X0 = X0,
+  source_model = "SL.glmnet.multinom",
+  source_model_args = list(),
+  treatment_model_type = "separate",
+  treatment_model = "SuperLearner",
+  treatment_model_args = list(
+    family = binomial(),
+    SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+    cvControl = list(V = 5L)
+  ),
+  R_model = "SuperLearner",
+  R_model_args = list(
+    family = binomial(),
+    SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+    cvControl = list(V = 5L)
+  ),
+  outcome_model = "SuperLearner",
+  outcome_model_args = list(
+    family = gaussian(),
+    SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+    cvControl = list(V = 5L)
+  ),
+  x_tilde = 1
+)
+str(test.R)
