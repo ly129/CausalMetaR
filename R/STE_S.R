@@ -132,7 +132,7 @@ CMetafoR.STE.S <- function(
     plot_scb[((i - 1) * no_S + 1):(i * no_S), 2] <- psi[, 1] - psi[, 2] + qtmax * sqrt(psi_var[,1] + psi_var[,2])
   }
 
-  snames <- rep(paste("S =", unique_S), n_x_tilde)
+  snames <- rep(paste("Study =", unique_S), n_x_tilde)
   xtildenames <- character(length = n_x_tilde * no_S)
   xtildenames[1:(n_x_tilde * no_S) %% no_S == 1] <- c(paste(names(X)[1], "=", unique_X))
 
@@ -141,7 +141,8 @@ CMetafoR.STE.S <- function(
          slab = xtildenames,
          ilab = snames,
          ilab.xpos = -3,
-         header = TRUE)
+         header = "Subgroup",
+         xlab = "Treatment Effect")
   for (i in 1:(n_x_tilde * no_S)) {
     segments(x0 = plot_scb[i, 1],
              y0 = n_x_tilde * no_S + 1 - i,
