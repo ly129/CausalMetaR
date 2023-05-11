@@ -137,8 +137,27 @@ hist(Data$Y[which(Data$R==1)]);mean(Data$Y[which(Data$R==1)])
 
 dd <- subset(Data, R == 1)
 
-test.S <- CMetafoR.S(
-  X = dd[, 1:10], Y = dd$Y, S = dd$S, A = dd$A,
+
+
+
+
+
+X0 <- Data[Data$R == 0, 1:10]
+X <- Data[Data$R == 1, 1:10]
+Y <- Data[Data$R == 1, ]$Y
+A <- Data[Data$R == 1, ]$A
+S <- Data[Data$R == 1, ]$S
+
+summary(A)
+summary(Y)
+summary(S)
+dim(X)
+dim(X0)
+
+
+### STE.S test
+test.STE.S <- CMetafoR.STE.S(
+  X = X, Y = Y, S = S, A = A,
   source_model = "SL.glmnet.multinom",
   source_model_args = list(),
   treatment_model = "SuperLearner",
@@ -157,28 +176,12 @@ test.S <- CMetafoR.S(
     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
     cvControl = list(V = 5L)
   ),
-  x_tilde = 1
 )
-str(test.S)
+test.STE.S
 
 
-
-
-X0 <- Data[Data$R == 0, 1:10]
-X <- Data[Data$R == 1, 1:10]
-Y <- Data[Data$R == 1, ]$Y
-A <- Data[Data$R == 1, ]$A
-S <- Data[Data$R == 1, ]$S
-
-summary(A)
-summary(Y)
-summary(S)
-dim(X)
-dim(X0)
-
-
-
-test.R <- CMetafoR.R(
+### STE.R test
+test.STE.R <- CMetafoR.STE.R(
   X = X, Y = Y, S = S, A = A, X0 = X0,
   source_model = "SL.glmnet.multinom",
   source_model_args = list(),
@@ -203,4 +206,67 @@ test.R <- CMetafoR.R(
   ),
   x_tilde = 1
 )
-str(test.R)
+test.STE.R
+
+
+
+
+
+
+
+### ATE.R test
+test.ATE.R <- CMetafoR.ATE.R(
+  X = X, Y = Y, S = S, A = A, X0 = X0,
+  source_model = "SL.glmnet.multinom",
+  source_model_args = list(),
+  treatment_model_type = "separate",
+  treatment_model = "SuperLearner",
+  treatment_model_args = list(
+    family = binomial(),
+    SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+    cvControl = list(V = 5L)
+  ),
+  R_model = "SuperLearner",
+  R_model_args = list(
+    family = binomial(),
+    SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+    cvControl = list(V = 5L)
+  ),
+  outcome_model = "SuperLearner",
+  outcome_model_args = list(
+    family = gaussian(),
+    SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+    cvControl = list(V = 5L)
+  )
+)
+test.ATE.R
+
+
+
+
+### ATE.S test
+test.ATE.S <- CMetafoR.ATE.S(
+  X = X, Y = Y, S = S, A = A,
+  source_model = "SL.glmnet.multinom",
+  source_model_args = list(),
+  treatment_model_type = "separate",
+  treatment_model = "SuperLearner",
+  treatment_model_args = list(
+    family = binomial(),
+    SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+    cvControl = list(V = 5L)
+  ),
+  # R_model = "SuperLearner",
+  # R_model_args = list(
+  #   family = binomial(),
+  #   SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+  #   cvControl = list(V = 5L)
+  # ),
+  outcome_model = "SuperLearner",
+  outcome_model_args = list(
+    family = gaussian(),
+    SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+    cvControl = list(V = 5L)
+  )
+)
+test.ATE.S

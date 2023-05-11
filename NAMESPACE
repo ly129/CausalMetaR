@@ -1,1 +1,5 @@
 exportPattern("^[[:alpha:]]+")
+importFrom("stats", "model.matrix", "predict", "qnorm", "quantile",
+               "rnorm")
+import("SuperLearner")
+import("metafor")

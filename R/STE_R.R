@@ -1,4 +1,4 @@
-CMetafoR.R <- function(
+CMetafoR.STE.R <- function(
     X,
     X0,
     Y,

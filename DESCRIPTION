@@ -12,7 +12,8 @@ LazyData: true
 Imports:
     SuperLearner,
     glmnet,
-    nnet
+    nnet,
+    metafor
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
