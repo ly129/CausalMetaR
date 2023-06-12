@@ -1,7 +1,7 @@
 #' Transport ATE from multi-source data to an internal source-specific data
 #'
 #' @description
-#' Fit a (time-dependent) Cox model via penalized maximum likelihood, where the penalization is a weighted sum of infinity norm of (overlapping) groups of coefficients. The regularization path is computed at a grid of values for the regularization parameter lambda.
+#' Estimate the average treatment effect of an internal source-specific target population. The nuisance parameters are allowed to be estimated by SuperLearner.   
 #' 
 #' @param x Predictor matrix with dimension \eqn{nm * p}, where \eqn{n} is the number of subjects, \eqn{m} is the maximum observation time, and \eqn{p} is the number of predictors. See Details.
 #' @param ID The ID of each subjects, each subject has one ID (many rows in \code{x} share one \code{ID}).
