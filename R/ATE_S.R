@@ -1,19 +1,19 @@
 #' Transport ATE from multi-source data to an internal source-specific data
 #'
 #' @description
-#' Estimate the average treatment effect of an internal source-specific target population. The nuisance parameters are allowed to be estimated by SuperLearner.   
+#' Estimate the average treatment effect of an internal source-specific target population using \eqn{m} multi-source data. The nuisance parameters are allowed to be estimated by \code{SuperLearner}.   
 #' 
-#' @param X
-#' @param Y
-#' @param S
-#' @param A
-#' @param source_model
-#' @param source_model_args 
-#' @param treatment_model_type
-#' @param treatment_model
-#' @param treatment_model_args
-#' @param outcome_model 
-#' @param outcome_model_args
+#' @param X The covariate matrix/data frame with \eqn{n=n_1+...+n_m} rows and q coloums.
+#' @param Y The outcome (bianry/categorical/continuous) vector.
+#' @param S The source (numeric) vector. The source should start with 1 and end with \eqn{m}.
+#' @param A The treatment (binary) vector.
+#' @param source_model The choice of modeling the multi-nomial source model \eqn{P(S=s|X)}. The current supported values are \code{SL.glmnet.multinom} and \code{SL.nnet.multinom}. The default is \code{SL.glmnet.multinom}.
+#' @param source_model_args The arguments of the source model.
+#' @param treatment_model_type The types of modeling the treatment_model \eqn{P(A=1|X, S=s)}. It can be either \code{separate} or \code{joint}. The default is \code{separate}. If \code{separate} is chosen, then \eqn{P(A=1|X, S=s)} is estimated by fiting the model (regressing \eqn{A} on \eqn{X}) within each internal source-specific population (S=s). If \code{joint} is chosen, then \eqn{P(A=1|X, S=s)} is estimated by fiting the model (regressing \eqn{A} on \eqn{X} and \eqn{S}) with the multi-source population, and then estimate the probability by fiting the model suppressing the vector S=s. In either case, the propensity score is calculated by $P(A=1|X)=\sum_{s=1}^{m}P(A=1|X, S=s)P(S=s|X)$. 
+#' @param treatment_model The choice of modeling the treatment model \eqn{P(A=1|X, S=s)}. Now it is suppressed to be \code{SuperLearner}. If, for example, one wants to use logistic regression to estimate the probability, then please include \code{glmn} only in the \code{SuperLearner} library in the \code{treatment_model_args}.
+#' @param treatment_model_args The arguments of the treatment model.
+#' @param outcome_model The choice of modeling the outcome model \eqn{E(Y|A=a, X)}.
+#' @param outcome_model_args The arguments of the outcome model.
 #' 
 #' @examples 
 #' # g3 in g1 -> grp_31 = 1
