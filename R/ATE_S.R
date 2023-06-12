@@ -3,21 +3,17 @@
 #' @description
 #' Estimate the average treatment effect of an internal source-specific target population. The nuisance parameters are allowed to be estimated by SuperLearner.   
 #' 
-#' @param x Predictor matrix with dimension \eqn{nm * p}, where \eqn{n} is the number of subjects, \eqn{m} is the maximum observation time, and \eqn{p} is the number of predictors. See Details.
-#' @param ID The ID of each subjects, each subject has one ID (many rows in \code{x} share one \code{ID}).
-#' @param time Represents the start of each time interval.
-#' @param time2 Represents the stop of each time interval.
-#' @param event Indicator of event. \code{event = 1} when event occurs and \code{event = 0} otherwise.
-#' @param lambda Sequence of regularization coefficients \eqn{\lambda}'s.
-#' @param group \eqn{G * G} matrix describing the relationship between the groups of variables, where \eqn{G} represents the number of groups. Denote the \eqn{i}-th group of variables by \eqn{g_i}. The \eqn{(i,j)} entry is \code{1} if and only if \eqn{i\neq j} and \eqn{g_i} is a child group (subset) of \eqn{g_j}, and is \code{0} otherwise. See Examples and Details.
-#' @param group_variable \eqn{p * G} matrix describing the relationship between the groups and the variables. The \eqn{(i,j)} entry is \code{1} if and only if variable \eqn{i} is in group \eqn{g_j}, but not in any child group of \eqn{g_j}, and is \code{0} otherwise. See Examples and Details.
-#' @param penalty_weights Optional, vector of length \eqn{G} specifying the group-specific penalty weights. If not specified, the default value is \eqn{\mathbf{1}_G}. Modify with caution.
-#' @param par_init Optional, vector of initial values of the optimization algorithm. Default initial value is zero for all \eqn{p} variables.
-#' @param stepsize_init Initial value of the stepsize of the optimization algorithm. Default is 1.
-#' @param stepsize_shrink Factor in \eqn{(0,1)} by which the stepsize shrinks in the backtracking linesearch. Default is 0.8.
-#' @param tol Convergence criterion. Algorithm stops when the \eqn{l_2} norm of the difference between two consecutive updates is smaller than \code{tol}.
-#' @param maxit Maximum number of iterations allowed.
-#' @param verbose Logical, whether progress is printed.
+#' @param X
+#' @param Y
+#' @param S
+#' @param A
+#' @param source_model
+#' @param source_model_args 
+#' @param treatment_model_type
+#' @param treatment_model
+#' @param treatment_model_args
+#' @param outcome_model 
+#' @param outcome_model_args
 #' 
 #' @examples 
 #' # g3 in g1 -> grp_31 = 1
