@@ -1,19 +1,45 @@
-#' Transport ATE from multi-source data to an internal source-specific data
+#' Transport ATE from multi-source data to internal source-specific data
 #'
 #' @description
-#' Estimate the average treatment effect of an internal source-specific target population using \eqn{m} multi-source data. The nuisance parameters are allowed to be estimated by \code{SuperLearner}.   
+#' Doubly-robust and efficient estimation of the average treatment effect of an internal source-specific target population using \eqn{m} multi-source data.   
 #' 
 #' @param X The covariate matrix/data frame with \eqn{n=n_1+...+n_m} rows and q coloums.
-#' @param Y The outcome (bianry/categorical/continuous) vector.
-#' @param S The source (numeric) vector. The source should start with 1 and end with \eqn{m}.
-#' @param A The treatment (binary) vector.
-#' @param source_model The choice of modeling the multi-nomial source model \eqn{P(S=s|X)}. The current supported values are \code{SL.glmnet.multinom} and \code{SL.nnet.multinom}. The default is \code{SL.glmnet.multinom}.
-#' @param source_model_args The arguments of the source model.
-#' @param treatment_model_type The types of modeling the treatment_model \eqn{P(A=1|X, S=s)}. It can be either \code{separate} or \code{joint}. The default is \code{separate}. If \code{separate} is chosen, then \eqn{P(A=1|X, S=s)} is estimated by fiting the model (regressing \eqn{A} on \eqn{X}) within each internal source-specific population (S=s). If \code{joint} is chosen, then \eqn{P(A=1|X, S=s)} is estimated by fiting the model (regressing \eqn{A} on \eqn{X} and \eqn{S}) with the multi-source population, and then estimate the probability by fiting the model suppressing the vector S=s. In either case, the propensity score is calculated by $P(A=1|X)=\sum_{s=1}^{m}P(A=1|X, S=s)P(S=s|X)$. 
-#' @param treatment_model The choice of modeling the treatment model \eqn{P(A=1|X, S=s)}. Now it is suppressed to be \code{SuperLearner}. If, for example, one wants to use logistic regression to estimate the probability, then please include \code{glmn} only in the \code{SuperLearner} library in the \code{treatment_model_args}.
-#' @param treatment_model_args The arguments of the treatment model.
-#' @param outcome_model The choice of modeling the outcome model \eqn{E(Y|A=a, X)}.
-#' @param outcome_model_args The arguments of the outcome model.
+#' @param Y The outcome (binary/categorical/continuous) length \eqn{n} vector.
+#' @param S The source (numeric) length \eqn{n} vector. 
+#' @param A The treatment (binary) length \eqn{n} vector.
+#' @param source_model The decision to model the multi-nomial source model \eqn{P(S=s|X)} has two available options: \code{SL.glmnet.multinom} and \code{SL.nnet.multinom}. The default choice is \code{SL.glmnet.multinom}.
+#' @param source_model_args The arguments (in \pkg{SuperLearner}) of the source model.
+#' @param treatment_model_type The options for modeling the treatment_model \eqn{P(A=1|X, S=s)} include \code{separate} and \code{joint}, with the default being \code{separate}. When \code{separate} is selected, 
+#' \eqn{P(A=1|X, S=s)} is estimated by fitting the model (regressing \eqn{A} on \eqn{X}) within each specific internal source population (S=s). On the other hand, when \code{joint} is chosen, \eqn{P(A=1|X, S=s)} 
+#' is estimated by fitting the model (regressing \eqn{A} on \eqn{X} and \eqn{S}) using the multi-source population and then estimating the probability by fitting the model while suppressing the vector S=s. 
+#' In both cases, the propensity score is calculated as $P(A=1|X)=\sum_{s=1}^{m}P(A=1|X, S=s)P(S=s|X)$.
+#' @param treatment_model The treatment model \eqn{P(A=1|X, S=s)} is estimated using \pkg{SuperLearner}. If, for example, the preference is to use only logistic regression for the probability estimation, 
+#' please ensure that only \code{glm} is included in the \pkg{SuperLearner} library within the \code{treatment_model_args}.
+#' @param treatment_model_args The arguments (in \pkg{SuperLearner}) of the treatment model.
+#' @param outcome_model The same as \code{treatment_model}.
+#' @param outcome_model_args The arguments (in \pkg{SuperLearner}) of the outcome model.
+#'
+#' @details
+#' The estimator is doubly robust and non-parametrically efficient (if the nuisance parameters are estimated non-parametrically). Three nuisance parameters are estimated by \pkg{SuperLearner}, 
+#' the source model $q_s(X)=P(S=s|X)$, the propensity score model $\eta_a(X)=P(A=a|X)$, and the outcome model $\mu_a(X)=E(Y|X, A=a)$. The nuisance parameters are allowed to be estimated by \pkg{SuperLearner}. The estimator is
+#' $$
+#'  \dfrac{\widehat \kappa}{n}\sum\limits_{i=1}^{n} \Bigg[ I(S_i = s) \widehat \mu_a(X_i) 
+#'  +I(A_i = a) \dfrac{\widehat q_{s}(X_i)}{\widehat \eta_a(X_i)}  \Big\{ Y_i - \widehat \mu_a(X_i) \Big\} \Bigg],
+#' $$
+#' where $\widehat \kappa=\{n^{-1} \sum_{i=1}^n I(S_i=s)\}^{-1}$.
+#' To achieve the non-parametrical efficiency and asymptotic normality, it requires that $||\widehat \mu_a(X) -\mu_a(X)||\big\{||\widehat \eta_a(X) -\eta_a(X)||+||\widehat q_s(X) -q_s(X)||\big\}=o_p(n^{-1/2})$. 
+#' In addition， to avoid the Donsker class assumption, the estimation is done by sample splitting and cross-fitting.
+#' When one source of data is a randomized trial, it is still recommended to estimate the propensity score for optimal efficiency. 
+#' Since the non-parametric influence function is the same as the semi-parametric efficient influence function when the propensity score is known, the inference stays the same. 
+#'
+#' @return A list with the following four elements.
+#'   \item{Estimates}{The point estimate of the ATE.}
+#'   \item{Variances}{The asymptotic variance of the point estimate, calculated based on the (efficient) influence function.}
+#'   \item{CI_LB}{The lower bound of the 95% confidence interval.}
+#'   \item{CI_UB}{The upper bound of the 95% confidence interval.}
+#'
+#' @references Dahabreh, I.J., Robertson, S.E., Petito, L.C., Hernán, M.A. and Steingrimsson, J.A.. (2019) \emph{Efficient and robust methods for causally 
+#' interpretable meta‐analysis: Transporting inferences from multiple randomized trials to a target population}, Biometrics.
 #' 
 #' @examples 
 #' # g3 in g1 -> grp_31 = 1
@@ -57,17 +83,7 @@
 #'               tol = 1e-4,
 #'               maxit = 1e3,
 #'               verbose = FALSE)
-#' @details
-#' The predictor matrix should be of dimension \eqn{nm * p}. Each row records the values of covariates for one subject at one time, for example, the values at the day from \code{time} (Start) to \code{time2} (Stop). An example dataset \code{\link{sim}} is provided. The dataset has the same format produced by the \code{R} package \pkg{PermAlgo}. 
-#' The specification of arguments \code{group} and \code{group_variable} for the grouping structure can be found in \url{http://thoth.inrialpes.fr/people/mairal/spams/doc-R/html/doc_spams006.html#sec27}, the same as the grouping structure specification in the \code{R} package \pkg{spams}.
 #'
-#' In the Examples below, \eqn{p=9,G=5}, the group structure is: \deqn{g_1 = \{A_{1}, A_{2}, A_{1}B, A_{2}B\},} \deqn{g_2  = \{B, A_{1}B, A_{2}B, C_{1}B, C_{2}B\},} \deqn{g_3  = \{A_{1}B, A_{2}B\},} \deqn{g_4  = \{C_1, C_2, C_{1}B, C_{2}B\},} \deqn{g_5  = \{C_{1}B, C_{2}B\}.}
-#' 
-#' where \eqn{g_3} is a subset of \eqn{g_1} and \eqn{g_2}, and \eqn{g_5} is a subset of \eqn{g_2} and \eqn{g_4}.
-#' @return A list with the following three elements.
-#'   \item{lambdas}{The user-specified regularization coefficients \code{lambda} sorted in decreasing order.}
-#'   \item{estimates}{A matrix, with each column corresponding to the coefficient estimates at each \eqn{\lambda} in \code{lambdas}.}
-#'   \item{iterations}{A vector of number of iterations it takes to converge at each \eqn{\lambda} in \code{lambdas}.}
 
 CMetafoR.ATE.S <- function(
     X,
