@@ -42,47 +42,6 @@
 #' interpretable meta‐analysis: Transporting inferences from multiple randomized trials to a target population}, Biometrics.
 #' 
 #' @examples 
-#' # g3 in g1 -> grp_31 = 1
-#' # g3 in g2 -> grp_32 = 1
-#' # g5 in g2 -> grp_52 = 1
-#' # g5 in g4 -> grp_54 = 1
-#' grp <- matrix(c(0, 0, 0, 0, 0,
-#'                 0, 0, 0, 0, 0,
-#'                 1, 1, 0, 0, 0,
-#'                 0, 0, 0, 0, 0,
-#'                 0, 1, 0, 1, 0),
-#'               ncol = 5, byrow = TRUE)
-#'
-#' # Variable A1 is in g1 only: grp.var_11 = 1
-#' # Variable A1B is in g1 and g3, but g3 is a child group of g1,
-#' # so grp.var_63 = 1 while grp.var_61 = 0.
-#' grp.var <- matrix(c(1, 0, 0, 0, 0, #A1
-#'                     1, 0, 0, 0, 0, #A2
-#'                     0, 0, 0, 1, 0, #C1
-#'                     0, 0, 0, 1, 0, #C2
-#'                     0, 1, 0, 0, 0, #B
-#'                     0, 0, 1, 0, 0, #A1B
-#'                     0, 0, 1, 0, 0, #A2B
-#'                     0, 0, 0, 0, 1, #C1B
-#'                     0, 0, 0, 0, 1  #C2B
-#'                    ), ncol = 5, byrow = TRUE)
-#' eta_g <- rep(1, 5)
-#' x <- as.matrix(sim[, c("A1","A2","C1","C2","B",
-#'                        "A1B","A2B","C1B","C2B")])
-#' lam.seq <- 10^seq(0, -2, by = -0.2)
-#' 
-#' fit <- sox(x = x,
-#'               ID = sim$Id,
-#'               time = sim$Start,
-#'               time2 = sim$Stop,
-#'               event = sim$Event,
-#'               lambda = lam.seq,
-#'               group = grp,
-#'               group_variable = grp.var,
-#'               penalty_weights = eta_g,
-#'               tol = 1e-4,
-#'               maxit = 1e3,
-#'               verbose = FALSE)
 #'
 
 CMetafoR.ATE.S <- function(
