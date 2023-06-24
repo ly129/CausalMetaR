@@ -30,7 +30,7 @@
 #' the R model $q(X)=P(R=1|X)$, the propensity score model $\eta_a(X)=P(A=a|X)$, and the outcome model $\mu_a(X)=E(Y|X, A=a)$. The nuisance parameters are allowed to be estimated by \pkg{SuperLearner}. The estimator is
 #' $$
 #'  \dfrac{\widehat \kappa}{N}\sum\limits_{i=1}^{N} \Bigg[ I(R_i = 0) \widehat \mu_a(X_i) 
-#'  +I(A_i = a, R_i=1) \dfrac{1-\widehat q_{s}(X_i)}{\widehat \eta_a(X_i)\widehat q_{s}(X_i)}  \Big\{ Y_i - \widehat \mu_a(X_i) \Big\} \Bigg],
+#'  +I(A_i = a, R_i=1) \dfrac{1-\widehat q(X_i)}{\widehat \eta_a(X_i)\widehat q(X_i)}  \Big\{ Y_i - \widehat \mu_a(X_i) \Big\} \Bigg],
 #' $$
 #' where $N=n+n_0$, and $\widehat \kappa=\{N^{-1} \sum_{i=1}^N I(R_i=0)\}^{-1}$.
 #' To achieve the non-parametrical efficiency and asymptotic normality, it requires that $||\widehat \mu_a(X) -\mu_a(X)||\big\{||\widehat \eta_a(X) -\eta_a(X)||+||\widehat q(X) -q(X)||\big\}=o_p(n^{-1/2})$. 
