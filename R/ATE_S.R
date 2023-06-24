@@ -1,7 +1,7 @@
 #' Transporting ATE from multi-source population to an internal source-specific population
 #'
 #' @description
-#' Doubly-robust and efficient estimator for the average treatment effect of an internal source-specific target population using \eqn{m} multi-source data.   
+#' Doubly-robust and efficient estimator for the average treatment effects of each internal source-specific target population using \eqn{m} multi-source data.   
 #' 
 #' @param X The covariate matrix/data frame with \eqn{n=n_1+...+n_m} rows and q coloums.
 #' @param Y The (binary/categorical/continuous) outcome, which is a length \eqn{n} vector.
