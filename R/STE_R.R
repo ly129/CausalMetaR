@@ -4,7 +4,7 @@
 #' Doubly-robust and efficient estimator for the subgroup treatment effects (STE) of an external target population using \eqn{m} multi-source data.   
 #' 
 #' @param X The covariate matrix/data frame with \eqn{n=n_1+...+n_m} rows and q coloums. The first column of X is the categorical effect modifier ($\widetilde X$).
-#' @param X0 The covariate matrix/data frame with \eqn{n_0} rows and q coloums. 
+#' @param X0 The covariate matrix/data frame with \eqn{n_0} rows and q coloums. The first column of X is the categorical effect modifier ($\widetilde X$).
 #' @param Y The (binary/categorical/continuous) outcome, which is a length \eqn{n} vector.
 #' @param S The (numeric) source which is a length \eqn{n} vector. 
 #' @param A The (binary) treatment, which is a length \eqn{n} vector.
@@ -29,23 +29,22 @@
 #' The estimator is doubly robust and non-parametrically efficient. Three nuisance parameters are estimated, 
 #' the R model $q(X)=P(R=1|X)$, the propensity score model $\eta_a(X)=P(A=a|X)$, and the outcome model $\mu_a(X)=E(Y|X, A=a)$. The nuisance parameters are allowed to be estimated by \pkg{SuperLearner}. The estimator is
 #' $$
-#'  \dfrac{\widehat \kappa}{n}\sum\limits_{i=1}^{n} \Bigg[ I(R_i = 0) \widehat \mu_a(X_i) 
-#'  +I(A_i = a, R_i=1) \dfrac{1-\widehat q_{s}(X_i)}{\widehat \eta_a(X_i)\widehat q_{s}(X_i)}  \Big\{ Y_i - \widehat \mu_a(X_i) \Big\} \Bigg],
+#'  \dfrac{\widehat \kappa}{N}\sum\limits_{i=1}^{N} \Bigg[ I(R_i = 0) \widehat \mu_a(X_i) 
+#'  +I(A_i = a, R_i=1) \dfrac{1-\widehat q(X_i)}{\widehat \eta_a(X_i)\widehat q(X_i)}  \Big\{ Y_i - \widehat \mu_a(X_i) \Big\} \Bigg],
 #' $$
-#' where $\widehat \kappa=\{n^{-1} \sum_{i=1}^n I(R_i=0)\}^{-1}$.
+#' where $N=n+n_0$, and $\widehat \kappa=\{N^{-1} \sum_{i=1}^N I(R_i=0)\}^{-1}$.
 #' To achieve the non-parametrical efficiency and asymptotic normality, it requires that $||\widehat \mu_a(X) -\mu_a(X)||\big\{||\widehat \eta_a(X) -\eta_a(X)||+||\widehat q(X) -q(X)||\big\}=o_p(n^{-1/2})$. 
 #' In addition, to avoid the Donsker class assumption, the estimation is done by sample splitting and cross-fitting.
 #' When one source of data is a randomized trial, it is still recommended to estimate the propensity score for optimal efficiency. 
 #' Since the non-parametric influence function is the same as the efficient semi-parametric efficient influence function when the propensity score is known and incorporating the assumption $Y\prep S|(X, A=a)$, the inference stays the same. 
 #'
 #' @return A list with the following four elements.
-#'   \item{Estimates}{The point estimate of the ATE for the external data.}
-#'   \item{Variances}{The asymptotic variance of the point estimate, which is calculated based on the (efficient) influence function.}
-#'   \item{CI_LB}{The lower bound of the 95% confidence interval.}
-#'   \item{CI_UB}{The upper bound of the 95% confidence interval.}
-#'    
-#' @references Dahabreh, I.J., Robertson, S.E., Petito, L.C., Hernán, M.A. and Steingrimsson, J.A.. (2019) \emph{Efficient and robust methods for causally 
-#' interpretable meta‐analysis: Transporting inferences from multiple randomized trials to a target population}, Biometrics.
+#'   \item{Estimates}{The point estimates of the STE for the external data.}
+#'   \item{Variances}{The asymptotic variances of the point estimates, which is calculated based on the (efficient) influence function.}
+#'   \item{CI_LB}{The lower bounds of the 95% confidence intervals.}
+#'   \item{CI_UB}{The upper bounds of the 95% confidence intervals.}
+#'   \item{SCB_LB}{The lower bounds of the 95% simultaneous confidence bands.}
+#'   \item{SCB_UB}{The upper bounds of the 95% simultaneous confidence bands.}
 #' 
 #' @examples 
 #'
