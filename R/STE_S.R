@@ -1,9 +1,9 @@
-#' Transporting subgroup treatment effects from multi-source population to an internal source-specific population
+#' Transporting subgroup treatment effects (STE) from multi-source population to an internal source-specific population
 #'
 #' @description
-#' Doubly-robust and efficient estimator for the subgroup treatments effect of each internal source-specific target population using \eqn{m} multi-source data.   
+#' Doubly-robust and efficient estimator for the subgroup treatments effect (STE) of each internal source-specific target population using \eqn{m} multi-source data.   
 #' 
-#' @param X The covariate matrix/data frame with \eqn{n=n_1+...+n_m} rows and q coloums. The first column of X is the categorical effect modifier.
+#' @param X The covariate matrix/data frame with \eqn{n=n_1+...+n_m} rows and q coloums. The first column of X is the categorical effect modifier ($\widetilde X$).
 #' @param Y The (binary/categorical/continuous) outcome, which is a length \eqn{n} vector.
 #' @param S The (numeric) source which is a length \eqn{n} vector. 
 #' @param A The (binary) treatment, which is a length \eqn{n} vector.
@@ -20,27 +20,27 @@
 #' @param outcome_model_args The arguments (in \pkg{SuperLearner}) for the outcome model.
 #'
 #' @details
-#' Data structure: multi-source data contain outcome Y, source S, treatment A, and covariates X ($n \times p$).
+#' Data structure: multi-source data contain outcome Y, source S, treatment A, and covariates X ($n \times p$) with the first column being the categorical effect modifier ($\widetilde X$).
 #' The estimator is doubly robust and non-parametrically efficient. Three nuisance parameters are estimated, 
 #' the source model $q_s(X)=P(S=s|X)$, the propensity score model $\eta_a(X)=P(A=a|X)$, and the outcome model $\mu_a(X)=E(Y|X, A=a)$. The nuisance parameters are allowed to be estimated by \pkg{SuperLearner}. The estimator is
 #' $$
-#'  \dfrac{\widehat \kappa}{n}\sum\limits_{i=1}^{n} \Bigg[ I(S_i = s) \widehat \mu_a(X_i) 
-#'  +I(A_i = a) \dfrac{\widehat q_{s}(X_i)}{\widehat \eta_a(X_i)}  \Big\{ Y_i - \widehat \mu_a(X_i) \Big\} \Bigg],
+#'  \dfrac{\widehat \kappa}{n}\sum\limits_{i=1}^{n} \Bigg[ I(S_i = s, \widetilde X_i=\widetilde x) \widehat \mu_a(X_i) 
+#'  +I(A_i = a, \widetilde X_i=\widetilde x) \dfrac{\widehat q_{s}(X_i)}{\widehat \eta_a(X_i)}  \Big\{ Y_i - \widehat \mu_a(X_i) \Big\} \Bigg],
 #' $$
-#' where $\widehat \kappa=\{n^{-1} \sum_{i=1}^n I(S_i=s)\}^{-1}$.
+#' where $\widehat \kappa=\{n^{-1} \sum_{i=1}^n I(S_i=s, \widetilde X_i=\widetilde x)\}^{-1}$.
 #' To achieve the non-parametrical efficiency and asymptotic normality, it requires that $||\widehat \mu_a(X) -\mu_a(X)||\big\{||\widehat \eta_a(X) -\eta_a(X)||+||\widehat q_s(X) -q_s(X)||\big\}=o_p(n^{-1/2})$. 
 #' In addition, to avoid the Donsker class assumption, the estimation is done by sample splitting and cross-fitting.
 #' When one source of data is a randomized trial, it is still recommended to estimate the propensity score for optimal efficiency. 
 #' Since the non-parametric influence function is the same as the efficient semi-parametric efficient influence function when the propensity score is known and incorporating the assumption $Y\prep S|(X, A=a)$, the inference stays the same. 
 #'
 #' @return A list with the following four elements.
-#'   \item{Estimates}{The point estimate of the ATE for each of s.}
+#'   \item{Estimates}{The point estimate of the STE for each of s and $\widetilde x$.}
 #'   \item{Variances}{The asymptotic variances of the point estimates, which are calculated based on the (efficient) influence function.}
 #'   \item{CI_LB}{The lower bounds of the 95% confidence intervals.}
 #'   \item{CI_UB}{The upper bounds of the 95% confidence intervals.}
-#'
-#' @references Dahabreh, I.J., Robertson, S.E., Petito, L.C., Hernán, M.A. and Steingrimsson, J.A.. (2019) \emph{Efficient and robust methods for causally 
-#' interpretable meta‐analysis: Transporting inferences from multiple randomized trials to a target population}, Biometrics.
+#'   \item{SCB_LB}{The lower bounds of the 95% simultaneous confidence bands.}
+#'   \item{SCB_UB}{The upper bounds of the 95% simultaneous confidence bands.}
+#'   \item{forest plot}{The forest plot for all the above information.}
 #' 
 #' @examples 
 #'
