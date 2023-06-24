@@ -29,7 +29,7 @@
 #' $$
 #' where $\widehat \kappa=\{n^{-1} \sum_{i=1}^n I(S_i=s)\}^{-1}$.
 #' To achieve the non-parametrical efficiency and asymptotic normality, it requires that $||\widehat \mu_a(X) -\mu_a(X)||\big\{||\widehat \eta_a(X) -\eta_a(X)||+||\widehat q_s(X) -q_s(X)||\big\}=o_p(n^{-1/2})$. 
-#' In addition， to avoid the Donsker class assumption, the estimation is done by sample splitting and cross-fitting.
+#' In addition, to avoid the Donsker class assumption, the estimation is done by sample splitting and cross-fitting.
 #' When one source of data is a randomized trial, it is still recommended to estimate the propensity score for optimal efficiency. 
 #' Since the non-parametric influence function is the same as the efficient semi-parametric efficient influence function when the propensity score is known and incorporating the assumption $Y\prep S|(X, A=a)$, the inference stays the same. 
 #'
