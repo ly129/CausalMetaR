@@ -36,8 +36,8 @@
 #' @return A list with the following four elements.
 #'   \item{Estimates}{The point estimate of the ATE for each of s.}
 #'   \item{Variances}{The asymptotic variances of the point estimates, which are calculated based on the (efficient) influence function.}
-#'   \item{CI_LB}{The lower bound of the 95% confidence interval.}
-#'   \item{CI_UB}{The upper bound of the 95% confidence interval.}
+#'   \item{CI_LB}{The lower bounds of the 95% confidence intervals.}
+#'   \item{CI_UB}{The upper bounds of the 95% confidence intervals.}
 #'
 #' @references Dahabreh, I.J., Robertson, S.E., Petito, L.C., Hernán, M.A. and Steingrimsson, J.A.. (2019) \emph{Efficient and robust methods for causally 
 #' interpretable meta‐analysis: Transporting inferences from multiple randomized trials to a target population}, Biometrics.
