@@ -1,4 +1,4 @@
-#' Transporting ATE from multi-source data to an external source-specific population
+#' Transporting ATE from multi-source population to an external source-specific population
 #'
 #' @description
 #' Doubly-robust and efficient estimator for the average treatment effect of an external target population using \eqn{m} multi-source data.   
