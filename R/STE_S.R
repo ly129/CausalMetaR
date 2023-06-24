@@ -1,9 +1,9 @@
 #' Transporting subgroup treatment effects from multi-source population to an internal source-specific population
 #'
 #' @description
-#' Doubly-robust and efficient estimator for the subgroup treatments effect of an internal source-specific target population using \eqn{m} multi-source data.   
+#' Doubly-robust and efficient estimator for the subgroup treatments effect of each internal source-specific target population using \eqn{m} multi-source data.   
 #' 
-#' @param X The covariate matrix/data frame with \eqn{n=n_1+...+n_m} rows and q coloums.
+#' @param X The covariate matrix/data frame with \eqn{n=n_1+...+n_m} rows and q coloums. The first column of X is the categorical effect modifier.
 #' @param Y The (binary/categorical/continuous) outcome, which is a length \eqn{n} vector.
 #' @param S The (numeric) source which is a length \eqn{n} vector. 
 #' @param A The (binary) treatment, which is a length \eqn{n} vector.
@@ -20,7 +20,7 @@
 #' @param outcome_model_args The arguments (in \pkg{SuperLearner}) for the outcome model.
 #'
 #' @details
-#' Data structure: multi-source data contain outcome Y, source S, treatment A, and covariates X ($n \times p$); external data contain only covariate X0 ($n0 \times p$).
+#' Data structure: multi-source data contain outcome Y, source S, treatment A, and covariates X ($n \times p$).
 #' The estimator is doubly robust and non-parametrically efficient. Three nuisance parameters are estimated, 
 #' the source model $q_s(X)=P(S=s|X)$, the propensity score model $\eta_a(X)=P(A=a|X)$, and the outcome model $\mu_a(X)=E(Y|X, A=a)$. The nuisance parameters are allowed to be estimated by \pkg{SuperLearner}. The estimator is
 #' $$
