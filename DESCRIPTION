@@ -3,7 +3,8 @@ Type: Package
 Title: Causally interpretable meta-analysis package for R
 Version: 0.1.0
 Authors@R: c(person("Yi", "Lian", role = c("aut", "cre"), email = "yi.lian@mail.mcgill.ca"),
-             person("Guanbo", "Wang", role = "aut"),
+             person("Guanbo", "Wang", role = c("aut", "cre"), email = "gwang@hsph.harvard.edu"),
+             person("Sean", "McGrath", role = c("aut", "cre"), email = "sean_mcgrath@g.harvard.edu"),
              person("Issa", "Dahabreh", role = "aut"))
 Maintainer: Guanbo Wang <gwang@hsph.harvard.edu>
 Description: This R package provides methods for transporting causal estimands from a multi-source data to a target population. The multi-source data can be a collection of trails, observation cohorts, or a combination of both, which have same datat structure (outcome, treatment, and covariates). The target population can be one internal source-specific data, or an external dataset where only covariate information is available. The causal estimands available for transportation is average treatment effects and subgroup treatment effects.  
