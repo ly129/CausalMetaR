@@ -1,19 +1,19 @@
 #' Transporting subgroup treatment effects (STE) from multi-source population to an internal source-specific population
 #'
 #' @description
-#' Doubly-robust and efficient estimator for the subgroup treatments effect (STE) of each internal source-specific target population using \eqn{m} multi-source data.   
-#' 
+#' Doubly-robust and efficient estimator for the subgroup treatments effect (STE) of each internal source-specific target population using \eqn{m} multi-source data.
+#'
 #' @param X The covariate matrix/data frame with \eqn{n=n_1+...+n_m} rows and q coloums. The first column of X is the categorical effect modifier ($\widetilde X$).
 #' @param Y The (binary/categorical/continuous) outcome, which is a length \eqn{n} vector.
-#' @param S The (numeric) source which is a length \eqn{n} vector. 
+#' @param S The (numeric) source which is a length \eqn{n} vector.
 #' @param A The (binary) treatment, which is a length \eqn{n} vector.
 #' @param source_model The multi-nomial model for estimating \eqn{P(S=s|X)}. It has two options: \code{SL.glmnet.multinom} and \code{SL.nnet.multinom}. The default is \code{SL.glmnet.multinom}.
 #' @param source_model_args The arguments (in \pkg{SuperLearner}) for the source model.
-#' @param treatment_model_type The options for how the treatment_model \eqn{P(A=1|X, S=s)} is estimated. It includes \code{separate} and \code{joint}, with the default being \code{separate}. When \code{separate} is selected, 
-#' \eqn{P(A=1|X, S=s)} is estimated by fitting the model (regressing \eqn{A} on \eqn{X}) within each specific internal source population (S=s). When \code{joint} is selected, \eqn{P(A=1|X, S=s)} 
-#' is estimated by fitting the model (regressing \eqn{A} on \eqn{X} and \eqn{S}) using the multi-source population and then estimating the probability by fitting the model while suppressing the \eqn{S=s}. 
+#' @param treatment_model_type The options for how the treatment_model \eqn{P(A=1|X, S=s)} is estimated. It includes \code{separate} and \code{joint}, with the default being \code{separate}. When \code{separate} is selected,
+#' \eqn{P(A=1|X, S=s)} is estimated by fitting the model (regressing \eqn{A} on \eqn{X}) within each specific internal source population (S=s). When \code{joint} is selected, \eqn{P(A=1|X, S=s)}
+#' is estimated by fitting the model (regressing \eqn{A} on \eqn{X} and \eqn{S}) using the multi-source population and then estimating the probability by fitting the model while suppressing the \eqn{S=s}.
 #' In both cases, the propensity score is calculated as $P(A=1|X)=\sum_{s=1}^{m}P(A=1|X, S=s)P(S=s|X)$.
-#' @param treatment_model The treatment model \eqn{P(A=1|X, S=s)} is estimated using \pkg{SuperLearner}. If, for example, the preference is to use only logistic regression for the probability estimation, 
+#' @param treatment_model The treatment model \eqn{P(A=1|X, S=s)} is estimated using \pkg{SuperLearner}. If, for example, the preference is to use only logistic regression for the probability estimation,
 #' please ensure that only \code{glm} is included in the \pkg{SuperLearner} library within the \code{treatment_model_args}.
 #' @param treatment_model_args The arguments (in \pkg{SuperLearner}) for the treatment model.
 #' @param outcome_model The same as \code{treatment_model}.
@@ -21,17 +21,17 @@
 #'
 #' @details
 #' Data structure: multi-source data contain outcome Y, source S, treatment A, and covariates X ($n \times p$) with the first column being the categorical effect modifier ($\widetilde X$).
-#' The estimator is doubly robust and non-parametrically efficient. Three nuisance parameters are estimated, 
+#' The estimator is doubly robust and non-parametrically efficient. Three nuisance parameters are estimated,
 #' the source model $q_s(X)=P(S=s|X)$, the propensity score model $\eta_a(X)=P(A=a|X)$, and the outcome model $\mu_a(X)=E(Y|X, A=a)$. The nuisance parameters are allowed to be estimated by \pkg{SuperLearner}. The estimator is
 #' $$
-#'  \dfrac{\widehat \kappa}{n}\sum\limits_{i=1}^{n} \Bigg[ I(S_i = s, \widetilde X_i=\widetilde x) \widehat \mu_a(X_i) 
+#'  \dfrac{\widehat \kappa}{n}\sum\limits_{i=1}^{n} \Bigg[ I(S_i = s, \widetilde X_i=\widetilde x) \widehat \mu_a(X_i)
 #'  +I(A_i = a, \widetilde X_i=\widetilde x) \dfrac{\widehat q_{s}(X_i)}{\widehat \eta_a(X_i)}  \Big\{ Y_i - \widehat \mu_a(X_i) \Big\} \Bigg],
 #' $$
 #' where $\widehat \kappa=\{n^{-1} \sum_{i=1}^n I(S_i=s, \widetilde X_i=\widetilde x)\}^{-1}$.
-#' To achieve the non-parametrical efficiency and asymptotic normality, it requires that $||\widehat \mu_a(X) -\mu_a(X)||\big\{||\widehat \eta_a(X) -\eta_a(X)||+||\widehat q_s(X) -q_s(X)||\big\}=o_p(n^{-1/2})$. 
+#' To achieve the non-parametrical efficiency and asymptotic normality, it requires that $||\widehat \mu_a(X) -\mu_a(X)||\big\{||\widehat \eta_a(X) -\eta_a(X)||+||\widehat q_s(X) -q_s(X)||\big\}=o_p(n^{-1/2})$.
 #' In addition, to avoid the Donsker class assumption, the estimation is done by sample splitting and cross-fitting.
-#' When one source of data is a randomized trial, it is still recommended to estimate the propensity score for optimal efficiency. 
-#' Since the non-parametric influence function is the same as the efficient semi-parametric efficient influence function when the propensity score is known and incorporating the assumption $Y\prep S|(X, A=a)$, the inference stays the same. 
+#' When one source of data is a randomized trial, it is still recommended to estimate the propensity score for optimal efficiency.
+#' Since the non-parametric influence function is the same as the efficient semi-parametric efficient influence function when the propensity score is known and incorporating the assumption $Y\prep S|(X, A=a)$, the inference stays the same.
 #'
 #' @return A list with the following four elements.
 #'   \item{Estimates}{The point estimate of the STE for each of s and $\widetilde x$.}
@@ -41,8 +41,8 @@
 #'   \item{SCB_LB}{The lower bounds of the 95% simultaneous confidence bands.}
 #'   \item{SCB_UB}{The upper bounds of the 95% simultaneous confidence bands.}
 #'   \item{forest plot}{The forest plot for all the above information.}
-#' 
-#' @examples 
+#'
+#' @examples
 #'
 CMetafoR.STE.S <- function(
     X,
@@ -150,11 +150,11 @@ CMetafoR.STE.S <- function(
       psi_var[s, ] <- kappa/n^2 * colSums((tmp1 + tmp2)^2)
     }
 
-    rownames(psi) <- paste0("S=", unique_S)
-    colnames(psi) <- paste0("A=", c(1, 0))
+    rownames(psi) <- paste0("S = ", unique_S)
+    colnames(psi) <- paste0("A = ", c(1, 0))
 
-    rownames(psi_var) <- paste0("S=", unique_S)
-    colnames(psi_var) <- paste0("A=", c(1, 0))
+    rownames(psi_var) <- paste0("S = ", unique_S)
+    colnames(psi_var) <- paste0("A = ", c(1, 0))
 
     lb <- psi - qnorm(p = 0.975) * sqrt(psi_var)
     ub <- psi + qnorm(p = 0.975) * sqrt(psi_var)
@@ -178,24 +178,58 @@ CMetafoR.STE.S <- function(
     plot_scb[((i - 1) * no_S + 1):(i * no_S), 2] <- psi[, 1] - psi[, 2] + qtmax * sqrt(psi_var[,1] + psi_var[,2])
   }
 
-  snames <- rep(paste("Study =", unique_S), n_x_tilde)
-  xtildenames <- character(length = n_x_tilde * no_S)
-  xtildenames[1:(n_x_tilde * no_S) %% no_S == 1] <- c(paste(names(X)[1], "=", unique_X))
+  # snames <- rep(paste("Study =", unique_S), n_x_tilde)
+  # xtildenames <- character(length = n_x_tilde * no_S)
+  # xtildenames[1:(n_x_tilde * no_S) %% no_S == 1] <- c(paste(names(X)[1], "=", unique_X))
+  snames <- character(length = no_S)
+  snames[1:(n_x_tilde * no_S) %% n_x_tilde == 1] <- c(paste("Study =", unique_S))
+  xtildenames <- rep(paste(names(X)[1], "=", unique_X), no_S)
 
-  forest(x = plot_psi,
-         vi = plot_psi_var,
-         slab = xtildenames,
-         ilab = snames,
+  # Rearrange
+  id_rows <- seq(no_S * n_x_tilde)
+  rearr <- sapply(c(seq(no_S - 1), 0),
+                  FUN = function(x) {which(id_rows %% no_S == x)}, simplify = TRUE)
+  rearr <- c(rearr)
+
+  forest(x = plot_psi[rearr],
+         vi = plot_psi_var[rearr],
+         slab = snames,
+         ilab = xtildenames,
          ilab.xpos = -3,
          header = "Subgroup",
          xlab = "Treatment Effect")
   for (i in 1:(n_x_tilde * no_S)) {
-    segments(x0 = plot_scb[i, 1],
+    segments(x0 = plot_scb[rearr[i], 1],
              y0 = n_x_tilde * no_S + 1 - i,
-             x1 = plot_scb[i, 2])
+             x1 = plot_scb[rearr[i], 2])
   }
 
-  return(output)
+  # rearrange output
+  reoutput <- vector(mode = "list", length = no_S)
+  names(reoutput) <- paste0("Study = ", unique_S)
+
+  mat_with_name <- matrix(nrow = n_x_tilde, ncol = 2)
+  rownames(mat_with_name) <- paste(names(X)[1], "=", unique_X)
+  colnames(mat_with_name) <- paste0("A = ", c(1, 0))
+
+  for (s in 1:no_S) {
+    reoutput[[s]] <- list(Estimates = mat_with_name,
+                          Variances = mat_with_name,
+                          CI_LB = mat_with_name,
+                          CI_UB = mat_with_name,
+                          SCB_LB = mat_with_name,
+                          SCB_UB = mat_with_name)
+  }
+
+  for (i in 1:n_x_tilde) {
+    for (s in 1:no_S) {
+      for (j in 1:6) {
+        reoutput[[s]][[j]][i, ] <- output[[i]][[j]][s, ]
+      }
+    }
+  }
+
+  return(reoutput)
 }
 
 

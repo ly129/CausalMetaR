@@ -6,10 +6,7 @@ Authors@R: c(person("Yi", "Lian", role = c("aut", "cre"), email = "yi.lian@mail.
              person("Guanbo", "Wang", role = "aut"),
              person("Issa", "Dahabreh", role = "aut"))
 Maintainer: Guanbo Wang <gwang@hsph.harvard.edu>
-Description: This R package provides methods for transporting causal estimands from a multi-source data to a target population. 
-The multi-source data can be a collection of trails, observation cohorts, or a combination of both, which have same datat structure (outcome, treatment, and covariates).
-The target population can be one internal source-specific data, or an external dataset where only covariate information is available.
-The causal estimands available for transportation is average treatment effects and subgroup treatment effects.  
+Description: This R package provides methods for transporting causal estimands from a multi-source data to a target population. The multi-source data can be a collection of trails, observation cohorts, or a combination of both, which have same datat structure (outcome, treatment, and covariates). The target population can be one internal source-specific data, or an external dataset where only covariate information is available. The causal estimands available for transportation is average treatment effects and subgroup treatment effects.  
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
