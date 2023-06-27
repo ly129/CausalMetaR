@@ -160,18 +160,15 @@ test.STE.S <- CMetafoR.STE.S(
   X = X, Y = Y, S = S, A = A,
   source_model = "SL.glmnet.multinom",
   source_model_args = list(),
+  # treatment_model_type = "joint",
   treatment_model = "SuperLearner",
   treatment_model_args = list(
-    # Y = dd$A,
-    # X = dd[, 1:10],
     family = binomial(),
     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
     cvControl = list(V = 5L)
   ),
   outcome_model = "SuperLearner",
   outcome_model_args = list(
-    # Y = dd$Y,
-    # X = cbind(dd$A, dd[, 1:10]),
     family = gaussian(),
     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
     cvControl = list(V = 5L)
