@@ -4,7 +4,13 @@
 \alias{plot.STE_S}
 \title{Plot method for objects of class "STE_s"}
 \usage{
-\method{plot}{STE_S}(x, header = "Subgroup", xlab = "Treatment Effect", ...)
+\method{plot}{STE_S}(
+  x,
+  header = "Subgroup",
+  xlab = "Treatment Effect",
+  include_scb = TRUE,
+  ...
+)
 }
 \arguments{
 \item{x}{Object of class "STE_S".}
@@ -12,6 +18,8 @@
 \item{header}{character string specifying the title of the column of subgroup names}
 
 \item{xlab}{character string specifying the title for the x-axis.}
+
+\item{include_scb}{logical scalar specifying whether to include simultaneous 95\% confidence bands in the forest plot}
 
 \item{...}{Other arguments, which are passed to \code{\link[metafor]{forest.rma}}.}
 }
