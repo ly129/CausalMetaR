@@ -38,7 +38,7 @@
 #' When one source of data is a randomized trial, it is still recommended to estimate the propensity score for optimal efficiency.
 #' Since the non-parametric influence function is the same as the efficient semi-parametric efficient influence function when the propensity score is known and incorporating the assumption $Y\prep S|(X, A=a)$, the inference stays the same.
 #'
-#' @return A list with the following four elements.
+#' @return An object of class "ATE_R". This object is a list with the following elements:
 #'   \item{Estimate}{The point estimate of the ATE for the external data.}
 #'   \item{Variance}{The asymptotic variance of the point estimate, which is calculated based on the (efficient) influence function.}
 #'   \item{CI_LB}{The lower bound of the 95% confidence interval.}
@@ -181,12 +181,13 @@ CMetafoR.ATE.R <- function(
   # lb_scb <- phi - qtmax * sqrt(phi_var)
   # ub_scb <- phi + qtmax * sqrt(phi_var)
 
-  return(list(Estimate = phi,
-              Variance = phi_var,
-              CI_LB = lb,
-              CI_UB = ub))#,
-              # SCB_LB = lb_scb,
-              # SCB_UB = ub_scb))
+  output <- list(Estimate = phi,
+                 Variance = phi_var,
+                 CI_LB = lb,
+                 CI_UB = ub)
+  class(output) <- 'ATE_R'
+
+  return(output)
 }
 
 

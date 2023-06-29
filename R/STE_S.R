@@ -33,14 +33,14 @@
 #' When one source of data is a randomized trial, it is still recommended to estimate the propensity score for optimal efficiency.
 #' Since the non-parametric influence function is the same as the efficient semi-parametric efficient influence function when the propensity score is known and incorporating the assumption $Y\prep S|(X, A=a)$, the inference stays the same.
 #'
-#' @return A list with the following four elements.
+#' @return An object of class "STE_S". This object is a list with the following elements:
 #'   \item{Estimates}{The point estimate of the STE for each of s and $\widetilde x$.}
 #'   \item{Variances}{The asymptotic variances of the point estimates, which are calculated based on the (efficient) influence function.}
 #'   \item{CI_LB}{The lower bounds of the 95% confidence intervals.}
 #'   \item{CI_UB}{The upper bounds of the 95% confidence intervals.}
 #'   \item{SCB_LB}{The lower bounds of the 95% simultaneous confidence bands.}
 #'   \item{SCB_UB}{The upper bounds of the 95% simultaneous confidence bands.}
-#'   \item{forest plot}{The forest plot for all the above information.}
+#'   \item{...}{Some additional elements.}
 #'
 #' @examples
 #'
@@ -192,19 +192,6 @@ CMetafoR.STE.S <- function(
                   FUN = function(x) {which(id_rows %% no_S == x)}, simplify = TRUE)
   rearr <- c(rearr)
 
-  forest(x = plot_psi[rearr],
-         vi = plot_psi_var[rearr],
-         slab = snames,
-         ilab = xtildenames,
-         ilab.xpos = -3,
-         header = "Subgroup",
-         xlab = "Treatment Effect")
-  for (i in 1:(n_x_tilde * no_S)) {
-    graphics::segments(x0 = plot_scb[rearr[i], 1],
-                       y0 = n_x_tilde * no_S + 1 - i,
-                       x1 = plot_scb[rearr[i], 2])
-  }
-
   # rearrange output
   reoutput <- vector(mode = "list", length = no_S)
   names(reoutput) <- paste0("Study = ", unique_S)
@@ -229,6 +216,15 @@ CMetafoR.STE.S <- function(
       }
     }
   }
+  reoutput$plot_psi <- plot_psi[rearr]
+  reoutput$plot_psi_var <- plot_psi_var[rearr]
+  reoutput$plot_scb <- plot_scb[rearr, ]
+  reoutput$no_S <- no_S
+  reoutput$n_x_tilde <- n_x_tilde
+  reoutput$snames <- snames
+  reoutput$xtildenames <- xtildenames
+
+  class(reoutput) <- 'STE_S'
 
   return(reoutput)
 }
