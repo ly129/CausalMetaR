@@ -44,6 +44,7 @@
 #'
 #' @examples
 #'
+#' @export
 CMetafoR.STE.S <- function(
     X,
     Y,
@@ -199,9 +200,9 @@ CMetafoR.STE.S <- function(
          header = "Subgroup",
          xlab = "Treatment Effect")
   for (i in 1:(n_x_tilde * no_S)) {
-    segments(x0 = plot_scb[rearr[i], 1],
-             y0 = n_x_tilde * no_S + 1 - i,
-             x1 = plot_scb[rearr[i], 2])
+    graphics::segments(x0 = plot_scb[rearr[i], 1],
+                       y0 = n_x_tilde * no_S + 1 - i,
+                       x1 = plot_scb[rearr[i], 2])
   }
 
   # rearrange output
