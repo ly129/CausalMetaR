@@ -155,8 +155,8 @@
 # dim(X0)
 #
 #
-# ### STE.S test
-# test.STE.S <- CMetafoR.STE.S(
+# ### STE_int test
+# test_STE_int <- STE_int(
 #   X = X, Y = Y, S = S, A = A,
 #   source_model = "SL.glmnet.multinom",
 #   source_model_args = list(),
@@ -174,11 +174,11 @@
 #     cvControl = list(V = 5L)
 #   )
 # )
-# test.STE.S
+# test_STE_int
 #
 #
-# ### STE.R test
-# test.STE.R <- CMetafoR.STE.R(
+# ### STE_ext test
+# test_STE_ext <- STE_ext(
 #   X = X, Y = Y, S = S, A = A, X0 = X0,
 #   source_model = "SL.glmnet.multinom",
 #   source_model_args = list(),
@@ -189,8 +189,8 @@
 #     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
 #     cvControl = list(V = 5L)
 #   ),
-#   R_model = "SuperLearner",
-#   R_model_args = list(
+#   external_model = "SuperLearner",
+#   external_model_args = list(
 #     family = binomial(),
 #     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
 #     cvControl = list(V = 5L)
@@ -201,9 +201,9 @@
 #     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
 #     cvControl = list(V = 5L)
 #   ),
-#   x_tilde = 1
+#   EM = 1
 # )
-# test.STE.R
+# test_STE_ext
 #
 #
 #
@@ -211,8 +211,8 @@
 #
 #
 #
-# ### ATE.R test
-# test.ATE.R <- CMetafoR.ATE.R(
+# ### ATE_ext test
+# test_ATE_ext <- ATE_ext(
 #   X = X, Y = Y, S = S, A = A, X0 = X0,
 #   source_model = "SL.glmnet.multinom",
 #   source_model_args = list(),
@@ -223,8 +223,8 @@
 #     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
 #     cvControl = list(V = 5L)
 #   ),
-#   R_model = "SuperLearner",
-#   R_model_args = list(
+#   external_model = "SuperLearner",
+#   external_model_args = list(
 #     family = binomial(),
 #     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
 #     cvControl = list(V = 5L)
@@ -236,13 +236,13 @@
 #     cvControl = list(V = 5L)
 #   )
 # )
-# test.ATE.R
+# test_ATE_ext
 #
 #
 #
 #
-# ### ATE.S test
-# test.ATE.S <- CMetafoR.ATE.S(
+# ### ATE_int test
+# test_ATE_int <- ATE_int(
 #   X = X, Y = Y, S = S, A = A,
 #   source_model = "SL.glmnet.multinom",
 #   source_model_args = list(),
@@ -253,12 +253,6 @@
 #     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
 #     cvControl = list(V = 5L)
 #   ),
-#   # R_model = "SuperLearner",
-#   # R_model_args = list(
-#   #   family = binomial(),
-#   #   SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
-#   #   cvControl = list(V = 5L)
-#   # ),
 #   outcome_model = "SuperLearner",
 #   outcome_model_args = list(
 #     family = gaussian(),
@@ -266,4 +260,4 @@
 #     cvControl = list(V = 5L)
 #   )
 # )
-# test.ATE.S
+# test_ATE_int

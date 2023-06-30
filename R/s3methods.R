@@ -1,23 +1,23 @@
-#' Plot method for objects of class "STE_s"
+#' Plot method for objects of class "STE_int"
 #'
-#' This function creates forest plots of objects of class "STE_S".
+#' This function creates forest plots of objects of class "STE_int".
 #'
-#' @param x Object of class "STE_S".
+#' @param x Object of class "STE_int".
 #' @param header character string specifying the title of the column of subgroup names
 #' @param xlab character string specifying the title for the x-axis.
 #' @param include_scb logical scalar specifying whether to include simultaneous 95\% confidence bands in the forest plot
 #' @param ... Other arguments, which are passed to \code{\link[metafor]{forest.rma}}.
 #' @return No value is returned.
-#' @seealso \code{\link{CMetafoR.STE.S}}
+#' @seealso \code{\link{STE_int}}
 #'
 #'
 #'
 #' @export
 
-plot.STE_S <- function(x, header = 'Subgroup', xlab = 'Treatment Effect',
+plot.STE_int <- function(x, header = 'Subgroup', xlab = 'Treatment Effect',
                        include_scb = TRUE, ...){
-  if (!inherits(x, "STE_S")){
-    stop("Argument 'x' must be an object of class \"STE_S\".")
+  if (!inherits(x, "STE_int")){
+    stop("Argument 'x' must be an object of class \"STE_int\".")
   }
 
   forest(x = x$plot_psi,
@@ -41,23 +41,23 @@ plot.STE_S <- function(x, header = 'Subgroup', xlab = 'Treatment Effect',
 
 
 
-#' Print method for objects of class "STE_S"
+#' Print method for objects of class "STE_int"
 #'
-#' Print method for objects of class "STE_S"
+#' Print method for objects of class "STE_int"
 #'
-#' @param x Object of class "STE_S".
+#' @param x Object of class "STE_int".
 #' @param digits Integer specifying the number of decimal places to display.
 #' @param ... Other arguments.
 #' @return No value is returned.
-#' @seealso \code{\link{CMetafoR.STE.S}}
+#' @seealso \code{\link{STE_int}}
 #'
 #'
 #'
 #' @export
 
-print.STE_S <- function(x, digits = 4, ...){
-  if (!inherits(x, "STE_S")){
-    stop("Argument 'x' must be an object of class \"STE_S\".")
+print.STE_int <- function(x, digits = 4, ...){
+  if (!inherits(x, "STE_int")){
+    stop("Argument 'x' must be an object of class \"STE_int\".")
   }
   cat('SUBGROUP TREATMENT EFFECT ESTIMATES')
   cat("\n-----------------------------------\n\n")

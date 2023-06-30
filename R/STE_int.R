@@ -33,7 +33,7 @@
 #' When one source of data is a randomized trial, it is still recommended to estimate the propensity score for optimal efficiency.
 #' Since the non-parametric influence function is the same as the efficient semi-parametric efficient influence function when the propensity score is known and incorporating the assumption $Y\prep S|(X, A=a)$, the inference stays the same.
 #'
-#' @return An object of class "STE_S". This object is a list with the following elements:
+#' @return An object of class "STE_int". This object is a list with the following elements:
 #'   \item{Estimates}{The point estimate of the STE for each of s and $\widetilde x$.}
 #'   \item{Variances}{The asymptotic variances of the point estimates, which are calculated based on the (efficient) influence function.}
 #'   \item{CI_LB}{The lower bounds of the 95% confidence intervals.}
@@ -48,7 +48,7 @@
 #' @examples
 #'
 #' @export
-CMetafoR.STE.S <- function(
+STE_int <- function(
     X,
     Y,
     S, # integer sequence starting from 1
@@ -234,7 +234,7 @@ CMetafoR.STE.S <- function(
   reoutput$snames <- snames
   reoutput$xtildenames <- xtildenames
 
-  class(reoutput) <- 'STE_S'
+  class(reoutput) <- 'STE_int'
 
   return(reoutput)
 }

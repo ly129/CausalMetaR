@@ -1,13 +1,14 @@
-#' Transporting ATE from multi-source population to an external source-specific population
+#' Transporting subgroup treatment effects (STE) from multi-source population to an external source-specific population
 #'
 #' @description
-#' Doubly-robust and efficient estimator for the average treatment effect of an external target population using \eqn{m} multi-source data.
+#' Doubly-robust and efficient estimator for the subgroup treatment effects (STE) of an external target population using \eqn{m} multi-source data.
 #'
-#' @param X The covariate matrix/data frame with \eqn{n=n_1+...+n_m} rows and q coloums.
-#' @param X0 The covariate matrix/data frame with \eqn{n_0} rows and q coloums.
+#' @param X The covariate matrix/data frame with \eqn{n=n_1+...+n_m} rows and q coloums. The first column of X is the categorical effect modifier ($\widetilde X$).
+#' @param X0 The covariate matrix/data frame with \eqn{n_0} rows and q coloums. The first column of X is the categorical effect modifier ($\widetilde X$).
 #' @param Y The (binary/categorical/continuous) outcome, which is a length \eqn{n} vector.
 #' @param S The (numeric) source which is a length \eqn{n} vector.
 #' @param A The (binary) treatment, which is a length \eqn{n} vector.
+#' @param EM The effect modifier (FILL IN DETAILS)
 #' @param source_model The multi-nomial model for estimating \eqn{P(S=s|X)}. It has two options: \code{SL.glmnet.multinom} and \code{SL.nnet.multinom}. The default is \code{SL.glmnet.multinom}.
 #' @param source_model_args The arguments (in \pkg{SuperLearner}) for the source model.
 #' @param treatment_model_type The options for how the treatment_model \eqn{P(A=1|X, S=s)} is estimated. It includes \code{separate} and \code{joint}, with the default being \code{separate}. When \code{separate} is selected,
@@ -17,9 +18,9 @@
 #' @param treatment_model The treatment model \eqn{P(A=1|X, S=s)} is estimated using \pkg{SuperLearner}. If, for example, the preference is to use only logistic regression for the probability estimation,
 #' please ensure that only \code{glm} is included in the \pkg{SuperLearner} library within the \code{treatment_model_args}.
 #' @param treatment_model_args The arguments (in \pkg{SuperLearner}) for the treatment model.
-#' @param R_model = The R model \eqn{P(R=1|W)} is estimated using \pkg{SuperLearner}. R is a binary variable indicating the multi-source data, i.e., R is 1 if the subject belongs to the multi-source data and 0 if the subject belongs to the external data.
+#' @param external_model = The R model \eqn{P(R=1|W)} is estimated using \pkg{SuperLearner}. R is a binary variable indicating the multi-source data, i.e., R is 1 if the subject belongs to the multi-source data and 0 if the subject belongs to the external data.
 #' W is combination of X and X0, i.e., W=rbind(X, X0)
-#' @param R_model_args = list(),
+#' @param external_model_args = list(),
 #' @param outcome_model The same as \code{treatment_model}.
 #' @param outcome_model_args The arguments (in \pkg{SuperLearner}) for the outcome model.
 #'
@@ -38,28 +39,23 @@
 #' When one source of data is a randomized trial, it is still recommended to estimate the propensity score for optimal efficiency.
 #' Since the non-parametric influence function is the same as the efficient semi-parametric efficient influence function when the propensity score is known and incorporating the assumption $Y\prep S|(X, A=a)$, the inference stays the same.
 #'
-#' @return An object of class "ATE_R". This object is a list with the following elements:
-#'   \item{Estimate}{The point estimate of the ATE for the external data.}
-#'   \item{Variance}{The asymptotic variance of the point estimate, which is calculated based on the (efficient) influence function.}
-#'   \item{CI_LB}{The lower bound of the 95% confidence interval.}
-#'   \item{CI_UB}{The upper bound of the 95% confidence interval.}
+#' @return An object of class "STE_ext". This object is a list with the following elements:
+#'   \item{Estimates}{The point estimates of the STE for the external data.}
+#'   \item{Variances}{The asymptotic variances of the point estimates, which is calculated based on the (efficient) influence function.}
+#'   \item{CI_LB}{The lower bounds of the 95% confidence intervals.}
+#'   \item{CI_UB}{The upper bounds of the 95% confidence intervals.}
+#'   \item{SCB_LB}{The lower bounds of the 95% simultaneous confidence bands.}
+#'   \item{SCB_UB}{The upper bounds of the 95% simultaneous confidence bands.}
 #'   \item{fit_outcome}{Fitted outcome model.}
 #'   \item{fit_source}{Fitted source model.}
 #'   \item{fit_treatment}{Fitted treatment model(s).}
-#'   \item{fit_R}{Fitted R model.}
-#'
-#' @references Dahabreh, I.J., Robertson, S.E., Petito, L.C., Hernán, M.A. and Steingrimsson, J.A.. (2019) \emph{Efficient and robust methods for causally
-#' interpretable meta‐analysis: Transporting inferences from multiple randomized trials to a target population}, Biometrics.
+#'   \item{fit_external}{Fitted external model.}
 #'
 #' @examples
 #'
-#' @import metafor
-#' @import SuperLearner
-#' @importFrom stats model.matrix predict qnorm quantile rnorm
-#'
 #' @export
 
-CMetafoR.ATE.R <- function(
+STE_ext <- function(
     X,
     X0,
     Y,
@@ -70,10 +66,11 @@ CMetafoR.ATE.R <- function(
     treatment_model_type = "separate",
     treatment_model = "SuperLearner",
     treatment_model_args = list(),
-    R_model = "SuperLearner",
-    R_model_args = list(),
+    external_model = "SuperLearner",
+    external_model_args = list(),
     outcome_model = "SuperLearner",
-    outcome_model_args = list()
+    outcome_model_args = list(),
+    EM
 ) {
   # Total sample size
   n1 <- nrow(X)
@@ -121,10 +118,10 @@ CMetafoR.ATE.R <- function(
     stop("Type has to be either 'separate' or 'joint'.")
   }
 
-  R_model_args$Y <- c(rep(1, n1), rep(0, n0))
-  R_model_args$X <- rbind(X, X0)
-  fit_R <- do.call(what = R_model, args = R_model_args)
-  PrR_X <- predict.SuperLearner(fit_R, newdata = X)$pred
+  external_model_args$Y <- c(rep(1, n1), rep(0, n0))
+  external_model_args$X <- rbind(X, X0)
+  fit_external <- do.call(what = external_model, args = external_model_args)
+  PrR_X <- predict.SuperLearner(fit_external, newdata = X)$pred
 
   outcome_model_args$Y <- Y
   outcome_model_args$X <- data.frame(A, X)
@@ -152,17 +149,17 @@ CMetafoR.ATE.R <- function(
   pred_Y0_X1 <- predict.SuperLearner(fit_outcome,
                                      newdata = data.frame(A = 0, X))$pred
 
-  # I_xr <- which(X0[, 1] == x_tilde)
+  I_xr <- which(X0[, 1] == EM)
 
-  gamma <- n/n0 # length(I_xr)
+  gamma <- n/length(I_xr)
 
   tmp1 <- matrix(0, nrow = n0, ncol = 2)
-  tmp1[, 1] <- pred_Y1_X0   #[I_xr, ]
-  tmp1[, 2] <- pred_Y0_X0   #[I_xr, ]
+  tmp1[I_xr, 1] <- pred_Y1_X0[I_xr, ]
+  tmp1[I_xr, 2] <- pred_Y0_X0[I_xr, ]
 
   tmp2 <- matrix(0, nrow = n1, ncol = 2)
-  I_xa1 <- which(A == 1)
-  I_xa0 <- which(A == 0)
+  I_xa1 <- which((X[, 1] == EM) & (A == 1))
+  I_xa0 <- which((X[, 1] == EM) & (A == 0))
 
   tmp2[I_xa1, 1] <- (1 - PrR_X[I_xa1])/PrR_X[I_xa1]/eta1[I_xa1] * (Y[I_xa1] - pred_Y1_X1[I_xa1])
   tmp2[I_xa0, 2] <- (1 - PrR_X[I_xa0])/PrR_X[I_xa0]/eta0[I_xa0] * (Y[I_xa0] - pred_Y0_X1[I_xa0])
@@ -170,7 +167,7 @@ CMetafoR.ATE.R <- function(
   tmp <- colSums(rbind(tmp1, tmp2))
   phi <- gamma/n * tmp
 
-  tmp1 <- tmp1 - rep(phi, each = n0)
+  tmp1[I_xr, ] <- tmp1[I_xr, ] - rep(phi, each = length(I_xr))
   phi_var <- gamma/n^2 * colSums(rbind(tmp1, tmp2)^2)
 
   names(phi) <- paste0("A=", c(1, 0))
@@ -180,22 +177,24 @@ CMetafoR.ATE.R <- function(
   lb <- phi - qnorm(p = 0.975) * sqrt(phi_var)
   ub <- phi + qnorm(p = 0.975) * sqrt(phi_var)
 
-  # tmax <- apply(abs(matrix(rnorm(length(unique(X[,1])) * 1e6),
-  #                          nrow = length(unique(X[,1])), ncol = 1e6)), 2, max)
-  # qtmax <- quantile(tmax, 0.95)
-  #
-  # lb_scb <- phi - qtmax * sqrt(phi_var)
-  # ub_scb <- phi + qtmax * sqrt(phi_var)
+  tmax <- apply(abs(matrix(rnorm(length(unique(X[,1])) * 1e6),
+                           nrow = length(unique(X[,1])), ncol = 1e6)), 2, max)
+  qtmax <- quantile(tmax, 0.95)
 
-  output <- list(Estimate = phi,
-                 Variance = phi_var,
+  lb_scb <- phi - qtmax * sqrt(phi_var)
+  ub_scb <- phi + qtmax * sqrt(phi_var)
+
+  output <- list(Estimates = phi,
+                 Variances = phi_var,
                  CI_LB = lb,
                  CI_UB = ub,
+                 SCB_LB = lb_scb,
+                 SCB_UB = ub_scb,
                  fit_outcome = fit_outcome,
                  fit_source = fit_source,
                  fit_treatment = fit_treatment,
-                 fit_R = fit_R)
-  class(output) <- 'ATE_R'
+                 fit_external = fit_external)
+  class(output) <- 'STE_ext'
 
   return(output)
 }
