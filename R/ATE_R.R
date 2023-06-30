@@ -46,6 +46,7 @@
 #'   \item{fit_outcome}{Fitted outcome model.}
 #'   \item{fit_source}{Fitted source model.}
 #'   \item{fit_treatment}{Fitted treatment model(s).}
+#'   \item{fit_R}{Fitted R model.}
 #'
 #' @references Dahabreh, I.J., Robertson, S.E., Petito, L.C., Hernán, M.A. and Steingrimsson, J.A.. (2019) \emph{Efficient and robust methods for causally
 #' interpretable meta‐analysis: Transporting inferences from multiple randomized trials to a target population}, Biometrics.
@@ -192,7 +193,8 @@ CMetafoR.ATE.R <- function(
                  CI_UB = ub,
                  fit_outcome = fit_outcome,
                  fit_source = fit_source,
-                 fit_treatment = fit_treatment)
+                 fit_treatment = fit_treatment,
+                 fit_R = fit_R)
   class(output) <- 'ATE_R'
 
   return(output)

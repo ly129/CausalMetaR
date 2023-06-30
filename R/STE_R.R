@@ -48,6 +48,7 @@
 #'   \item{fit_outcome}{Fitted outcome model.}
 #'   \item{fit_source}{Fitted source model.}
 #'   \item{fit_treatment}{Fitted treatment model(s).}
+#'   \item{fit_R}{Fitted R model.}
 #'
 #' @examples
 #'
@@ -190,7 +191,8 @@ CMetafoR.STE.R <- function(
                  SCB_UB = ub_scb,
                  fit_outcome = fit_outcome,
                  fit_source = fit_source,
-                 fit_treatment = fit_treatment)
+                 fit_treatment = fit_treatment,
+                 fit_R = fit_R)
   class(output) <- 'STE_R'
 
   return(output)
