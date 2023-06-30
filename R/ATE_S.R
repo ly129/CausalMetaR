@@ -38,6 +38,9 @@
 #'   \item{Variances}{The asymptotic variances of the point estimates, which are calculated based on the (efficient) influence function.}
 #'   \item{CI_LB}{The lower bounds of the 95% confidence intervals.}
 #'   \item{CI_UB}{The upper bounds of the 95% confidence intervals.}
+#'   \item{fit_outcome}{Fitted outcome model.}
+#'   \item{fit_source}{Fitted source model.}
+#'   \item{fit_treatment}{Fitted treatment model(s).}
 #'
 #' @references Dahabreh, I.J., Robertson, S.E., Petito, L.C., Hernán, M.A. and Steingrimsson, J.A.. (2019) \emph{Efficient and robust methods for causally
 #' interpretable meta‐analysis: Transporting inferences from multiple randomized trials to a target population}, Biometrics.
@@ -80,6 +83,7 @@ CMetafoR.ATE.S <- function(
 
   PrA_XS <- matrix(nrow = n, ncol = no_S)
   if (treatment_model_type == "separate") {
+    fit_treatment <- vector(mode = 'list', length = no_S)
     for (s in 1:no_S) {
       id_s <- which(S == s)
       treatment_model_args$Y <- A[id_s]
@@ -87,6 +91,7 @@ CMetafoR.ATE.S <- function(
       fit_treatment_s <- do.call(what = treatment_model,
                                  args = treatment_model_args)
       PrA_XS[, s] <- predict.SuperLearner(fit_treatment_s, newdata = X)$pred
+      fit_treatment[[s]] <- fit_treatment_s
     }
   } else if (treatment_model_type == "joint") {
     treatment_model_args$Y <- A
@@ -161,7 +166,10 @@ CMetafoR.ATE.S <- function(
   output <- list(Estimates = psi,
                  Variances = psi_var,
                  CI_LB = lb,
-                 CI_UB = ub)
+                 CI_UB = ub,
+                 fit_outcome = fit_outcome,
+                 fit_source = fit_source,
+                 fit_treatment = fit_treatment)
   class(output) <- 'ATE_S'
 
   return(output)

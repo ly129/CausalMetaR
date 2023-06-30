@@ -40,6 +40,9 @@
 #'   \item{CI_UB}{The upper bounds of the 95% confidence intervals.}
 #'   \item{SCB_LB}{The lower bounds of the 95% simultaneous confidence bands.}
 #'   \item{SCB_UB}{The upper bounds of the 95% simultaneous confidence bands.}
+#'   \item{fit_outcome}{Fitted outcome model.}
+#'   \item{fit_source}{Fitted source model.}
+#'   \item{fit_treatment}{Fitted treatment model(s).}
 #'   \item{...}{Some additional elements.}
 #'
 #' @examples
@@ -79,6 +82,7 @@ CMetafoR.STE.S <- function(
 
   PrA_XS <- matrix(nrow = n, ncol = no_S)
   if (treatment_model_type == "separate") {
+    fit_treatment <- vector(mode = 'list', length = no_S)
     for (s in 1:no_S) {
       id_s <- which(S == s)
       treatment_model_args$Y <- A[id_s]
@@ -86,6 +90,7 @@ CMetafoR.STE.S <- function(
       fit_treatment_s <- do.call(what = treatment_model,
                                  args = treatment_model_args)
       PrA_XS[, s] <- predict.SuperLearner(fit_treatment_s, newdata = X)$pred
+      fit_treatment[[s]] <- fit_treatment_s
     }
   } else if (treatment_model_type == "joint") {
     treatment_model_args$Y <- A
@@ -216,6 +221,11 @@ CMetafoR.STE.S <- function(
       }
     }
   }
+
+  reoutput$fit_outcome = fit_outcome
+  reoutput$fit_source = fit_source
+  reoutput$fit_treatment = fit_treatment
+
   reoutput$plot_psi <- plot_psi[rearr]
   reoutput$plot_psi_var <- plot_psi_var[rearr]
   reoutput$plot_scb <- plot_scb[rearr, ]

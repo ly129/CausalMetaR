@@ -45,6 +45,9 @@
 #'   \item{CI_UB}{The upper bounds of the 95% confidence intervals.}
 #'   \item{SCB_LB}{The lower bounds of the 95% simultaneous confidence bands.}
 #'   \item{SCB_UB}{The upper bounds of the 95% simultaneous confidence bands.}
+#'   \item{fit_outcome}{Fitted outcome model.}
+#'   \item{fit_source}{Fitted source model.}
+#'   \item{fit_treatment}{Fitted treatment model(s).}
 #'
 #' @examples
 #'
@@ -90,6 +93,7 @@ CMetafoR.STE.R <- function(
 
   PrA_XS <- matrix(nrow = n1, ncol = no_S)
   if (treatment_model_type == "separate") {
+    fit_treatment <- vector(mode = 'list', length = no_S)
     for (s in 1:no_S) {
       id_s <- which(S == s)
       treatment_model_args$Y <- A[id_s]
@@ -97,6 +101,7 @@ CMetafoR.STE.R <- function(
       fit_treatment_s <- do.call(what = treatment_model,
                                  args = treatment_model_args)
       PrA_XS[, s] <- predict.SuperLearner(fit_treatment_s, newdata = X)$pred
+      fit_treatment[[s]] <- fit_treatment_s
     }
   } else if (treatment_model_type == "joint") {
     treatment_model_args$Y <- A
@@ -182,7 +187,10 @@ CMetafoR.STE.R <- function(
                  CI_LB = lb,
                  CI_UB = ub,
                  SCB_LB = lb_scb,
-                 SCB_UB = ub_scb)
+                 SCB_UB = ub_scb,
+                 fit_outcome = fit_outcome,
+                 fit_source = fit_source,
+                 fit_treatment = fit_treatment)
   class(output) <- 'STE_R'
 
   return(output)
