@@ -37,3 +37,37 @@ plot.STE_S <- function(x, header = 'Subgroup', xlab = 'Treatment Effect',
     }
   }
 }
+
+
+
+
+#' Print method for objects of class "STE_S"
+#'
+#' Print method for objects of class "STE_S"
+#'
+#' @param x Object of class "STE_S".
+#' @param digits Integer specifying the number of decimal places to display.
+#' @param ... Other arguments.
+#' @return No value is returned.
+#' @seealso \code{\link{CMetafoR.STE.S}}
+#'
+#'
+#'
+#' @export
+
+print.STE_S <- function(x, digits = 4, ...){
+  if (!inherits(x, "STE_S")){
+    stop("Argument 'x' must be an object of class \"STE_S\".")
+  }
+  cat('SUBGROUP TREATMENT EFFECT ESTIMATES')
+  cat("\n-----------------------------------\n\n")
+
+  df <- data.frame(Study = rep(1:x$no_S, each = x$n_x_tilde),
+                   Subgroup = rep(1:x$n_x_tilde, times = x$no_S),
+                   Estimate = x$plot_psi,
+                   SE = sqrt(x$plot_psi_var),
+                   ci.lb = x$plot_psi - qnorm(p = 0.975) * sqrt(x$plot_psi_var),
+                   ci.ub = x$plot_psi + qnorm(p = 0.975) * sqrt(x$plot_psi_var))
+  colnames(df)[4:6] <- c('Std. Error', 'Lower CI', 'Upper CI')
+  print(df, row.names = FALSE, digits = digits)
+}
