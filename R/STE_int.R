@@ -122,14 +122,14 @@ STE_int <- function(
   psi <- psi_var <- matrix(nrow = no_S, ncol = 2)
 
   unique_X <- sort(unique(X[, 1]))
-  n_x_tilde <- length(unique_X)
-  output <- vector(mode = "list", length = n_x_tilde)
+  no_x_tilde <- length(unique_X)
+  output <- vector(mode = "list", length = no_x_tilde)
   names(output) <- paste(names(X)[1], "=", unique_X)
 
-  plot_psi <- plot_psi_var <- numeric(n_x_tilde * no_S)
-  plot_scb <- matrix(nrow = n_x_tilde * no_S, ncol = 2)
+  plot_psi <- plot_psi_var <- numeric(no_x_tilde * no_S)
+  plot_scb <- matrix(nrow = no_x_tilde * no_S, ncol = 2)
 
-  for (i in 1:n_x_tilde) {
+  for (i in 1:no_x_tilde) {
     x_tilde <- unique_X[i]
     for (s in unique_S) {
       tmp1 <- tmp2 <- matrix(0, nrow = n, ncol = 2)
@@ -184,15 +184,15 @@ STE_int <- function(
     plot_scb[((i - 1) * no_S + 1):(i * no_S), 2] <- psi[, 1] - psi[, 2] + qtmax * sqrt(psi_var[,1] + psi_var[,2])
   }
 
-  # snames <- rep(paste("Study =", unique_S), n_x_tilde)
-  # xtildenames <- character(length = n_x_tilde * no_S)
-  # xtildenames[1:(n_x_tilde * no_S) %% no_S == 1] <- c(paste(names(X)[1], "=", unique_X))
+  # snames <- rep(paste("Study =", unique_S), no_x_tilde)
+  # xtildenames <- character(length = no_x_tilde * no_S)
+  # xtildenames[1:(no_x_tilde * no_S) %% no_S == 1] <- c(paste(names(X)[1], "=", unique_X))
   snames <- character(length = no_S)
-  snames[1:(n_x_tilde * no_S) %% n_x_tilde == 1] <- c(paste("Study =", unique_S))
+  snames[1:(no_x_tilde * no_S) %% no_x_tilde == 1] <- c(paste("Study =", unique_S))
   xtildenames <- rep(paste(names(X)[1], "=", unique_X), no_S)
 
   # Rearrange
-  id_rows <- seq(no_S * n_x_tilde)
+  id_rows <- seq(no_S * no_x_tilde)
   rearr <- sapply(c(seq(no_S - 1), 0),
                   FUN = function(x) {which(id_rows %% no_S == x)}, simplify = TRUE)
   rearr <- c(rearr)
@@ -201,7 +201,7 @@ STE_int <- function(
   reoutput <- vector(mode = "list", length = no_S)
   names(reoutput) <- paste0("Study = ", unique_S)
 
-  mat_with_name <- matrix(nrow = n_x_tilde, ncol = 2)
+  mat_with_name <- matrix(nrow = no_x_tilde, ncol = 2)
   rownames(mat_with_name) <- paste(names(X)[1], "=", unique_X)
   colnames(mat_with_name) <- paste0("A = ", c(1, 0))
 
@@ -214,7 +214,7 @@ STE_int <- function(
                           SCB_UB = mat_with_name)
   }
 
-  for (i in 1:n_x_tilde) {
+  for (i in 1:no_x_tilde) {
     for (s in 1:no_S) {
       for (j in 1:6) {
         reoutput[[s]][[j]][i, ] <- output[[i]][[j]][s, ]
@@ -230,7 +230,7 @@ STE_int <- function(
   reoutput$plot_psi_var <- plot_psi_var[rearr]
   reoutput$plot_scb <- plot_scb[rearr, ]
   reoutput$no_S <- no_S
-  reoutput$n_x_tilde <- n_x_tilde
+  reoutput$no_x_tilde <- no_x_tilde
   reoutput$snames <- snames
   reoutput$xtildenames <- xtildenames
 

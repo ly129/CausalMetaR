@@ -30,9 +30,9 @@ plot.STE_int <- function(x, header = 'Subgroup', xlab = 'Treatment Effect',
          ...)
 
   if (include_scb){
-    for (i in 1:(x$n_x_tilde * x$no_S)) {
+    for (i in 1:(x$no_x_tilde * x$no_S)) {
       graphics::segments(x0 = x$plot_scb[i, 1],
-                         y0 = x$n_x_tilde * x$no_S + 1 - i,
+                         y0 = x$no_x_tilde * x$no_S + 1 - i,
                          x1 = x$plot_scb[i, 2])
     }
   }
@@ -61,11 +61,11 @@ print.STE_int <- function(x, digits = 4, ...){
   }
 
   study_num <- matrix(1:x$no_S, nrow = 1)
-  append_row <- matrix(NA, ncol = x$no_S, nrow = x$n_x_tilde - 1)
+  append_row <- matrix(NA, ncol = x$no_S, nrow = x$no_x_tilde - 1)
   study_lab <- c(rbind(study_num, append_row))
 
   df <- data.frame(Study = study_lab,
-                   Subgroup = rep(1:x$n_x_tilde, times = x$no_S),
+                   Subgroup = rep(1:x$no_x_tilde, times = x$no_S),
                    Estimate = x$plot_psi,
                    SE = sqrt(x$plot_psi_var),
                    ci.lb = x$plot_psi - qnorm(p = 0.975) * sqrt(x$plot_psi_var),
@@ -100,11 +100,11 @@ summary.STE_int <- function(object, digits = 4, ...){
   }
 
   study_num <- matrix(1:object$no_S, nrow = 1)
-  append_row <- matrix(NA, ncol = object$no_S, nrow = object$n_x_tilde - 1)
+  append_row <- matrix(NA, ncol = object$no_S, nrow = object$no_x_tilde - 1)
   study_lab <- c(rbind(study_num, append_row))
 
   df <- data.frame(Study = study_lab,
-                   Subgroup = rep(1:object$n_x_tilde, times = object$no_S),
+                   Subgroup = rep(1:object$no_x_tilde, times = object$no_S),
                    Estimate = object$plot_psi,
                    SE = sqrt(object$plot_psi_var),
                    ci.lb = object$plot_psi - qnorm(p = 0.975) * sqrt(object$plot_psi_var),
@@ -113,7 +113,7 @@ summary.STE_int <- function(object, digits = 4, ...){
                    scb.ub = object$plot_scb[, 2])
 
   df_A1 <- df_A0 <- data.frame(Study = study_lab,
-                               Subgroup = rep(1:object$n_x_tilde, times = object$no_S),
+                               Subgroup = rep(1:object$no_x_tilde, times = object$no_S),
                                Estimate = NA,
                                SE = NA,
                                ci.lb = NA,
@@ -122,7 +122,7 @@ summary.STE_int <- function(object, digits = 4, ...){
                                scb.ub = NA)
   row_ind <- 1
   for (i in 1:object$no_S){
-    for (j in 1:object$n_x_tilde){
+    for (j in 1:object$no_x_tilde){
       df_A1[row_ind, 'Estimate'] <- object[[i]]$Estimates[j, 1]
       df_A0[row_ind, 'Estimate'] <- object[[i]]$Estimates[j, 2]
 
