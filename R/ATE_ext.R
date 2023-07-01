@@ -173,9 +173,9 @@ ATE_ext <- function(
   tmp1 <- tmp1 - rep(phi, each = n0)
   phi_var <- gamma/n^2 * colSums(rbind(tmp1, tmp2)^2)
 
-  names(phi) <- paste0("A=", c(1, 0))
+  names(phi) <- paste0("A = ", c(1, 0))
 
-  names(phi_var) <- paste0("A=", c(1, 0))
+  names(phi_var) <- paste0("A = ", c(1, 0))
 
   lb <- phi - qnorm(p = 0.975) * sqrt(phi_var)
   ub <- phi + qnorm(p = 0.975) * sqrt(phi_var)

@@ -147,11 +147,11 @@ ATE_int <- function(
     psi_var[s, ] <- kappa/n^2 * colSums((tmp1 + tmp2)^2)
   }
 
-  rownames(psi) <- paste0("S=", unique_S)
-  colnames(psi) <- paste0("A=", c(1, 0))
+  rownames(psi) <- paste0("S = ", unique_S)
+  colnames(psi) <- paste0("A = ", c(1, 0))
 
-  rownames(psi_var) <- paste0("S=", unique_S)
-  colnames(psi_var) <- paste0("A=", c(1, 0))
+  rownames(psi_var) <- paste0("S = ", unique_S)
+  colnames(psi_var) <- paste0("A = ", c(1, 0))
 
   lb <- psi - qnorm(p = 0.975) * sqrt(psi_var)
   ub <- psi + qnorm(p = 0.975) * sqrt(psi_var)
