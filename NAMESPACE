@@ -2,6 +2,7 @@
 
 S3method(plot,STE_int)
 S3method(print,STE_int)
+S3method(summary,STE_int)
 export(ATE_ext)
 export(ATE_int)
 export(STE_ext)

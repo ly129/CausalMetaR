@@ -47,7 +47,7 @@ plot.STE_int <- function(x, header = 'Subgroup', xlab = 'Treatment Effect',
 #'
 #' @param x Object of class "STE_int".
 #' @param digits Integer specifying the number of decimal places to display.
-#' @param ... Other arguments.
+#' @param ... Other arguments (ignored).
 #' @return No value is returned.
 #' @seealso \code{\link{STE_int}}
 #'
@@ -59,15 +59,125 @@ print.STE_int <- function(x, digits = 4, ...){
   if (!inherits(x, "STE_int")){
     stop("Argument 'x' must be an object of class \"STE_int\".")
   }
-  cat('SUBGROUP TREATMENT EFFECT ESTIMATES')
-  cat("\n-----------------------------------\n\n")
 
-  df <- data.frame(Study = rep(1:x$no_S, each = x$n_x_tilde),
+  study_num <- matrix(1:x$no_S, nrow = 1)
+  append_row <- matrix(NA, ncol = x$no_S, nrow = x$n_x_tilde - 1)
+  study_lab <- c(rbind(study_num, append_row))
+
+  df <- data.frame(Study = study_lab,
                    Subgroup = rep(1:x$n_x_tilde, times = x$no_S),
                    Estimate = x$plot_psi,
                    SE = sqrt(x$plot_psi_var),
                    ci.lb = x$plot_psi - qnorm(p = 0.975) * sqrt(x$plot_psi_var),
-                   ci.ub = x$plot_psi + qnorm(p = 0.975) * sqrt(x$plot_psi_var))
-  colnames(df)[4:6] <- c('Std. Error', 'Lower CI', 'Upper CI')
-  print(df, row.names = FALSE, digits = digits)
+                   ci.ub = x$plot_psi + qnorm(p = 0.975) * sqrt(x$plot_psi_var),
+                   scb.lb = x$plot_scb[, 1],
+                   scb.ub = x$plot_scb[, 2])
+
+  cat('SUBGROUP TREATMENT EFFECT ESTIMATES IN INTERNAL POPULATIONS\n\n')
+  cat('Treatment effect (mean difference) estimates:\n')
+  cat("---------------------------------------------\n")
+  my_print(df, digits = digits, include_scb = TRUE)
+}
+
+
+#' Summary method for objects of class "STE_int"
+#'
+#' Summary method for objects of class "STE_int"
+#'
+#' @param object Object of class "STE_int".
+#' @param digits Integer specifying the number of decimal places to display.
+#' @param ... Other arguments.
+#' @return No value is returned.
+#' @seealso \code{\link{STE_int}}
+#'
+#'
+#'
+#' @export
+
+summary.STE_int <- function(object, digits = 4, ...){
+  if (!inherits(object, "STE_int")){
+    stop("Argument 'object' must be an object of class \"STE_int\".")
+  }
+
+  study_num <- matrix(1:object$no_S, nrow = 1)
+  append_row <- matrix(NA, ncol = object$no_S, nrow = object$n_x_tilde - 1)
+  study_lab <- c(rbind(study_num, append_row))
+
+  df <- data.frame(Study = study_lab,
+                   Subgroup = rep(1:object$n_x_tilde, times = object$no_S),
+                   Estimate = object$plot_psi,
+                   SE = sqrt(object$plot_psi_var),
+                   ci.lb = object$plot_psi - qnorm(p = 0.975) * sqrt(object$plot_psi_var),
+                   ci.ub = object$plot_psi + qnorm(p = 0.975) * sqrt(object$plot_psi_var),
+                   scb.lb = object$plot_scb[, 1],
+                   scb.ub = object$plot_scb[, 2])
+
+  df_A1 <- df_A0 <- data.frame(Study = study_lab,
+                               Subgroup = rep(1:object$n_x_tilde, times = object$no_S),
+                               Estimate = NA,
+                               SE = NA,
+                               ci.lb = NA,
+                               ci.ub = NA,
+                               scb.lb = NA,
+                               scb.ub = NA)
+  row_ind <- 1
+  for (i in 1:object$no_S){
+    for (j in 1:object$n_x_tilde){
+      df_A1[row_ind, 'Estimate'] <- object[[i]]$Estimates[j, 1]
+      df_A0[row_ind, 'Estimate'] <- object[[i]]$Estimates[j, 2]
+
+      df_A1[row_ind, 'SE'] <- sqrt(object[[i]]$Variances[j, 1])
+      df_A0[row_ind, 'SE'] <- sqrt(object[[i]]$Variances[j, 2])
+
+      df_A1[row_ind, 'ci.lb'] <- object[[i]]$CI_LB[j, 1]
+      df_A0[row_ind, 'ci.lb'] <- object[[i]]$CI_LB[j, 2]
+
+      df_A1[row_ind, 'ci.ub'] <- object[[i]]$CI_UB[j, 1]
+      df_A0[row_ind, 'ci.ub'] <- object[[i]]$CI_UB[j, 2]
+
+      df_A1[row_ind, 'scb.lb'] <- object[[i]]$SCB_LB[j, 1]
+      df_A0[row_ind, 'scb.lb'] <- object[[i]]$SCB_LB[j, 2]
+
+      df_A1[row_ind, 'scb.ub'] <- object[[i]]$SCB_UB[j, 1]
+      df_A0[row_ind, 'scb.ub'] <- object[[i]]$SCB_UB[j, 2]
+
+      row_ind <- row_ind + 1
+    }
+  }
+
+  cat('SUBGROUP TREATMENT EFFECT ESTIMATES IN INTERNAL POPULATIONS\n\n')
+  cat('Treatment effect (mean difference) estimates:\n')
+  cat("---------------------------------------------\n")
+  my_print(df, digits = digits, include_scb = TRUE)
+
+  cat('\n\nPotential outcome mean estimates under A=0:\n')
+  cat("-------------------------------------------\n")
+  my_print(df_A0, digits = digits, include_scb = TRUE)
+
+  cat('\n\nPotential outcome mean estimates under A=1:\n')
+  cat("-------------------------------------------\n")
+  my_print(df_A1, digits = digits, include_scb = TRUE)
+}
+
+
+
+my_print <- function(df, digits, include_scb, ...){
+  my_fun <- function(x){
+    sprintf(paste0("%.", digits, "f"), x)
+  }
+  mycols <- which(colnames(df) %in% c('Study', 'Subgroup'))
+
+  df_rounded <- round(df[, -mycols], digits = digits)
+  df_char <- df[, mycols]
+
+  df_rounded <- format.data.frame(data.frame(lapply(df_rounded, my_fun)))
+  df_char <- format.data.frame(data.frame(lapply(df_char, as.character)), na.encode = FALSE)
+
+  if (include_scb){
+    colnames(df_rounded)[2:6] <- c('SE', 'Lower 95% CI', 'Upper 95% CI', 'Lower 95% SCB', 'Upper 95% SCB')
+  } else {
+    colnames(df_rounded)[2:4] <- c('SE', 'Lower 95% CI', 'Upper 95% CI')
+  }
+
+  print(cbind(df_char, df_rounded), na.print = "", row.names = FALSE)
 }
