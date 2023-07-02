@@ -178,10 +178,11 @@ STE_int <- function(
                         CI_UB = ub,
                         SCB_LB = lb_scb,
                         SCB_UB = ub_scb)
+    # STE
     plot_psi[((i - 1) * no_S + 1):(i * no_S)] <- psi[, 1] - psi[, 2]
-    plot_psi_var[((i - 1) * no_S + 1):(i * no_S)] <- psi_var[,1] + psi_var[,2]
-    plot_scb[((i - 1) * no_S + 1):(i * no_S), 1] <- psi[, 1] - psi[, 2] - qtmax * sqrt(psi_var[,1] + psi_var[,2])
-    plot_scb[((i - 1) * no_S + 1):(i * no_S), 2] <- psi[, 1] - psi[, 2] + qtmax * sqrt(psi_var[,1] + psi_var[,2])
+    plot_psi_var[((i - 1) * no_S + 1):(i * no_S)] <- psi_var[, 1] + psi_var[, 2]
+    plot_scb[((i - 1) * no_S + 1):(i * no_S), 1] <- psi[, 1] - psi[, 2] - qtmax * sqrt(psi_var[, 1] + psi_var[, 2])
+    plot_scb[((i - 1) * no_S + 1):(i * no_S), 2] <- psi[, 1] - psi[, 2] + qtmax * sqrt(psi_var[, 1] + psi_var[, 2])
   }
 
   # snames <- rep(paste("Study =", unique_S), no_x_tilde)

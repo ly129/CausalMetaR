@@ -156,12 +156,11 @@ ATE_int <- function(
   lb <- psi - qnorm(p = 0.975) * sqrt(psi_var)
   ub <- psi + qnorm(p = 0.975) * sqrt(psi_var)
 
-  # tmax <- apply(abs(matrix(rnorm(length(unique(X[,1])) * 1e6),
-  #                          nrow = length(unique(X[,1])), ncol = 1e6)), 2, max)
-  # qtmax <- quantile(tmax, 0.95)
-  #
-  # lb_scb <- psi - qtmax * sqrt(psi_var)
-  # ub_scb <- psi + qtmax * sqrt(psi_var)
+  # ATE
+  plot_psi <- psi[, 1] - psi[, 2]
+  plot_psi_var <- psi_var[, 1] + psi_var[, 2]
+  plot_psi_CI <- cbind(plot_psi - qnorm(p = 0.975) * sqrt(plot_psi_var),
+                       plot_psi + qnorm(p = 0.975) * sqrt(plot_psi_var))
 
   output <- list(Estimates = psi,
                  Variances = psi_var,
@@ -169,7 +168,10 @@ ATE_int <- function(
                  CI_UB = ub,
                  fit_outcome = fit_outcome,
                  fit_source = fit_source,
-                 fit_treatment = fit_treatment)
+                 fit_treatment = fit_treatment,
+                 plot_psi,
+                 plot_psi_var,
+                 plot_psi_CI)
   class(output) <- 'ATE_int'
 
   return(output)

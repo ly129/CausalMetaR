@@ -180,12 +180,10 @@ ATE_ext <- function(
   lb <- phi - qnorm(p = 0.975) * sqrt(phi_var)
   ub <- phi + qnorm(p = 0.975) * sqrt(phi_var)
 
-  # tmax <- apply(abs(matrix(rnorm(length(unique(X[,1])) * 1e6),
-  #                          nrow = length(unique(X[,1])), ncol = 1e6)), 2, max)
-  # qtmax <- quantile(tmax, 0.95)
-  #
-  # lb_scb <- phi - qtmax * sqrt(phi_var)
-  # ub_scb <- phi + qtmax * sqrt(phi_var)
+  # ATE
+  plot_phi <- unname(phi[1] - phi[2])
+  plot_phi_var <- unname(phi_var[1] + phi_var[2])
+  plot_phi_CI <- plot_phi + c(-1, 1) * qnorm(p = 0.975) * sqrt(plot_phi_var)
 
   output <- list(Estimate = phi,
                  Variance = phi_var,
@@ -194,7 +192,10 @@ ATE_ext <- function(
                  fit_outcome = fit_outcome,
                  fit_source = fit_source,
                  fit_treatment = fit_treatment,
-                 fit_external = fit_external)
+                 fit_external = fit_external,
+                 plot_phi,
+                 plot_phi_var,
+                 plot_phi_CI)
   class(output) <- 'ATE_ext'
 
   return(output)
