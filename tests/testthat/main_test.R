@@ -1,7 +1,7 @@
 # test
 library("mvtnorm")
 library("rootSolve")
-library(CMetafoR)
+library("CMetafoR")
 
 generate_simulated_data <- function(n = 2000) {
   prevmi <- rbinom(n, size = 1, prob = 0.50)
@@ -184,7 +184,7 @@ test.STE.R <- STE_ext(
   X = X, Y = Y, S = S, A = A, X0 = X0,
   source_model = "SL.glmnet.multinom",
   source_model_args = list(),
-  treatment_model_type = "separate",
+  treatment_model_type = "joint",
   treatment_model = "SuperLearner",
   treatment_model_args = list(
     family = binomial(),

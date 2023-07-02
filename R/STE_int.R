@@ -187,7 +187,7 @@ STE_int <- function(
   # snames <- rep(paste("Study =", unique_S), no_x_tilde)
   # xtildenames <- character(length = no_x_tilde * no_S)
   # xtildenames[1:(no_x_tilde * no_S) %% no_S == 1] <- c(paste(names(X)[1], "=", unique_X))
-  snames <- character(length = no_S)
+  snames <- character(length = no_x_tilde * no_S)
   snames[1:(no_x_tilde * no_S) %% no_x_tilde == 1] <- c(paste("Study =", unique_S))
   xtildenames <- rep(paste(names(X)[1], "=", unique_X), no_S)
 

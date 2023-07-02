@@ -110,12 +110,12 @@ ATE_ext <- function(
     }
   } else if (treatment_model_type == "joint") {
     treatment_model_args$Y <- A
-    treatment_model_args$X <- cbind(X, S)
+    treatment_model_args$X <- data.frame(X, S)
     fit_treatment <- do.call(what = treatment_model,
                              args = treatment_model_args)
     for (s in 1:no_S) {
       PrA_XS[, s] <- predict.SuperLearner(fit_treatment,
-                                          newdata = cbind(X, s))$pred
+                                          newdata = data.frame(X, S = s))$pred
     }
   } else {
     stop("Type has to be either 'separate' or 'joint'.")

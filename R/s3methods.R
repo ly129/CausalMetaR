@@ -150,11 +150,11 @@ summary.STE_int <- function(object, digits = 4, ...){
   cat("---------------------------------------------\n")
   my_print(df, digits = digits, include_scb = TRUE)
 
-  cat('\n\nPotential outcome mean estimates under A=0:\n')
+  cat('\n\nPotential outcome mean estimates under A = 0:\n')
   cat("-------------------------------------------\n")
   my_print(df_A0, digits = digits, include_scb = TRUE)
 
-  cat('\n\nPotential outcome mean estimates under A=1:\n')
+  cat('\n\nPotential outcome mean estimates under A = 1:\n')
   cat("-------------------------------------------\n")
   my_print(df_A1, digits = digits, include_scb = TRUE)
 }
