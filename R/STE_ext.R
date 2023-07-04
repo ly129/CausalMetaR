@@ -200,10 +200,10 @@ STE_ext <- function(
                  fit_source = fit_source,
                  fit_treatment = fit_treatment,
                  fit_external = fit_external,
-                 plot_phi,
-                 plot_phi_var,
-                 plot_phi_CI,
-                 plot_phi_SCB)
+                 plot_phi = plot_phi,
+                 plot_phi_var = plot_phi_var,
+                 plot_phi_CI = plot_phi_CI,
+                 plot_phi_SCB = plot_phi_SCB)
   class(output) <- 'STE_ext'
 
   return(output)

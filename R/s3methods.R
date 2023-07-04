@@ -41,11 +41,11 @@ plot.STE_int <- function(x, header = 'Subgroup', xlab = 'Treatment Effect',
 
 
 
-#' Print method for objects of class "STE_int"
+#' Print method for objects of class "STE_int" or "STE_ext"
 #'
-#' Print method for objects of class "STE_int"
+#' Print method for objects of class "STE_int" or "STE_ext"
 #'
-#' @param x Object of class "STE_int".
+#' @param x Object of class "STE_int" or "STE_ext".
 #' @param digits Integer specifying the number of decimal places to display.
 #' @param ... Other arguments (ignored).
 #' @return No value is returned.
@@ -79,6 +79,61 @@ print.STE_int <- function(x, digits = 4, ...){
   my_print(df, digits = digits, include_scb = TRUE)
 }
 
+#' @rdname print.STE_int
+#' @export
+print.ATE_int <- function(x, digits = 4, ...){
+  if (!inherits(x, "ATE_int")){
+    stop("Argument 'x' must be an object of class \"ATE_int\".")
+  }
+
+  df <- data.frame(Study = 1:x$no_S,
+                   Estimate = unname(x$plot_psi),
+                   SE = unname(sqrt(x$plot_psi_var)),
+                   ci.lb = unname(x$plot_psi_CI[, 1]),
+                   ci.ub = unname(x$plot_psi_CI[, 2]))
+
+  cat('AVERAGE TREATMENT EFFECT ESTIMATES IN INTERNAL POPULATIONS\n\n')
+  cat('Treatment effect (mean difference) estimates:\n')
+  cat("---------------------------------------------\n")
+  my_print(df, digits = digits, include_scb = FALSE)
+}
+
+
+#' @rdname print.STE_int
+#' @export
+print.STE_ext <- function(x, digits = 4, ...){
+  if (!inherits(x, "STE_ext")){
+    stop("Argument 'x' must be an object of class \"STE_ext\".")
+  }
+
+  df <- data.frame(Estimate = x$plot_phi,
+                   SE = sqrt(x$plot_phi_var),
+                   ci.lb = x$plot_phi_CI[1],
+                   ci.ub = x$plot_phi_CI[2])
+
+  cat('SUBGROUP TREATMENT EFFECT ESTIMATES IN AN EXTERNAL POPULATION\n\n')
+  cat('Treatment effect (mean difference) estimates:\n')
+  cat("---------------------------------------------\n")
+  my_print(df, digits = digits, include_scb = FALSE)
+}
+
+#' @rdname print.STE_int
+#' @export
+print.ATE_ext <- function(x, digits = 4, ...){
+  if (!inherits(x, "ATE_ext")){
+    stop("Argument 'x' must be an object of class \"ATE_ext\".")
+  }
+
+  df <- data.frame(Estimate = x$plot_phi,
+                   SE = sqrt(x$plot_phi_var),
+                   ci.lb = x$plot_phi_CI[1],
+                   ci.ub = x$plot_phi_CI[2])
+
+  cat('AVERAGE TREATMENT EFFECT ESTIMATES IN AN EXTERNAL POPULATION\n\n')
+  cat('Treatment effect (mean difference) estimates:\n')
+  cat("---------------------------------------------\n")
+  my_print(df, digits = digits, include_scb = FALSE)
+}
 
 #' Summary method for objects of class "STE_int"
 #'
@@ -167,17 +222,25 @@ my_print <- function(df, digits, include_scb, ...){
   }
   mycols <- which(colnames(df) %in% c('Study', 'Subgroup'))
 
-  df_rounded <- round(df[, -mycols], digits = digits)
-  df_char <- df[, mycols]
+  if (length(mycols) > 0){
+    df_rounded <- round(df[, -mycols], digits = digits)
+    df_char <- df[, mycols]
+    df_char <- format.data.frame(data.frame(lapply(df_char, as.character)), na.encode = FALSE)
+  } else {
+    df_rounded <- round(df, digits = digits)
+  }
 
   df_rounded <- format.data.frame(data.frame(lapply(df_rounded, my_fun)))
-  df_char <- format.data.frame(data.frame(lapply(df_char, as.character)), na.encode = FALSE)
-
   if (include_scb){
     colnames(df_rounded)[2:6] <- c('SE', 'Lower 95% CI', 'Upper 95% CI', 'Lower 95% SCB', 'Upper 95% SCB')
   } else {
     colnames(df_rounded)[2:4] <- c('SE', 'Lower 95% CI', 'Upper 95% CI')
   }
 
-  print(cbind(df_char, df_rounded), na.print = "", row.names = FALSE)
+  if (length(mycols) > 0){
+    out <- cbind(df_char, df_rounded)
+  } else {
+    out <- df_rounded
+  }
+  print(out, na.print = "", row.names = FALSE)
 }

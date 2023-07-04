@@ -169,9 +169,10 @@ ATE_int <- function(
                  fit_outcome = fit_outcome,
                  fit_source = fit_source,
                  fit_treatment = fit_treatment,
-                 plot_psi,
-                 plot_psi_var,
-                 plot_psi_CI)
+                 plot_psi = plot_psi,
+                 plot_psi_var = plot_psi_var,
+                 plot_psi_CI = plot_psi_CI,
+                 no_S = no_S)
   class(output) <- 'ATE_int'
 
   return(output)

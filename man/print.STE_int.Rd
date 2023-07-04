@@ -2,12 +2,21 @@
 % Please edit documentation in R/s3methods.R
 \name{print.STE_int}
 \alias{print.STE_int}
-\title{Print method for objects of class "STE_int"}
+\alias{print.ATE_int}
+\alias{print.STE_ext}
+\alias{print.ATE_ext}
+\title{Print method for objects of class "STE_int" or "STE_ext"}
 \usage{
 \method{print}{STE_int}(x, digits = 4, ...)
+
+\method{print}{ATE_int}(x, digits = 4, ...)
+
+\method{print}{STE_ext}(x, digits = 4, ...)
+
+\method{print}{ATE_ext}(x, digits = 4, ...)
 }
 \arguments{
-\item{x}{Object of class "STE_int".}
+\item{x}{Object of class "STE_int" or "STE_ext".}
 
 \item{digits}{Integer specifying the number of decimal places to display.}
 
@@ -17,7 +26,7 @@
 No value is returned.
 }
 \description{
-Print method for objects of class "STE_int"
+Print method for objects of class "STE_int" or "STE_ext"
 }
 \seealso{
 \code{\link{STE_int}}
