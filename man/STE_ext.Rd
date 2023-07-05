@@ -18,8 +18,7 @@ STE_ext(
   external_model = "SuperLearner",
   external_model_args = list(),
   outcome_model = "SuperLearner",
-  outcome_model_args = list(),
-  EM
+  outcome_model_args = list()
 )
 }
 \arguments{
@@ -55,8 +54,6 @@ W is combination of X and X0, i.e., W=rbind(X, X0)}
 \item{outcome_model}{The same as \code{treatment_model}.}
 
 \item{outcome_model_args}{The arguments (in \pkg{SuperLearner}) for the outcome model.}
-
-\item{EM}{The effect modifier (FILL IN DETAILS)}
 }
 \value{
 
