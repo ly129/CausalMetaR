@@ -173,17 +173,20 @@ ATE_ext <- function(
   tmp1 <- tmp1 - rep(phi, each = n0)
   phi_var <- gamma/n^2 * colSums(rbind(tmp1, tmp2)^2)
 
-  names(phi) <- paste0("A = ", c(1, 0))
-
-  names(phi_var) <- paste0("A = ", c(1, 0))
-
-  lb <- phi - qnorm(p = 0.975) * sqrt(phi_var)
-  ub <- phi + qnorm(p = 0.975) * sqrt(phi_var)
-
   # ATE
   plot_phi <- unname(phi[1] - phi[2])
   plot_phi_var <- unname(phi_var[1] + phi_var[2])
   plot_phi_CI <- plot_phi + c(-1, 1) * qnorm(p = 0.975) * sqrt(plot_phi_var)
+
+  phi <- c(phi, plot_phi)
+  phi_var <- c(phi_var, plot_phi_var)
+  names(phi) <- c("A = 1", "A = 0", "Difference")
+  names(phi_var) <- c("A = 1", "A = 0", "Difference")
+
+  lb <- phi - qnorm(p = 0.975) * sqrt(phi_var)
+  ub <- phi + qnorm(p = 0.975) * sqrt(phi_var)
+
+
 
   output <- list(Estimate = phi,
                  Variance = phi_var,
@@ -192,10 +195,7 @@ ATE_ext <- function(
                  fit_outcome = fit_outcome,
                  fit_source = fit_source,
                  fit_treatment = fit_treatment,
-                 fit_external = fit_external,
-                 plot_phi = plot_phi,
-                 plot_phi_var = plot_phi_var,
-                 plot_phi_CI = plot_phi_CI)
+                 fit_external = fit_external)
   class(output) <- 'ATE_ext'
 
   return(output)
