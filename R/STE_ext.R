@@ -8,7 +8,6 @@
 #' @param Y The (binary/categorical/continuous) outcome, which is a length \eqn{n} vector.
 #' @param S The (numeric) source which is a length \eqn{n} vector.
 #' @param A The (binary) treatment, which is a length \eqn{n} vector.
-#' @param EM The effect modifier (FILL IN DETAILS)
 #' @param source_model The multi-nomial model for estimating \eqn{P(S=s|X)}. It has two options: \code{SL.glmnet.multinom} and \code{SL.nnet.multinom}. The default is \code{SL.glmnet.multinom}.
 #' @param source_model_args The arguments (in \pkg{SuperLearner}) for the source model.
 #' @param treatment_model_type The options for how the treatment_model \eqn{P(A=1|X, S=s)} is estimated. It includes \code{separate} and \code{joint}, with the default being \code{separate}. When \code{separate} is selected,
@@ -69,8 +68,7 @@ STE_ext <- function(
     external_model = "SuperLearner",
     external_model_args = list(),
     outcome_model = "SuperLearner",
-    outcome_model_args = list(),
-    EM
+    outcome_model_args = list()
 ) {
   # Total sample size
   n1 <- nrow(X)
@@ -149,30 +147,34 @@ STE_ext <- function(
   pred_Y0_X1 <- predict.SuperLearner(fit_outcome,
                                      newdata = data.frame(A = 0, X))$pred
 
-  I_xr <- which(X0[, 1] == EM)
+  unique_EM <- sort(unique(X[, 1]))
+  phi <- phi_var <- matrix(nrow = length(unique_EM), ncol = 2)
+  for (m in seq_along(unique_EM)) {
+    EM <- unique_EM[m]
+    I_xr <- which(X0[, 1] == EM)
 
-  gamma <- n/length(I_xr)
+    gamma <- n/length(I_xr)
 
-  tmp1 <- matrix(0, nrow = n0, ncol = 2)
-  tmp1[I_xr, 1] <- pred_Y1_X0[I_xr, ]
-  tmp1[I_xr, 2] <- pred_Y0_X0[I_xr, ]
+    tmp1 <- matrix(0, nrow = n0, ncol = 2)
+    tmp1[I_xr, 1] <- pred_Y1_X0[I_xr, ]
+    tmp1[I_xr, 2] <- pred_Y0_X0[I_xr, ]
 
-  tmp2 <- matrix(0, nrow = n1, ncol = 2)
-  I_xa1 <- which((X[, 1] == EM) & (A == 1))
-  I_xa0 <- which((X[, 1] == EM) & (A == 0))
+    tmp2 <- matrix(0, nrow = n1, ncol = 2)
+    I_xa1 <- which((X[, 1] == EM) & (A == 1))
+    I_xa0 <- which((X[, 1] == EM) & (A == 0))
 
-  tmp2[I_xa1, 1] <- (1 - PrR_X[I_xa1])/PrR_X[I_xa1]/eta1[I_xa1] * (Y[I_xa1] - pred_Y1_X1[I_xa1])
-  tmp2[I_xa0, 2] <- (1 - PrR_X[I_xa0])/PrR_X[I_xa0]/eta0[I_xa0] * (Y[I_xa0] - pred_Y0_X1[I_xa0])
+    tmp2[I_xa1, 1] <- (1 - PrR_X[I_xa1])/PrR_X[I_xa1]/eta1[I_xa1] * (Y[I_xa1] - pred_Y1_X1[I_xa1])
+    tmp2[I_xa0, 2] <- (1 - PrR_X[I_xa0])/PrR_X[I_xa0]/eta0[I_xa0] * (Y[I_xa0] - pred_Y0_X1[I_xa0])
 
-  tmp <- colSums(rbind(tmp1, tmp2))
-  phi <- gamma/n * tmp
+    tmp <- colSums(rbind(tmp1, tmp2))
+    phi[m, ] <- gamma/n * tmp
 
-  tmp1[I_xr, ] <- tmp1[I_xr, ] - rep(phi, each = length(I_xr))
-  phi_var <- gamma/n^2 * colSums(rbind(tmp1, tmp2)^2)
+    tmp1[I_xr, ] <- tmp1[I_xr, ] - rep(phi[m, ], each = length(I_xr))
+    phi_var[m, ] <- gamma/n^2 * colSums(rbind(tmp1, tmp2)^2)
+  }
 
-  names(phi) <- paste0("A = ", c(1, 0))
-
-  names(phi_var) <- paste0("A = ", c(1, 0))
+  colnames(phi) <- colnames(phi_var) <- paste0("A = ", c(1, 0))
+  rownames(phi) <- rownames(phi_var) <- paste(names(X)[1], "=", unique_EM)
 
   lb <- phi - qnorm(p = 0.975) * sqrt(phi_var)
   ub <- phi + qnorm(p = 0.975) * sqrt(phi_var)
@@ -185,10 +187,16 @@ STE_ext <- function(
   ub_scb <- phi + qtmax * sqrt(phi_var)
 
   # STE
-  plot_phi <- unname(phi[1] - phi[2])
-  plot_phi_var <- unname(phi_var[1] + phi_var[2])
-  plot_phi_CI <- plot_phi + c(-1, 1) * qnorm(p = 0.975) * sqrt(plot_phi_var)
-  plot_phi_SCB <- plot_phi + c(-1, 1) * qtmax * sqrt(plot_phi_var)
+  plot_phi <- unname(phi[, 1] - phi[, 2])
+  plot_phi_var <- unname(phi_var[, 1] + phi_var[, 2])
+  plot_phi_CI <- plot_phi_SCB <- matrix(nrow = length(unique_EM), ncol = 2)
+  plot_phi_CI[, 1] <- plot_phi - qnorm(p = 0.975) * sqrt(plot_phi_var)
+  plot_phi_CI[, 2] <- plot_phi + qnorm(p = 0.975) * sqrt(plot_phi_var)
+  plot_phi_SCB[, 1] <- plot_phi - qtmax * sqrt(plot_phi_var)
+  plot_phi_SCB[, 2] <- plot_phi + qtmax * sqrt(plot_phi_var)
+  names(plot_phi) <- names(plot_phi_var) <- rownames(plot_phi_CI) <- rownames(plot_phi_SCB) <- paste(names(X)[1], "=", unique_EM)
+  colnames(plot_phi_CI) <- c('Lower 95% CI', 'Upper 95% CI')
+  colnames(plot_phi_SCB) <- c('Lower 95% SCB', 'Upper 95% SCB')
 
   output <- list(Estimates = phi,
                  Variances = phi_var,
