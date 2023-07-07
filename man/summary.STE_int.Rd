@@ -2,12 +2,21 @@
 % Please edit documentation in R/s3methods.R
 \name{summary.STE_int}
 \alias{summary.STE_int}
-\title{Summary method for objects of class "STE_int"}
+\alias{summary.STE_ext}
+\alias{summary.ATE_ext}
+\alias{summary.ATE_int}
+\title{Summary method for objects of class "ATE_int", "ATE_ext", "STE_int", or "STE_ext"}
 \usage{
 \method{summary}{STE_int}(object, digits = 4, ...)
+
+\method{summary}{STE_ext}(object, digits = 4, ...)
+
+\method{summary}{ATE_ext}(object, digits = 4, ...)
+
+\method{summary}{ATE_int}(object, digits = 4, ...)
 }
 \arguments{
-\item{object}{Object of class "STE_int".}
+\item{object}{Object of class "ATE_int", "ATE_ext", "STE_int", or "STE_ext".}
 
 \item{digits}{Integer specifying the number of decimal places to display.}
 
@@ -17,8 +26,8 @@
 No value is returned.
 }
 \description{
-Summary method for objects of class "STE_int"
+Summary method for objects of class "ATE_int", "ATE_ext", "STE_int", or "STE_ext"
 }
 \seealso{
-\code{\link{STE_int}}
+\code{\link{ATE_int}}, \code{\link{ATE_ext}}, \code{\link{STE_int}}, \code{\link{STE_ext}}
 }

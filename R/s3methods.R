@@ -44,15 +44,15 @@ plot.STE_int <- function(x, header = 'Subgroup', xlab = 'Treatment Effect',
 
 
 
-#' Print method for objects of class "STE_int" or "STE_ext"
+#' Print method for objects of class "ATE_int", "ATE_ext", "STE_int", or "STE_ext"
 #'
-#' Print method for objects of class "STE_int" or "STE_ext"
+#' Print method for objects of class "ATE_int", "ATE_ext", "STE_int", or "STE_ext"
 #'
-#' @param x Object of class "STE_int" or "STE_ext".
+#' @param x Object of class "ATE_int", "ATE_ext", "STE_int", or "STE_ext".
 #' @param digits Integer specifying the number of decimal places to display.
 #' @param ... Other arguments (ignored).
 #' @return No value is returned.
-#' @seealso \code{\link{STE_int}}
+#' @seealso \code{\link{ATE_int}}, \code{\link{ATE_ext}}, \code{\link{STE_int}}, \code{\link{STE_ext}}
 #'
 #'
 #'
@@ -119,15 +119,15 @@ print.ATE_ext <- function(x, digits = 4, ...){
   my_print(x$df_dif, digits = digits, ATE = TRUE, internal = FALSE)
 }
 
-#' Summary method for objects of class "STE_int"
+#' Summary method for objects of class "ATE_int", "ATE_ext", "STE_int", or "STE_ext"
 #'
-#' Summary method for objects of class "STE_int"
+#' Summary method for objects of class "ATE_int", "ATE_ext", "STE_int", or "STE_ext"
 #'
-#' @param object Object of class "STE_int".
+#' @param object Object of class "ATE_int", "ATE_ext", "STE_int", or "STE_ext".
 #' @param digits Integer specifying the number of decimal places to display.
 #' @param ... Other arguments.
 #' @return No value is returned.
-#' @seealso \code{\link{STE_int}}
+#' @seealso \code{\link{ATE_int}}, \code{\link{ATE_ext}}, \code{\link{STE_int}}, \code{\link{STE_ext}}
 #'
 #'
 #'
@@ -161,6 +161,70 @@ summary.STE_int <- function(object, digits = 4, ...){
   cat('\n\nPotential outcome mean estimates under A = 1:\n')
   cat("---------------------------------------------\n")
   my_print(df_A1, digits = digits, ATE = FALSE, internal = TRUE)
+}
+
+
+#' @rdname summary.STE_int
+#' @export
+summary.STE_ext <- function(object, digits = 4, ...){
+  if (!inherits(object, "STE_ext")){
+    stop("Argument 'object' must be an object of class \"STE_ext\".")
+  }
+
+  cat('SUBGROUP TREATMENT EFFECT ESTIMATES IN AN EXTERNAL POPULATION\n\n')
+  cat('Treatment effect (mean difference) estimates:\n')
+  cat("---------------------------------------------\n")
+  my_print(object$df_dif, digits = digits, ATE = FALSE, internal = FALSE)
+
+  cat('\n\nPotential outcome mean estimates under A = 0:\n')
+  cat("---------------------------------------------\n")
+  my_print(object$df_A0, digits = digits, ATE = FALSE, internal = FALSE)
+
+  cat('\n\nPotential outcome mean estimates under A = 1:\n')
+  cat("---------------------------------------------\n")
+  my_print(object$df_A1, digits = digits, ATE = FALSE, internal = FALSE)
+}
+
+#' @rdname summary.STE_int
+#' @export
+summary.ATE_ext <- function(object, digits = 4, ...){
+  if (!inherits(object, "ATE_ext")){
+    stop("Argument 'object' must be an object of class \"ATE_ext\".")
+  }
+
+  cat('AVERAGE TREATMENT EFFECT ESTIMATES IN AN EXTERNAL POPULATION\n\n')
+  cat('Treatment effect (mean difference) estimates:\n')
+  cat("---------------------------------------------\n")
+  my_print(object$df_dif, digits = digits, ATE = TRUE, internal = FALSE)
+
+  cat('\n\nPotential outcome mean estimates under A = 0:\n')
+  cat("---------------------------------------------\n")
+  my_print(object$df_A0, digits = digits, ATE = TRUE, internal = FALSE)
+
+  cat('\n\nPotential outcome mean estimates under A = 1:\n')
+  cat("---------------------------------------------\n")
+  my_print(object$df_A1, digits = digits, ATE = TRUE, internal = FALSE)
+}
+
+#' @rdname summary.STE_int
+#' @export
+summary.ATE_int <- function(object, digits = 4, ...){
+  if (!inherits(object, "ATE_int")){
+    stop("Argument 'object' must be an object of class \"ATE_int\".")
+  }
+
+  cat('AVERAGE TREATMENT EFFECT ESTIMATES IN AN INTERNAL POPULATIONS\n\n')
+  cat('Treatment effect (mean difference) estimates:\n')
+  cat("---------------------------------------------\n")
+  my_print(object$df_dif, digits = digits, ATE = TRUE, internal = TRUE)
+
+  cat('\n\nPotential outcome mean estimates under A = 0:\n')
+  cat("---------------------------------------------\n")
+  my_print(object$df_A0, digits = digits, ATE = TRUE, internal = TRUE)
+
+  cat('\n\nPotential outcome mean estimates under A = 1:\n')
+  cat("---------------------------------------------\n")
+  my_print(object$df_A1, digits = digits, ATE = TRUE, internal = TRUE)
 }
 
 
