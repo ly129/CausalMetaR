@@ -34,9 +34,9 @@ plot.STE_int <- function(x, header = 'Subgroup', xlab = 'Treatment Effect',
     no_x_tilde <- length(unique(x$df_dif$Subgroup))
 
     for (i in 1:(no_x_tilde * no_S)) {
-      graphics::segments(x0 = x$df_dif$scb.lb,
+      graphics::segments(x0 = x$df_dif$scb.lb[i],
                          y0 = no_x_tilde * no_S + 1 - i,
-                         x1 = x$df_dif$scb.ub)
+                         x1 = x$df_dif$scb.ub[i])
     }
   }
 }
