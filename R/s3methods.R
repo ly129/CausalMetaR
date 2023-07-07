@@ -42,6 +42,34 @@ plot.STE_int <- function(x, header = 'Subgroup', xlab = 'Treatment Effect',
 }
 
 
+#' Plot method for objects of class "ATE_int"
+#'
+#' This function creates forest plots of objects of class "ATE_int".
+#'
+#' @param x Object of class "ATE_int".
+#' @param header character string specifying the title of the column of subgroup names
+#' @param xlab character string specifying the title for the x-axis.
+#' @param ... Other arguments, which are passed to \code{\link[metafor]{forest.rma}}.
+#' @return No value is returned.
+#' @seealso \code{\link{ATE_int}}
+#'
+#'
+#'
+#' @export
+
+plot.ATE_int <- function(x, header = 'Study', xlab = 'Treatment Effect', ...){
+  if (!inherits(x, "ATE_int")){
+    stop("Argument 'x' must be an object of class \"ATE_int\".")
+  }
+
+  forest(x = x$df_dif$Estimate,
+         vi = x$df_dif$SE^2,
+         header = header,
+         xlab = xlab,
+         ...)
+}
+
+
 
 
 #' Print method for objects of class "ATE_int", "ATE_ext", "STE_int", or "STE_ext"
