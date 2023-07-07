@@ -34,10 +34,9 @@
 #' Since the non-parametric influence function is the same as the efficient semi-parametric efficient influence function when the propensity score is known and incorporating the assumption \eqn{Y\perp S|(X, A=a)}, the inference stays the same.
 #'
 #' @return An object of class "ATE_int". This object is a list with the following elements:
-#'   \item{Estimates}{The point estimate of the ATE for each of s.}
-#'   \item{Variances}{The asymptotic variances of the point estimates, which are calculated based on the (efficient) influence function.}
-#'   \item{CI_LB}{The lower bounds of the 95% confidence intervals.}
-#'   \item{CI_UB}{The upper bounds of the 95% confidence intervals.}
+#'   \item{df_dif}{A data frame containing the treatment effect (mean difference) estimates for the internal populations.}
+#'   \item{df_A0}{A data frame containing the potential outcome mean estimates under A = 0 for the internal populations.}
+#'   \item{df_A1}{A data frame containing the potential outcome mean estimates under A = 1 for the internal populations.}
 #'   \item{fit_outcome}{Fitted outcome model.}
 #'   \item{fit_source}{Fitted source model.}
 #'   \item{fit_treatment}{Fitted treatment model(s).}
@@ -147,35 +146,43 @@ ATE_int <- function(
     psi_var[s, ] <- kappa/n^2 * colSums((tmp1 + tmp2)^2)
   }
 
-  rownames(psi) <- paste0("S = ", unique_S)
-  colnames(psi) <- paste0("A = ", c(1, 0))
+  psi <- cbind(psi, unname(psi[, 1] - psi[, 2]))
+  psi_var <- cbind(psi_var, unname(psi_var[, 1] + psi_var[, 2]))
 
-  rownames(psi_var) <- paste0("S = ", unique_S)
-  colnames(psi_var) <- paste0("A = ", c(1, 0))
+  rownames(psi) <- rownames(psi_var) <- paste0("S = ", unique_S)
+  colnames(psi) <- colnames(psi_var) <- c("A = 1", "A = 0", "Difference")
 
   lb <- psi - qnorm(p = 0.975) * sqrt(psi_var)
   ub <- psi + qnorm(p = 0.975) * sqrt(psi_var)
 
-  # ATE
-  plot_psi <- psi[, 1] - psi[, 2]
-  plot_psi_var <- psi_var[, 1] + psi_var[, 2]
-  plot_psi_CI <- cbind(plot_psi - qnorm(p = 0.975) * sqrt(plot_psi_var),
-                       plot_psi + qnorm(p = 0.975) * sqrt(plot_psi_var))
+  df_dif <-
+    data.frame(Study = 1:no_S,
+               Estimate = psi[, 3],
+               SE = psi_var[, 3],
+               ci.lb = lb[, 3],
+               ci.ub = ub[, 3])
+  df_A0 <-
+    data.frame(Study = 1:no_S,
+               Estimate = psi[, 2],
+               SE = psi_var[, 2],
+               ci.lb = lb[, 2],
+               ci.ub = ub[, 2])
+  df_A1 <-
+    data.frame(Study = 1:no_S,
+               Estimate = psi[, 1],
+               SE = psi_var[, 1],
+               ci.lb = lb[, 1],
+               ci.ub = ub[, 1])
 
-  output <- list(Estimates = psi,
-                 Variances = psi_var,
-                 CI_LB = lb,
-                 CI_UB = ub,
-                 fit_outcome = fit_outcome,
-                 fit_source = fit_source,
-                 fit_treatment = fit_treatment,
-                 plot_psi = plot_psi,
-                 plot_psi_var = plot_psi_var,
-                 plot_psi_CI = plot_psi_CI,
-                 no_S = no_S)
-  class(output) <- 'ATE_int'
+  res <- list(df_dif = df_dif,
+              df_A0 = df_A0,
+              df_A1 = df_A1,
+              fit_outcome = fit_outcome,
+              fit_source = fit_source,
+              fit_treatment = fit_treatment)
+  class(res) <- 'ATE_int'
 
-  return(output)
+  return(res)
 }
 
 

@@ -39,12 +39,9 @@
 #' Since the non-parametric influence function is the same as the efficient semi-parametric efficient influence function when the propensity score is known and incorporating the assumption \eqn{Y\perp S|(X, A=a)}, the inference stays the same.
 #'
 #' @return An object of class "STE_ext". This object is a list with the following elements:
-#'   \item{Estimates}{The point estimates of the STE for the external data.}
-#'   \item{Variances}{The asymptotic variances of the point estimates, which is calculated based on the (efficient) influence function.}
-#'   \item{CI_LB}{The lower bounds of the 95% confidence intervals.}
-#'   \item{CI_UB}{The upper bounds of the 95% confidence intervals.}
-#'   \item{SCB_LB}{The lower bounds of the 95% simultaneous confidence bands.}
-#'   \item{SCB_UB}{The upper bounds of the 95% simultaneous confidence bands.}
+#'   \item{df_dif}{A data frame containing the subgroup treatment effect (mean difference) estimates for the extenal data.}
+#'   \item{df_A0}{A data frame containing the subgroup potential outcome mean estimates under A = 0 for the extenal data.}
+#'   \item{df_A1}{A data frame containing the subgroup potential outcome mean estimates under A = 1 for the extenal data.}
 #'   \item{fit_outcome}{Fitted outcome model.}
 #'   \item{fit_source}{Fitted source model.}
 #'   \item{fit_treatment}{Fitted treatment model(s).}
@@ -173,7 +170,9 @@ STE_ext <- function(
     phi_var[m, ] <- gamma/n^2 * colSums(rbind(tmp1, tmp2)^2)
   }
 
-  colnames(phi) <- colnames(phi_var) <- paste0("A = ", c(1, 0))
+  phi <- cbind(phi, unname(phi[, 1] - phi[, 2]))
+  phi_var <- cbind(phi_var, unname(phi_var[, 1] + phi_var[, 2]))
+  colnames(phi) <- colnames(phi_var) <- c("A = 1", "A = 0", "Difference")
   rownames(phi) <- rownames(phi_var) <- paste(names(X)[1], "=", unique_EM)
 
   lb <- phi - qnorm(p = 0.975) * sqrt(phi_var)
@@ -186,35 +185,45 @@ STE_ext <- function(
   lb_scb <- phi - qtmax * sqrt(phi_var)
   ub_scb <- phi + qtmax * sqrt(phi_var)
 
-  # STE
-  plot_phi <- unname(phi[, 1] - phi[, 2])
-  plot_phi_var <- unname(phi_var[, 1] + phi_var[, 2])
-  plot_phi_CI <- plot_phi_SCB <- matrix(nrow = length(unique_EM), ncol = 2)
-  plot_phi_CI[, 1] <- plot_phi - qnorm(p = 0.975) * sqrt(plot_phi_var)
-  plot_phi_CI[, 2] <- plot_phi + qnorm(p = 0.975) * sqrt(plot_phi_var)
-  plot_phi_SCB[, 1] <- plot_phi - qtmax * sqrt(plot_phi_var)
-  plot_phi_SCB[, 2] <- plot_phi + qtmax * sqrt(plot_phi_var)
-  names(plot_phi) <- names(plot_phi_var) <- rownames(plot_phi_CI) <- rownames(plot_phi_SCB) <- paste(names(X)[1], "=", unique_EM)
-  colnames(plot_phi_CI) <- c('Lower 95% CI', 'Upper 95% CI')
-  colnames(plot_phi_SCB) <- c('Lower 95% SCB', 'Upper 95% SCB')
+  # Put results in a data frame
+  df_dif <-
+    data.frame(Subgroup = unique_EM,
+               Estimate = phi[, 3],
+               SE = phi_var[, 3],
+               ci.lb = lb[, 3],
+               ci.ub = ub[, 3],
+               scb.lb = lb_scb[, 3],
+               scb.ub = ub_scb[, 3])
+  df_A0 <-
+    data.frame(Subgroup = unique_EM,
+               Estimate = phi[, 2],
+               SE = phi_var[, 2],
+               ci.lb = lb[, 2],
+               ci.ub = ub[, 2],
+               scb.lb = lb_scb[, 2],
+               scb.ub = ub_scb[, 2])
+  df_A1 <-
+    data.frame(Subgroup = unique_EM,
+               Estimate = phi[, 1],
+               SE = phi_var[, 1],
+               ci.lb = lb[, 1],
+               ci.ub = ub[, 1],
+               scb.lb = lb_scb[, 1],
+               scb.ub = ub_scb[, 1])
 
-  output <- list(Estimates = phi,
-                 Variances = phi_var,
-                 CI_LB = lb,
-                 CI_UB = ub,
-                 SCB_LB = lb_scb,
-                 SCB_UB = ub_scb,
-                 fit_outcome = fit_outcome,
-                 fit_source = fit_source,
-                 fit_treatment = fit_treatment,
-                 fit_external = fit_external,
-                 plot_phi = plot_phi,
-                 plot_phi_var = plot_phi_var,
-                 plot_phi_CI = plot_phi_CI,
-                 plot_phi_SCB = plot_phi_SCB)
-  class(output) <- 'STE_ext'
+  res <- list(
+    df_dif = df_dif,
+    df_A0 = df_A0,
+    df_A1 = df_A1,
+    fit_outcome = fit_outcome,
+    fit_source = fit_source,
+    fit_treatment = fit_treatment,
+    fit_external = fit_external
+  )
 
-  return(output)
+  class(res) <- 'STE_ext'
+
+  return(res)
 }
 
 

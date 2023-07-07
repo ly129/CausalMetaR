@@ -56,7 +56,14 @@ W is combination of X and X0, i.e., W=rbind(X, X0)}
 \item{outcome_model_args}{The arguments (in \pkg{SuperLearner}) for the outcome model.}
 }
 \value{
-
+An object of class "STE_ext". This object is a list with the following elements:
+  \item{df_dif}{A data frame containing the subgroup treatment effect (mean difference) estimates for the extenal data.}
+  \item{df_A0}{A data frame containing the subgroup potential outcome mean estimates under A = 0 for the extenal data.}
+  \item{df_A1}{A data frame containing the subgroup potential outcome mean estimates under A = 1 for the extenal data.}
+  \item{fit_outcome}{Fitted outcome model.}
+  \item{fit_source}{Fitted source model.}
+  \item{fit_treatment}{Fitted treatment model(s).}
+  \item{fit_external}{Fitted external model.}
 }
 \description{
 Doubly-robust and efficient estimator for the subgroup treatment effects (STE) of an external target population using \eqn{m} multi-source data.

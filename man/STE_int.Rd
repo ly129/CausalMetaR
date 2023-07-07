@@ -46,7 +46,14 @@ please ensure that only \code{glm} is included in the \pkg{SuperLearner} library
 \item{outcome_model_args}{The arguments (in \pkg{SuperLearner}) for the outcome model.}
 }
 \value{
-
+An object of class "STE_int". This object is a list with the following elements:
+  \item{df_dif}{A data frame containing the subgroup treatment effect (mean difference) estimates for the internal populations.}
+  \item{df_A0}{A data frame containing the subgroup potential outcome mean estimates under A = 0 for the internal populations.}
+  \item{df_A1}{A data frame containing the subgroup potential outcome mean estimates under A = 1 for the internal populations.}
+  \item{fit_outcome}{Fitted outcome model.}
+  \item{fit_source}{Fitted source model.}
+  \item{fit_treatment}{Fitted treatment model(s).}
+  \item{...}{Some additional elements.}
 }
 \description{
 Doubly-robust and efficient estimator for the subgroup treatments effect (STE) of each internal source-specific target population using \eqn{m} multi-source data.

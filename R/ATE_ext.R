@@ -39,10 +39,9 @@
 #' Since the non-parametric influence function is the same as the efficient semi-parametric efficient influence function when the propensity score is known and incorporating the assumption \eqn{Y\perp S|(X, A=a)}, the inference stays the same.
 #'
 #' @return An object of class "ATE_ext". This object is a list with the following elements:
-#'   \item{Estimate}{The point estimate of the ATE for the external data.}
-#'   \item{Variance}{The asymptotic variance of the point estimate, which is calculated based on the (efficient) influence function.}
-#'   \item{CI_LB}{The lower bound of the 95% confidence interval.}
-#'   \item{CI_UB}{The upper bound of the 95% confidence interval.}
+#'   \item{df_dif}{A data frame containing the treatment effect (mean difference) estimates for the extenal data.}
+#'   \item{df_A0}{A data frame containing the potential outcome mean estimates under A = 0 for the extenal data.}
+#'   \item{df_A1}{A data frame containing the potential outcome mean estimates under A = 1 for the extenal data.}
 #'   \item{fit_outcome}{Fitted outcome model.}
 #'   \item{fit_source}{Fitted source model.}
 #'   \item{fit_treatment}{Fitted treatment model(s).}
@@ -186,19 +185,32 @@ ATE_ext <- function(
   lb <- phi - qnorm(p = 0.975) * sqrt(phi_var)
   ub <- phi + qnorm(p = 0.975) * sqrt(phi_var)
 
+  df_dif <-
+    data.frame(Estimate = phi[3],
+               SE = phi_var[3],
+               ci.lb = lb[3],
+               ci.ub = ub[3])
+  df_A0 <-
+    data.frame(Estimate = phi[2],
+               SE = phi_var[2],
+               ci.lb = lb[2],
+               ci.ub = ub[2])
+  df_A1 <-
+    data.frame(Estimate = phi[1],
+               SE = phi_var[1],
+               ci.lb = lb[1],
+               ci.ub = ub[1])
 
+  res <- list(df_dif = df_dif,
+              df_A0 = df_A0,
+              df_A1 = df_A1,
+              fit_outcome = fit_outcome,
+              fit_source = fit_source,
+              fit_treatment = fit_treatment,
+              fit_external = fit_external)
+  class(res) <- 'ATE_ext'
 
-  output <- list(Estimate = phi,
-                 Variance = phi_var,
-                 CI_LB = lb,
-                 CI_UB = ub,
-                 fit_outcome = fit_outcome,
-                 fit_source = fit_source,
-                 fit_treatment = fit_treatment,
-                 fit_external = fit_external)
-  class(output) <- 'ATE_ext'
-
-  return(output)
+  return(res)
 }
 
 

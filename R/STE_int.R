@@ -34,12 +34,9 @@
 #' Since the non-parametric influence function is the same as the efficient semi-parametric efficient influence function when the propensity score is known and incorporating the assumption \eqn{Y\perp S|(X, A=a)}, the inference stays the same.
 #'
 #' @return An object of class "STE_int". This object is a list with the following elements:
-#'   \item{Estimates}{The point estimate of the STE for each of s and \eqn{\widetilde x}.}
-#'   \item{Variances}{The asymptotic variances of the point estimates, which are calculated based on the (efficient) influence function.}
-#'   \item{CI_LB}{The lower bounds of the 95% confidence intervals.}
-#'   \item{CI_UB}{The upper bounds of the 95% confidence intervals.}
-#'   \item{SCB_LB}{The lower bounds of the 95% simultaneous confidence bands.}
-#'   \item{SCB_UB}{The upper bounds of the 95% simultaneous confidence bands.}
+#'   \item{df_dif}{A data frame containing the subgroup treatment effect (mean difference) estimates for the internal populations.}
+#'   \item{df_A0}{A data frame containing the subgroup potential outcome mean estimates under A = 0 for the internal populations.}
+#'   \item{df_A1}{A data frame containing the subgroup potential outcome mean estimates under A = 1 for the internal populations.}
 #'   \item{fit_outcome}{Fitted outcome model.}
 #'   \item{fit_source}{Fitted source model.}
 #'   \item{fit_treatment}{Fitted treatment model(s).}
@@ -119,8 +116,6 @@ STE_int <- function(
   eta1 <- PrA_XS * PrS_X
   eta0 <- (1 - PrA_XS) * PrS_X
 
-  psi <- psi_var <- matrix(nrow = no_S, ncol = 2)
-
   unique_X <- sort(unique(X[, 1]))
   no_x_tilde <- length(unique_X)
   output <- vector(mode = "list", length = no_x_tilde)
@@ -130,6 +125,7 @@ STE_int <- function(
   plot_scb <- matrix(nrow = no_x_tilde * no_S, ncol = 2)
 
   for (i in 1:no_x_tilde) {
+    psi <- psi_var <- matrix(nrow = no_S, ncol = 2)
     x_tilde <- unique_X[i]
     for (s in unique_S) {
       tmp1 <- tmp2 <- matrix(0, nrow = n, ncol = 2)
@@ -155,12 +151,11 @@ STE_int <- function(
 
       psi_var[s, ] <- kappa/n^2 * colSums((tmp1 + tmp2)^2)
     }
+    psi <- cbind(psi, unname(psi[, 1] - psi[, 2]))
+    psi_var <- cbind(psi_var, unname(psi_var[, 1] + psi_var[, 2]))
 
-    rownames(psi) <- paste0("S = ", unique_S)
-    colnames(psi) <- paste0("A = ", c(1, 0))
-
-    rownames(psi_var) <- paste0("S = ", unique_S)
-    colnames(psi_var) <- paste0("A = ", c(1, 0))
+    rownames(psi) <- rownames(psi_var) <- paste0("S = ", unique_S)
+    colnames(psi) <- colnames(psi_var) <- c("A = 1", "A = 0", "Difference")
 
     lb <- psi - qnorm(p = 0.975) * sqrt(psi_var)
     ub <- psi + qnorm(p = 0.975) * sqrt(psi_var)
@@ -178,11 +173,6 @@ STE_int <- function(
                         CI_UB = ub,
                         SCB_LB = lb_scb,
                         SCB_UB = ub_scb)
-    # STE
-    plot_psi[((i - 1) * no_S + 1):(i * no_S)] <- psi[, 1] - psi[, 2]
-    plot_psi_var[((i - 1) * no_S + 1):(i * no_S)] <- psi_var[, 1] + psi_var[, 2]
-    plot_scb[((i - 1) * no_S + 1):(i * no_S), 1] <- psi[, 1] - psi[, 2] - qtmax * sqrt(psi_var[, 1] + psi_var[, 2])
-    plot_scb[((i - 1) * no_S + 1):(i * no_S), 2] <- psi[, 1] - psi[, 2] + qtmax * sqrt(psi_var[, 1] + psi_var[, 2])
   }
 
   # snames <- rep(paste("Study =", unique_S), no_x_tilde)
@@ -202,9 +192,9 @@ STE_int <- function(
   reoutput <- vector(mode = "list", length = no_S)
   names(reoutput) <- paste0("Study = ", unique_S)
 
-  mat_with_name <- matrix(nrow = no_x_tilde, ncol = 2)
+  mat_with_name <- matrix(nrow = no_x_tilde, ncol = 3)
   rownames(mat_with_name) <- paste(names(X)[1], "=", unique_X)
-  colnames(mat_with_name) <- paste0("A = ", c(1, 0))
+  colnames(mat_with_name) <- c("A = 1", "A = 0", "Difference")
 
   for (s in 1:no_S) {
     reoutput[[s]] <- list(Estimates = mat_with_name,
@@ -223,21 +213,63 @@ STE_int <- function(
     }
   }
 
-  reoutput$fit_outcome = fit_outcome
-  reoutput$fit_source = fit_source
-  reoutput$fit_treatment = fit_treatment
+  # Put results in a data frame
+  df_dif <- df_A1 <- df_A0 <-
+    data.frame(Study = rep(1:no_S, each = no_x_tilde),
+               Subgroup = rep(1:no_x_tilde, times = no_S),
+               Estimate = NA,
+               SE = NA,
+               ci.lb = NA,
+               ci.ub = NA,
+               scb.lb = NA,
+               scb.ub = NA)
 
-  reoutput$plot_psi <- plot_psi[rearr]
-  reoutput$plot_psi_var <- plot_psi_var[rearr]
-  reoutput$plot_scb <- plot_scb[rearr, ]
-  reoutput$no_S <- no_S
-  reoutput$no_x_tilde <- no_x_tilde
-  reoutput$snames <- snames
-  reoutput$xtildenames <- xtildenames
+  row_ind <- 1
+  for (i in 1:no_S){
+    for (j in 1:no_x_tilde){
+      df_A1[row_ind, 'Estimate'] <- reoutput[[i]]$Estimates[j, 1]
+      df_A0[row_ind, 'Estimate'] <- reoutput[[i]]$Estimates[j, 2]
+      df_dif[row_ind, 'Estimate'] <- reoutput[[i]]$Estimates[j, 3]
 
-  class(reoutput) <- 'STE_int'
+      df_A1[row_ind, 'SE'] <- sqrt(reoutput[[i]]$Variances[j, 1])
+      df_A0[row_ind, 'SE'] <- sqrt(reoutput[[i]]$Variances[j, 2])
+      df_dif[row_ind, 'SE'] <- sqrt(reoutput[[i]]$Variances[j, 3])
 
-  return(reoutput)
+      df_A1[row_ind, 'ci.lb'] <- reoutput[[i]]$CI_LB[j, 1]
+      df_A0[row_ind, 'ci.lb'] <- reoutput[[i]]$CI_LB[j, 2]
+      df_dif[row_ind, 'ci.lb'] <- reoutput[[i]]$CI_LB[j, 3]
+
+      df_A1[row_ind, 'ci.ub'] <- reoutput[[i]]$CI_UB[j, 1]
+      df_A0[row_ind, 'ci.ub'] <- reoutput[[i]]$CI_UB[j, 2]
+      df_dif[row_ind, 'ci.ub'] <- reoutput[[i]]$CI_UB[j, 3]
+
+      df_A1[row_ind, 'scb.lb'] <- reoutput[[i]]$SCB_LB[j, 1]
+      df_A0[row_ind, 'scb.lb'] <- reoutput[[i]]$SCB_LB[j, 2]
+      df_dif[row_ind, 'scb.lb'] <- reoutput[[i]]$SCB_LB[j, 3]
+
+      df_A1[row_ind, 'scb.ub'] <- reoutput[[i]]$SCB_UB[j, 1]
+      df_A0[row_ind, 'scb.ub'] <- reoutput[[i]]$SCB_UB[j, 2]
+      df_dif[row_ind, 'scb.ub'] <- reoutput[[i]]$SCB_UB[j, 3]
+
+      row_ind <- row_ind + 1
+    }
+  }
+
+  res <- list(
+    df_dif = df_dif,
+    df_A0 = df_A0,
+    df_A1 = df_A1,
+    fit_outcome = fit_outcome,
+    fit_source = fit_source,
+    fit_treatment = fit_treatment
+  )
+
+  res$snames <- snames
+  res$xtildenames <- xtildenames
+
+  class(res) <- 'STE_int'
+
+  return(res)
 }
 
 
