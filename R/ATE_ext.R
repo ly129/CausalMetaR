@@ -4,7 +4,7 @@
 #' Doubly-robust and efficient estimator for the average treatment effect of an external target population using \eqn{m} multi-source data.
 #'
 #' @param X The covariate matrix/data frame with \eqn{n=n_1+...+n_m} rows and q coloums.
-#' @param X0 The covariate matrix/data frame with \eqn{n_0} rows and q coloums.
+#' @param X_external The covariate matrix/data frame with \eqn{n_0} rows and q coloums.
 #' @param Y The (binary/categorical/continuous) outcome, which is a length \eqn{n} vector.
 #' @param S The (numeric) source which is a length \eqn{n} vector.
 #' @param A The (binary) treatment, which is a length \eqn{n} vector.
@@ -18,14 +18,14 @@
 #' please ensure that only \code{glm} is included in the \pkg{SuperLearner} library within the \code{treatment_model_args}.
 #' @param treatment_model_args The arguments (in \pkg{SuperLearner}) for the treatment model.
 #' @param external_model The R model \eqn{P(R=1|W)} is estimated using \pkg{SuperLearner}. R is a binary variable indicating the multi-source data, i.e., R is 1 if the subject belongs to the multi-source data and 0 if the subject belongs to the external data.
-#' W is combination of X and X0, i.e., W=rbind(X, X0)
+#' W is combination of X and X_external, i.e., W=rbind(X, X_external)
 #' @param external_model_args = list(),
 #' @param outcome_model The same as \code{treatment_model}.
 #' @param outcome_model_args The arguments (in \pkg{SuperLearner}) for the outcome model.
 #'
 #' @details
-#' Data structure: multi-source data contain outcome Y, source S, treatment A, and covariates X (\eqn{n \times p}); external data contain only covariate X0 (\eqn{n_0 \times p}).
-#' Once X and X0 are defined, The indicator of multi-source data, R, can be defined, i.e., R is 1 if the subject belongs to the multi-source data and 0 if the subject belongs to the external data.
+#' Data structure: multi-source data contain outcome Y, source S, treatment A, and covariates X (\eqn{n \times p}); external data contain only covariate X_external (\eqn{n_0 \times p}).
+#' Once X and X_external are defined, The indicator of multi-source data, R, can be defined, i.e., R is 1 if the subject belongs to the multi-source data and 0 if the subject belongs to the external data.
 #' The estimator is doubly robust and non-parametrically efficient. Three nuisance parameters are estimated,
 #' the R model \eqn{q(X)=P(R=1|X)}, the propensity score model \eqn{\eta_a(X)=P(A=a|X)}, and the outcome model \eqn{\mu_a(X)=E(Y|X, A=a)}. The nuisance parameters are allowed to be estimated by \pkg{SuperLearner}. The estimator is
 #' \deqn{
@@ -60,7 +60,7 @@
 
 ATE_ext <- function(
     X,
-    X0,
+    X_external,
     Y,
     S, # integer sequence starting from 1
     A,
@@ -76,7 +76,7 @@ ATE_ext <- function(
 ) {
   # Total sample size
   n1 <- nrow(X)
-  n0 <- nrow(X0)
+  n0 <- nrow(X_external)
   n <- n0 + n1
 
   # Number of sources - with format check
@@ -121,7 +121,7 @@ ATE_ext <- function(
   }
 
   external_model_args$Y <- c(rep(1, n1), rep(0, n0))
-  external_model_args$X <- rbind(X, X0)
+  external_model_args$X <- rbind(X, X_external)
   fit_external <- do.call(what = external_model, args = external_model_args)
   PrR_X <- predict.SuperLearner(fit_external, newdata = X)$pred
 
@@ -142,9 +142,9 @@ ATE_ext <- function(
   eta0 <- (1 - PrA_XS) * PrS_X
 
   pred_Y1_X0 <- predict.SuperLearner(fit_outcome,
-                                     newdata = data.frame(A = 1, X0))$pred
+                                     newdata = data.frame(A = 1, X_external))$pred
   pred_Y0_X0 <- predict.SuperLearner(fit_outcome,
-                                     newdata = data.frame(A = 0, X0))$pred
+                                     newdata = data.frame(A = 0, X_external))$pred
 
   pred_Y1_X1 <- predict.SuperLearner(fit_outcome,
                                      newdata = data.frame(A = 1, X))$pred

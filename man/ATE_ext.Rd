@@ -6,7 +6,7 @@
 \usage{
 ATE_ext(
   X,
-  X0,
+  X_external,
   Y,
   S,
   A,
@@ -24,7 +24,7 @@ ATE_ext(
 \arguments{
 \item{X}{The covariate matrix/data frame with \eqn{n=n_1+...+n_m} rows and q coloums.}
 
-\item{X0}{The covariate matrix/data frame with \eqn{n_0} rows and q coloums.}
+\item{X_external}{The covariate matrix/data frame with \eqn{n_0} rows and q coloums.}
 
 \item{Y}{The (binary/categorical/continuous) outcome, which is a length \eqn{n} vector.}
 
@@ -47,7 +47,7 @@ please ensure that only \code{glm} is included in the \pkg{SuperLearner} library
 \item{treatment_model_args}{The arguments (in \pkg{SuperLearner}) for the treatment model.}
 
 \item{external_model}{The R model \eqn{P(R=1|W)} is estimated using \pkg{SuperLearner}. R is a binary variable indicating the multi-source data, i.e., R is 1 if the subject belongs to the multi-source data and 0 if the subject belongs to the external data.
-W is combination of X and X0, i.e., W=rbind(X, X0)}
+W is combination of X and X_external, i.e., W=rbind(X, X_external)}
 
 \item{external_model_args}{= list(),}
 
@@ -69,8 +69,8 @@ An object of class "ATE_ext". This object is a list with the following elements:
 Doubly-robust and efficient estimator for the average treatment effect of an external target population using \eqn{m} multi-source data.
 }
 \details{
-Data structure: multi-source data contain outcome Y, source S, treatment A, and covariates X (\eqn{n \times p}); external data contain only covariate X0 (\eqn{n_0 \times p}).
-Once X and X0 are defined, The indicator of multi-source data, R, can be defined, i.e., R is 1 if the subject belongs to the multi-source data and 0 if the subject belongs to the external data.
+Data structure: multi-source data contain outcome Y, source S, treatment A, and covariates X (\eqn{n \times p}); external data contain only covariate X_external (\eqn{n_0 \times p}).
+Once X and X_external are defined, The indicator of multi-source data, R, can be defined, i.e., R is 1 if the subject belongs to the multi-source data and 0 if the subject belongs to the external data.
 The estimator is doubly robust and non-parametrically efficient. Three nuisance parameters are estimated,
 the R model \eqn{q(X)=P(R=1|X)}, the propensity score model \eqn{\eta_a(X)=P(A=a|X)}, and the outcome model \eqn{\mu_a(X)=E(Y|X, A=a)}. The nuisance parameters are allowed to be estimated by \pkg{SuperLearner}. The estimator is
 \deqn{

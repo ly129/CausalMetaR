@@ -143,7 +143,7 @@ dd <- subset(Data, R == 1)
 
 
 
-X0 <- Data[Data$R == 0, 1:10]
+X_external <- Data[Data$R == 0, 1:10]
 X <- Data[Data$R == 1, 1:10]
 Y <- Data[Data$R == 1, ]$Y
 A <- Data[Data$R == 1, ]$A
@@ -153,8 +153,8 @@ summary(A)
 summary(Y)
 summary(S)
 dim(X)
-dim(X0)
-names(X)[1] <- names(X0)[1] <- "Subgroup"
+dim(X_external)
+names(X)[1] <- names(X_external)[1] <- "Subgroup"
 
 ### STE.S test
 test.STE.S <- STE_int(
@@ -181,7 +181,7 @@ plot(test.STE.S, include_scb = FALSE)
 
 ### STE.R test
 test.STE.R <- STE_ext(
-  X = X, Y = Y, S = S, A = A, X0 = X0,
+  X = X, Y = Y, S = S, A = A, X_external = X_external,
   source_model = "SL.glmnet.multinom",
   source_model_args = list(),
   treatment_model_type = "joint",
@@ -202,8 +202,7 @@ test.STE.R <- STE_ext(
     family = gaussian(),
     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
     cvControl = list(V = 5L)
-  ),
-  EM = 1
+  )
 )
 
 
@@ -215,7 +214,7 @@ test.STE.R <- STE_ext(
 
 ### ATE.R test
 test.ATE.R <- ATE_ext(
-  X = X, Y = Y, S = S, A = A, X0 = X0,
+  X = X, Y = Y, S = S, A = A, X_external = X_external,
   source_model = "SL.glmnet.multinom",
   source_model_args = list(),
   treatment_model_type = "separate",
