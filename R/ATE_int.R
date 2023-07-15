@@ -67,9 +67,10 @@ ATE_int <- function(
   # Number of sources - with format check
   unique_S <- sort(unique(S))
   no_S <- length(unique_S)
-  if (! identical(seq(no_S), unique_S)) {
-    stop(paste("Source", setdiff(seq(max(S)), unique_S), "is missing. "))
-  }
+
+  # Error checking
+  error_check(X = X, X_external = NULL, Y = Y, S = S, A = A,
+              external = FALSE, ATE = TRUE)
 
   if (source_model %in% c("SL.glmnet.multinom", "SL.nnet.multinom")) {
     source_model_args$Y <- S
