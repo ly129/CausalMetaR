@@ -7,11 +7,8 @@ SL.nnet.multinom <- function(Y, X, newX, family = NULL, obsWeights = NULL, id = 
   if (missing(newX)) {
     newX <- X
   }
-  if (!is.matrix(X)) {
-    X <- model.matrix(~-1 + ., X)
-    newX <- model.matrix(~-1 + ., newX)
-  }
-  fit.nnet.multinom <- nnet::multinom(formula = Y ~ X - 1, weights = obsWeights, ...)
+  fit.nnet.multinom <- nnet::multinom(formula = Y ~ as.matrix(X), weights = obsWeights, ...)
+
 
   # pred is the predicted responses for newX (on the scale of the outcome)
   pred <- predict(fit.nnet.multinom, newdata = newX, type = "probs")

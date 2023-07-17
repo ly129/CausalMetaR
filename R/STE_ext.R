@@ -76,6 +76,10 @@ STE_ext <- function(
   unique_S <- sort(unique(S))
   no_S <- length(unique_S)
 
+  # Converting factor variables into dummy variables
+  X <- data.frame(model.matrix(~ ., data = X)[, -1])
+  X_external <- data.frame(model.matrix(~ ., data = X_external)[, -1])
+
   # Error checking
   error_check(X = X, X_external = X_external, Y = Y, S = S, A = A,
               external = TRUE, ATE = FALSE)

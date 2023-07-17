@@ -149,6 +149,9 @@ Y <- Data[Data$R == 1, ]$Y
 A <- Data[Data$R == 1, ]$A
 S <- Data[Data$R == 1, ]$S
 
+X[,1] <- as.factor(X[,1])
+X_external[,1] <- as.factor(X_external[,1])
+
 summary(A)
 summary(Y)
 summary(S)

@@ -8,10 +8,6 @@ SL.glmnet.multinom <- function(Y, X, newX, s = "lambda.min", family = NULL, obsW
   if (missing(newX)) {
     newX <- X
   }
-  if (!is.matrix(X)) {
-    X <- model.matrix(~-1 + ., X)
-    newX <- model.matrix(~-1 + ., newX)
-  }
   fit.glmnet.multinom <- glmnet::cv.glmnet(
     x = X,
     y = Y,

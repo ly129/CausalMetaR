@@ -87,6 +87,10 @@ ATE_ext <- function(
   error_check(X = X, X_external = X_external, Y = Y, S = S, A = A,
               external = TRUE, ATE = TRUE)
 
+  # Converting factor variables into dummy variables
+  X <- data.frame(model.matrix(~ ., data = X)[, -1])
+  X_external <- data.frame(model.matrix(~ ., data = X_external)[, -1])
+
   if (source_model %in% c("SL.glmnet.multinom", "SL.nnet.multinom")) {
     source_model_args$Y <- S
     source_model_args$X <- X
