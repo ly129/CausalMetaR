@@ -1,21 +1,24 @@
 Package: CMetafoR
 Type: Package
-Title: Causally interpretable meta-analysis package for R
+Title: Causally Interpretable Meta-Analysis
 Version: 0.1.0
-Authors@R: c(person("Yi", "Lian", role = c("aut", "cre"), email = "yi.lian@mail.mcgill.ca"),
+Authors@R: c(person("Yi", "Lian", role = "aut", email = "yi.lian@mail.mcgill.ca"),
              person("Guanbo", "Wang", role = "aut", email = "gwang@hsph.harvard.edu"),
-             person("Sean", "McGrath", role = "aut", email = "sean_mcgrath@g.harvard.edu"),
+             person("Sean", "McGrath", role = c("aut", "cre"), email = "sean_mcgrath@g.harvard.edu", 
+                    comment = c(ORCID = "0000-0002-7281-3516")),
              person("Issa", "Dahabreh", role = "aut"))
-Description: This R package provides methods for transporting causal estimands from a multi-source data to a target population. The multi-source data can be a collection of trails, observation cohorts, or a combination of both, which have same datat structure (outcome, treatment, and covariates). The target population can be one internal source-specific data, or an external dataset where only covariate information is available. The causal estimands available for transportation is average treatment effects and subgroup treatment effects.  
-License: What license is it under?
+Description: Provides methods for transporting causal estimands from a multi-source data to a target population. The multi-source data can be a collection of trails, observation cohorts, or a combination of both, which have same datat structure (outcome, treatment, and covariates). The target population can be one internal source-specific data, or an external dataset where only covariate information is available. The causal estimands available for transportation is average treatment effects and subgroup treatment effects.  
+License: GPL (>=3)
 Encoding: UTF-8
 LazyData: true
 Imports:
-    SuperLearner,
     glmnet,
+    metafor,
     nnet,
-    metafor
+    SuperLearner
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 RoxygenNote: 7.2.3
+URL: https://github.com/ly129/CMetafoR
+BugReports: https://github.com/ly129/CMetafoR/issues
