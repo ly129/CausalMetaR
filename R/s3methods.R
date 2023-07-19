@@ -189,6 +189,12 @@ summary.STE_int <- function(object, digits = 4, ...){
   cat('\n\nPotential outcome mean estimates under A = 1:\n')
   cat("---------------------------------------------\n")
   my_print(df_A1, digits = digits, ATE = FALSE, internal = TRUE)
+
+  cat('\n\nSuperLearner libraries used:\n')
+  cat("----------------------------\n")
+  cat(paste0('Outcome model: ', paste0(object$outcome_model_args$SL.library, collapse = ', '), '\n'))
+  cat(paste0('Treatment model: ', paste0(object$treatment_model_args$SL.library, collapse = ', '), '\n'))
+  cat(paste0('Source model: NA (model fit via ', object$source_model, ')\n'))
 }
 
 
@@ -211,6 +217,13 @@ summary.STE_ext <- function(object, digits = 4, ...){
   cat('\n\nPotential outcome mean estimates under A = 1:\n')
   cat("---------------------------------------------\n")
   my_print(object$df_A1, digits = digits, ATE = FALSE, internal = FALSE)
+
+  cat('\n\nSuperLearner libraries used:\n')
+  cat("----------------------------\n")
+  cat(paste0('Outcome model: ', paste0(object$outcome_model_args$SL.library, collapse = ', '), '\n'))
+  cat(paste0('Treatment model: ', paste0(object$treatment_model_args$SL.library, collapse = ', '), '\n'))
+  cat(paste0('Source model: NA (model fit via ', object$source_model, ')\n'))
+  cat(paste0('External model: ', paste0(object$external_model_args$SL.library, collapse = ', '), '\n'))
 }
 
 #' @rdname summary.STE_int
@@ -232,6 +245,13 @@ summary.ATE_ext <- function(object, digits = 4, ...){
   cat('\n\nPotential outcome mean estimates under A = 1:\n')
   cat("---------------------------------------------\n")
   my_print(object$df_A1, digits = digits, ATE = TRUE, internal = FALSE)
+
+  cat('\n\nSuperLearner libraries used:\n')
+  cat("----------------------------\n")
+  cat(paste0('Outcome model: ', paste0(object$outcome_model_args$SL.library, collapse = ', '), '\n'))
+  cat(paste0('Treatment model: ', paste0(object$treatment_model_args$SL.library, collapse = ', '), '\n'))
+  cat(paste0('Source model: NA (model fit via ', object$source_model, ')\n'))
+  cat(paste0('External model: ', paste0(object$external_model_args$SL.library, collapse = ', '), '\n'))
 }
 
 #' @rdname summary.STE_int
@@ -253,6 +273,12 @@ summary.ATE_int <- function(object, digits = 4, ...){
   cat('\n\nPotential outcome mean estimates under A = 1:\n')
   cat("---------------------------------------------\n")
   my_print(object$df_A1, digits = digits, ATE = TRUE, internal = TRUE)
+
+  cat('\n\nSuperLearner libraries used:\n')
+  cat("----------------------------\n")
+  cat(paste0('Outcome model: ', paste0(object$outcome_model_args$SL.library, collapse = ', '), '\n'))
+  cat(paste0('Treatment model: ', paste0(object$treatment_model_args$SL.library, collapse = ', '), '\n'))
+  cat(paste0('Source model: NA (model fit via ', object$source_model, ')\n'))
 }
 
 

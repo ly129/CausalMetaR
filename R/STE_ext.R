@@ -77,6 +77,8 @@ STE_ext <- function(
   no_S <- length(unique_S)
 
   # Converting factor variables into dummy variables
+  X1 <- X[, 1]; X1_external <- X_external[, 1]
+  X1_names <- names(X1)
   X <- data.frame(model.matrix(~ ., data = X)[, -1])
   X_external <- data.frame(model.matrix(~ ., data = X_external)[, -1])
 
@@ -149,11 +151,13 @@ STE_ext <- function(
   pred_Y0_X1 <- predict.SuperLearner(fit_outcome,
                                      newdata = data.frame(A = 0, X))$pred
 
-  unique_EM <- sort(unique(X[, 1]))
+  unique_EM <- sort(unique(X1))
+  no_EM <- length(unique_EM)
+
   phi <- phi_var <- matrix(nrow = length(unique_EM), ncol = 2)
   for (m in seq_along(unique_EM)) {
     EM <- unique_EM[m]
-    I_xr <- which(X_external[, 1] == EM)
+    I_xr <- which(X1_external == EM)
 
     gamma <- n/length(I_xr)
 
@@ -162,8 +166,8 @@ STE_ext <- function(
     tmp1[I_xr, 2] <- pred_Y0_X0[I_xr, ]
 
     tmp2 <- matrix(0, nrow = n1, ncol = 2)
-    I_xa1 <- which((X[, 1] == EM) & (A == 1))
-    I_xa0 <- which((X[, 1] == EM) & (A == 0))
+    I_xa1 <- which((X1 == EM) & (A == 1))
+    I_xa0 <- which((X1 == EM) & (A == 0))
 
     tmp2[I_xa1, 1] <- (1 - PrR_X[I_xa1])/PrR_X[I_xa1]/eta1[I_xa1] * (Y[I_xa1] - pred_Y1_X1[I_xa1])
     tmp2[I_xa0, 2] <- (1 - PrR_X[I_xa0])/PrR_X[I_xa0]/eta0[I_xa0] * (Y[I_xa0] - pred_Y0_X1[I_xa0])
@@ -183,8 +187,8 @@ STE_ext <- function(
   lb <- phi - qnorm(p = 0.975) * sqrt(phi_var)
   ub <- phi + qnorm(p = 0.975) * sqrt(phi_var)
 
-  tmax <- apply(abs(matrix(rnorm(length(unique(X[,1])) * 1e6),
-                           nrow = length(unique(X[,1])), ncol = 1e6)), 2, max)
+  tmax <- apply(abs(matrix(rnorm(no_EM * 1e6),
+                           nrow = no_EM, ncol = 1e6)), 2, max)
   qtmax <- quantile(tmax, 0.95)
 
   lb_scb <- phi - qtmax * sqrt(phi_var)
@@ -223,7 +227,11 @@ STE_ext <- function(
     fit_outcome = fit_outcome,
     fit_source = fit_source,
     fit_treatment = fit_treatment,
-    fit_external = fit_external
+    fit_external = fit_external,
+    outcome_model_args = outcome_model_args,
+    source_model = source_model,
+    treatment_model_args = treatment_model_args,
+    external_model_args = external_model_args
   )
 
   class(res) <- 'STE_ext'

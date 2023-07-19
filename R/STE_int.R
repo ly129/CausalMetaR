@@ -70,6 +70,8 @@ STE_int <- function(
               external = FALSE, ATE = FALSE)
 
   # Converting factor variables into dummy variables
+  X1 <- X[, 1]
+  X1_names <- names(X1)
   X <- data.frame(model.matrix(~ ., data = X)[, -1])
 
   if (source_model %in% c("SL.glmnet.multinom", "SL.nnet.multinom")) {
@@ -120,10 +122,10 @@ STE_int <- function(
   eta1 <- PrA_XS * PrS_X
   eta0 <- (1 - PrA_XS) * PrS_X
 
-  unique_X <- sort(unique(X[, 1]))
+  unique_X <- sort(unique(X1))
   no_x_tilde <- length(unique_X)
   output <- vector(mode = "list", length = no_x_tilde)
-  names(output) <- paste(names(X)[1], "=", unique_X)
+  names(output) <- paste(X1_names, "=", unique_X)
 
   plot_psi <- plot_psi_var <- numeric(no_x_tilde * no_S)
   plot_scb <- matrix(nrow = no_x_tilde * no_S, ncol = 2)
@@ -133,13 +135,13 @@ STE_int <- function(
     x_tilde <- unique_X[i]
     for (s in unique_S) {
       tmp1 <- tmp2 <- matrix(0, nrow = n, ncol = 2)
-      I_xs <- which((X[, 1] == x_tilde) & (S == s))
+      I_xs <- which((X1 == x_tilde) & (S == s))
       kappa <- 1/(length(I_xs)/n)
       tmp1[I_xs, 1] <- pred_Y1[I_xs]
       tmp1[I_xs, 2] <- pred_Y0[I_xs]
 
-      I_xa1 <- which((X[, 1] == x_tilde) & (A == 1))
-      I_xa0 <- which((X[, 1] == x_tilde) & (A == 0))
+      I_xa1 <- which((X1 == x_tilde) & (A == 1))
+      I_xa0 <- which((X1 == x_tilde) & (A == 0))
 
       qs <- PrS_X[, s]
 
@@ -164,8 +166,8 @@ STE_int <- function(
     lb <- psi - qnorm(p = 0.975) * sqrt(psi_var)
     ub <- psi + qnorm(p = 0.975) * sqrt(psi_var)
 
-    tmax <- apply(abs(matrix(rnorm(length(unique(X[,1])) * 1e6),
-                             nrow = length(unique(X[,1])), ncol = 1e6)), 2, max)
+    tmax <- apply(abs(matrix(rnorm(no_x_tilde * 1e6),
+                             nrow = no_x_tilde, ncol = 1e6)), 2, max)
     qtmax <- quantile(tmax, 0.95)
 
     lb_scb <- psi - qtmax * sqrt(psi_var)
@@ -184,7 +186,7 @@ STE_int <- function(
   # xtildenames[1:(no_x_tilde * no_S) %% no_S == 1] <- c(paste(names(X)[1], "=", unique_X))
   snames <- character(length = no_x_tilde * no_S)
   snames[1:(no_x_tilde * no_S) %% no_x_tilde == 1] <- c(paste("Study =", unique_S))
-  xtildenames <- rep(paste(names(X)[1], "=", unique_X), no_S)
+  xtildenames <- rep(paste(X1_names, "=", unique_X), no_S)
 
   # Rearrange
   id_rows <- seq(no_S * no_x_tilde)
@@ -197,7 +199,7 @@ STE_int <- function(
   names(reoutput) <- paste0("Study = ", unique_S)
 
   mat_with_name <- matrix(nrow = no_x_tilde, ncol = 3)
-  rownames(mat_with_name) <- paste(names(X)[1], "=", unique_X)
+  rownames(mat_with_name) <- paste(X1_names, "=", unique_X)
   colnames(mat_with_name) <- c("A = 1", "A = 0", "Difference")
 
   for (s in 1:no_S) {
@@ -265,7 +267,10 @@ STE_int <- function(
     df_A1 = df_A1,
     fit_outcome = fit_outcome,
     fit_source = fit_source,
-    fit_treatment = fit_treatment
+    fit_treatment = fit_treatment,
+    outcome_model_args = outcome_model_args,
+    source_model = source_model,
+    treatment_model_args = treatment_model_args
   )
 
   res$snames <- snames

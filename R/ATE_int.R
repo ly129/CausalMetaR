@@ -183,7 +183,10 @@ ATE_int <- function(
               df_A1 = df_A1,
               fit_outcome = fit_outcome,
               fit_source = fit_source,
-              fit_treatment = fit_treatment)
+              fit_treatment = fit_treatment,
+              outcome_model_args = outcome_model_args,
+              source_model = source_model,
+              treatment_model_args = treatment_model_args)
   class(res) <- 'ATE_int'
 
   return(res)

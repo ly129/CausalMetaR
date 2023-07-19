@@ -212,7 +212,11 @@ ATE_ext <- function(
               fit_outcome = fit_outcome,
               fit_source = fit_source,
               fit_treatment = fit_treatment,
-              fit_external = fit_external)
+              fit_external = fit_external,
+              outcome_model_args = outcome_model_args,
+              source_model = source_model,
+              treatment_model_args = treatment_model_args,
+              external_model_args = external_model_args)
   class(res) <- 'ATE_ext'
 
   return(res)
