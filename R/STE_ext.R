@@ -108,13 +108,22 @@ STE_ext <- function(
       fit_treatment[[s]] <- fit_treatment_s
     }
   } else if (treatment_model_type == "joint") {
+    S_factor <- as.factor(S)
+    S_factor <- model.matrix(~., data.frame(S_factor))[, -1]
+    S_factor_names <- colnames(S_factor)
+
     treatment_model_args$Y <- A
-    treatment_model_args$X <- data.frame(X, S)
+    treatment_model_args$X <- data.frame(X, S_factor)
     fit_treatment <- do.call(what = treatment_model,
                              args = treatment_model_args)
     for (s in 1:no_S) {
+      S_mat <- matrix(0, nrow = n, ncol = no_S - 1)
+      colnames(S_mat) <- S_factor_names
+      if (s > 1){
+        S_mat[, s - 1] <- 1
+      }
       PrA_XS[, s] <- predict.SuperLearner(fit_treatment,
-                                          newdata = data.frame(X, S = s))$pred
+                                          newdata = data.frame(X, S_mat))$pred
     }
   } else {
     stop("Type has to be either 'separate' or 'joint'.")
