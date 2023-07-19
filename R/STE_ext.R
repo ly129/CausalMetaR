@@ -78,7 +78,6 @@ STE_ext <- function(
 
   # Converting factor variables into dummy variables
   X1 <- X[, 1]; X1_external <- X_external[, 1]
-  X1_names <- names(X1)
   X <- data.frame(model.matrix(~ ., data = X)[, -1])
   X_external <- data.frame(model.matrix(~ ., data = X_external)[, -1])
 

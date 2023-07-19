@@ -70,8 +70,8 @@ STE_int <- function(
               external = FALSE, ATE = FALSE)
 
   # Converting factor variables into dummy variables
+  X1_name <- names(X)[1]
   X1 <- X[, 1]
-  X1_names <- names(X1)
   X <- data.frame(model.matrix(~ ., data = X)[, -1])
 
   if (source_model %in% c("SL.glmnet.multinom", "SL.nnet.multinom")) {
@@ -134,7 +134,7 @@ STE_int <- function(
   unique_X <- sort(unique(X1))
   no_x_tilde <- length(unique_X)
   output <- vector(mode = "list", length = no_x_tilde)
-  names(output) <- paste(X1_names, "=", unique_X)
+  names(output) <- paste(X1_name, "=", unique_X)
 
   plot_psi <- plot_psi_var <- numeric(no_x_tilde * no_S)
   plot_scb <- matrix(nrow = no_x_tilde * no_S, ncol = 2)
@@ -195,7 +195,7 @@ STE_int <- function(
   # xtildenames[1:(no_x_tilde * no_S) %% no_S == 1] <- c(paste(names(X)[1], "=", unique_X))
   snames <- character(length = no_x_tilde * no_S)
   snames[1:(no_x_tilde * no_S) %% no_x_tilde == 1] <- c(paste("Study =", unique_S))
-  xtildenames <- rep(paste(X1_names, "=", unique_X), no_S)
+  xtildenames <- rep(paste(X1_name, "=", unique_X), no_S)
 
   # Rearrange
   id_rows <- seq(no_S * no_x_tilde)
@@ -208,7 +208,7 @@ STE_int <- function(
   names(reoutput) <- paste0("Study = ", unique_S)
 
   mat_with_name <- matrix(nrow = no_x_tilde, ncol = 3)
-  rownames(mat_with_name) <- paste(X1_names, "=", unique_X)
+  rownames(mat_with_name) <- paste(X1_name, "=", unique_X)
   colnames(mat_with_name) <- c("A = 1", "A = 0", "Difference")
 
   for (s in 1:no_S) {
