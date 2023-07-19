@@ -7,7 +7,7 @@
 #' @param Y The (binary/categorical/continuous) outcome, which is a length \eqn{n} vector.
 #' @param S The (numeric) source which is a length \eqn{n} vector.
 #' @param A The (binary) treatment, which is a length \eqn{n} vector.
-#' @param source_model The multi-nomial model for estimating \eqn{P(S=s|X)}. It has two options: \code{SL.glmnet.multinom} and \code{SL.nnet.multinom}. The default is \code{SL.glmnet.multinom}.
+#' @param source_model The multi-nomial model for estimating \eqn{P(S=s|X)}. It has two options: \code{glmnet.multinom} and \code{nnet.multinom}. The default is \code{glmnet.multinom}.
 #' @param source_model_args The arguments (in \pkg{SuperLearner}) for the source model.
 #' @param treatment_model_type The options for how the treatment_model \eqn{P(A=1|X, S=s)} is estimated. It includes \code{separate} and \code{joint}, with the default being \code{separate}. When \code{separate} is selected,
 #' \eqn{P(A=1|X, S=s)} is estimated by fitting the model (regressing \eqn{A} on \eqn{X}) within each specific internal source population (S=s). When \code{joint} is selected, \eqn{P(A=1|X, S=s)}
@@ -53,7 +53,7 @@ ATE_int <- function(
     Y,
     S, # integer sequence starting from 1
     A,
-    source_model = "SL.glmnet.multinom",
+    source_model = "glmnet.multinom",
     source_model_args = list(),
     treatment_model_type = "separate",
     treatment_model = "SuperLearner",
@@ -75,13 +75,13 @@ ATE_int <- function(
   # Converting factor variables into dummy variables
   X <- data.frame(model.matrix(~ ., data = X)[, -1])
 
-  if (source_model %in% c("SL.glmnet.multinom", "SL.nnet.multinom")) {
+  if (source_model %in% c("glmnet.multinom", "nnet.multinom")) {
     source_model_args$Y <- S
     source_model_args$X <- X
     fit_source <- do.call(what = source_model, args = source_model_args)
     PrS_X <- fit_source$pred
   } else {
-    stop("Currently only support `SL.glmnet.multinom` and `SL.nnet.multinom`.")
+    stop("Currently only support `glmnet.multinom` and `nnet.multinom`.")
   }
 
   PrA_XS <- matrix(nrow = n, ncol = no_S)

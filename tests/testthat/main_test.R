@@ -162,7 +162,7 @@ names(X)[1] <- names(X_external)[1] <- "Subgroup"
 ### STE.S test
 test.STE.S <- STE_int(
   X = X, Y = Y, S = S, A = A,
-  source_model = "SL.glmnet.multinom",
+  source_model = "glmnet.multinom",
   source_model_args = list(),
   treatment_model_type = "separate",
   treatment_model = "SuperLearner",
@@ -185,7 +185,7 @@ plot(test.STE.S, include_scb = FALSE)
 ### STE.R test
 test.STE.R <- STE_ext(
   X = X, Y = Y, S = S, A = A, X_external = X_external,
-  source_model = "SL.glmnet.multinom",
+  source_model = "glmnet.multinom",
   source_model_args = list(),
   treatment_model_type = "joint",
   treatment_model = "SuperLearner",
@@ -218,7 +218,7 @@ test.STE.R <- STE_ext(
 ### ATE.R test
 test.ATE.R <- ATE_ext(
   X = X, Y = Y, S = S, A = A, X_external = X_external,
-  source_model = "SL.glmnet.multinom",
+  source_model = "glmnet.multinom",
   source_model_args = list(),
   treatment_model_type = "separate",
   treatment_model = "SuperLearner",
@@ -248,7 +248,7 @@ test.ATE.R$Estimate
 ### ATE.S test
 test.ATE.S <- ATE_int(
   X = X, Y = Y, S = S, A = A,
-  source_model = "SL.glmnet.multinom",
+  source_model = "glmnet.multinom",
   source_model_args = list(),
   treatment_model_type = "separate",
   treatment_model = "SuperLearner",

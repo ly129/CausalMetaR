@@ -9,7 +9,7 @@ STE_int(
   Y,
   S,
   A,
-  source_model = "SL.glmnet.multinom",
+  source_model = "glmnet.multinom",
   source_model_args = list(),
   treatment_model_type = "separate",
   treatment_model = "SuperLearner",
@@ -27,7 +27,7 @@ STE_int(
 
 \item{A}{The (binary) treatment, which is a length \eqn{n} vector.}
 
-\item{source_model}{The multi-nomial model for estimating \eqn{P(S=s|X)}. It has two options: \code{SL.glmnet.multinom} and \code{SL.nnet.multinom}. The default is \code{SL.glmnet.multinom}.}
+\item{source_model}{The multi-nomial model for estimating \eqn{P(S=s|X)}. It has two options: \code{glmnet.multinom} and \code{nnet.multinom}. The default is \code{glmnet.multinom}.}
 
 \item{source_model_args}{The arguments (in \pkg{SuperLearner}) for the source model.}
 
