@@ -3,7 +3,7 @@
 #' @description
 #' Doubly-robust and efficient estimator for the average treatment effects of each internal source-specific target population using \eqn{m} multi-source data.
 #'
-#' @param X The covariate matrix/data frame with \eqn{n=n_1+...+n_m} rows and q coloums.
+#' @param X The covariate data frame with \eqn{n=n_1+...+n_m} rows and q coloums.
 #' @param Y The (binary/categorical/continuous) outcome, which is a length \eqn{n} vector.
 #' @param S The (numeric) source which is a length \eqn{n} vector.
 #' @param A The (binary) treatment, which is a length \eqn{n} vector.

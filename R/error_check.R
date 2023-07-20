@@ -29,9 +29,19 @@ error_check <- function(X, X_external, Y, S, A, external, ATE){
   }
 
   # Checking covariate data
+  if (!ATE){
+    if (!is.factor(X[, 1])){
+      stop(paste0('The first column of X must be a factor variable (corresponding to the categorical potential effect modifier).'))
+    }
+  }
   if (external){
     if (ncol(X) != ncol(X_external)){
       stop(paste0('X and X_external must have the same number of columns.'))
+    }
+    if (!ATE){
+      if (!is.factor(X_external[, 1])){
+        stop(paste0('The first column of X_external must be a factor variable (corresponding to the categorical potential effect modifier).'))
+      }
     }
   }
 }

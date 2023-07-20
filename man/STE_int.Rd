@@ -19,7 +19,7 @@ STE_int(
 )
 }
 \arguments{
-\item{X}{The covariate matrix/data frame with \eqn{n=n_1+...+n_m} rows and q coloums. The first column of X is the categorical effect modifier (\eqn{\widetilde X}).}
+\item{X}{The covariate data frame with \eqn{n=n_1+...+n_m} rows and q coloums. The first column of X is the categorical effect modifier (\eqn{\widetilde X}).}
 
 \item{Y}{The (binary/categorical/continuous) outcome, which is a length \eqn{n} vector.}
 
