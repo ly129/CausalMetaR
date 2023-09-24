@@ -122,7 +122,7 @@ ATE_ext <- function(
     fit_treatment <- do.call(what = treatment_model,
                              args = treatment_model_args)
     for (s in 1:no_S) {
-      S_mat <- matrix(0, nrow = n, ncol = no_S - 1)
+      S_mat <- matrix(0, nrow = n1, ncol = no_S - 1)
       colnames(S_mat) <- S_factor_names
       if (s > 1){
         S_mat[, s - 1] <- 1

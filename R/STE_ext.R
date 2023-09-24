@@ -76,14 +76,14 @@ STE_ext <- function(
   unique_S <- sort(unique(S))
   no_S <- length(unique_S)
 
+  # Error checking
+  error_check(X = X, X_external = X_external, Y = Y, S = S, A = A,
+              external = TRUE, ATE = FALSE)
+
   # Converting factor variables into dummy variables
   X1 <- X[, 1]; X1_external <- X_external[, 1]
   X <- data.frame(model.matrix(~ ., data = X)[, -1])
   X_external <- data.frame(model.matrix(~ ., data = X_external)[, -1])
-
-  # Error checking
-  error_check(X = X, X_external = X_external, Y = Y, S = S, A = A,
-              external = TRUE, ATE = FALSE)
 
   if (source_model %in% c("glmnet.multinom", "nnet.multinom")) {
     source_model_args$Y <- S
@@ -116,7 +116,7 @@ STE_ext <- function(
     fit_treatment <- do.call(what = treatment_model,
                              args = treatment_model_args)
     for (s in 1:no_S) {
-      S_mat <- matrix(0, nrow = n, ncol = no_S - 1)
+      S_mat <- matrix(0, nrow = n1, ncol = no_S - 1)
       colnames(S_mat) <- S_factor_names
       if (s > 1){
         S_mat[, s - 1] <- 1
