@@ -30,7 +30,7 @@ plot.STE_int <- function(x, header = 'Subgroup', xlab = 'Treatment Effect',
          ...)
 
   if (include_scb){
-    no_S <- length(unique(x$df_dif$Study))
+    no_S <- length(unique(x$df_dif$Source))
     no_x_tilde <- length(unique(x$df_dif$Subgroup))
 
     for (i in 1:(no_x_tilde * no_S)) {
@@ -57,7 +57,7 @@ plot.STE_int <- function(x, header = 'Subgroup', xlab = 'Treatment Effect',
 #'
 #' @export
 
-plot.ATE_int <- function(x, header = 'Study', xlab = 'Treatment Effect', ...){
+plot.ATE_int <- function(x, header = 'Source', xlab = 'Treatment Effect', ...){
   if (!inherits(x, "ATE_int")){
     stop("Argument 'x' must be an object of class \"ATE_int\".")
   }
@@ -91,15 +91,15 @@ print.STE_int <- function(x, digits = 4, ...){
     stop("Argument 'x' must be an object of class \"STE_int\".")
   }
 
-  no_S <- length(unique(x$df_dif$Study))
+  no_S <- length(unique(x$df_dif$Source))
   no_x_tilde <- length(unique(x$df_dif$Subgroup))
 
-  study_num <- matrix(1:no_S, nrow = 1)
+  source_num <- matrix(1:no_S, nrow = 1)
   append_row <- matrix(NA, ncol = no_S, nrow = no_x_tilde - 1)
-  study_lab <- c(rbind(study_num, append_row))
+  source_lab <- c(rbind(source_num, append_row))
 
   df_dif <- x$df_dif
-  df_dif$Study <- study_lab
+  df_dif$Source <- source_lab
 
   cat('SUBGROUP TREATMENT EFFECT ESTIMATES IN INTERNAL POPULATIONS\n\n')
   cat('Treatment effect (mean difference) estimates:\n')
@@ -166,16 +166,16 @@ summary.STE_int <- function(object, digits = 4, ...){
     stop("Argument 'object' must be an object of class \"STE_int\".")
   }
 
-  no_S <- length(unique(object$df_dif$Study))
+  no_S <- length(unique(object$df_dif$Source))
   no_x_tilde <- length(unique(object$df_dif$Subgroup))
 
-  study_num <- matrix(1:no_S, nrow = 1)
+  source_num <- matrix(1:no_S, nrow = 1)
   append_row <- matrix(NA, ncol = no_S, nrow = no_x_tilde - 1)
-  study_lab <- c(rbind(study_num, append_row))
+  source_lab <- c(rbind(source_num, append_row))
 
-  df_dif <- object$df_dif; df_dif$Study <- study_lab
-  df_A0 <- object$df_A0; df_A0$Study <- study_lab
-  df_A1 <- object$df_A1; df_A1$Study <- study_lab
+  df_dif <- object$df_dif; df_dif$Source <- source_lab
+  df_A0 <- object$df_A0; df_A0$Source <- source_lab
+  df_A1 <- object$df_A1; df_A1$Source <- source_lab
 
   cat('SUBGROUP TREATMENT EFFECT ESTIMATES IN INTERNAL POPULATIONS\n\n')
   cat('Treatment effect (mean difference) estimates:\n')
@@ -287,13 +287,13 @@ my_print <- function(df, digits, ATE, internal, ...){
   my_fun <- function(x){
     sprintf(paste0("%.", digits, "f"), round(x, digits))
   }
-  mycols <- which(colnames(df) %in% c('Study', 'Subgroup'))
+  mycols <- which(colnames(df) %in% c('Source', 'Subgroup'))
 
   if (ATE & !internal){
     df_num <- df
   } else if (ATE & internal){
     df_num <- df[, -mycols]
-    df_char <- data.frame(Study = df[, mycols])
+    df_char <- data.frame(Source = df[, mycols])
     df_char <- format.data.frame(data.frame(lapply(df_char, as.character)), na.encode = FALSE)
   } else if (!ATE & !internal){
     df_num <- df[, -mycols]

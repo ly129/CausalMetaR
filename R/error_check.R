@@ -3,7 +3,7 @@ error_check <- function(X, X_external, Y, S, A, external, ATE){
   # Checking lengths of all data inputs
   n <- nrow(X)
   if (length(Y) != n | length(S) != n | length(A) != n){
-    stop(paste0('All data inputs for the source studies must have the same length:\n',
+    stop(paste0('All data inputs for the sources must have the same length:\n',
                 'X has length ', n, '.\n',
                 'Y has length ', length(Y), '.\n',
                 'S has length ', length(S), '.\n',

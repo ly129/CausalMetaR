@@ -26,7 +26,7 @@ ATE_ext(
 
 \item{X_external}{The covariate data frame with \eqn{n_0} rows and q coloums.}
 
-\item{Y}{The (binary/categorical/continuous) outcome, which is a length \eqn{n} vector.}
+\item{Y}{The (binary/continuous) outcome, which is a length \eqn{n} vector.}
 
 \item{S}{The (numeric) source which is a length \eqn{n} vector.}
 

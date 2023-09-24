@@ -21,7 +21,7 @@ ATE_int(
 \arguments{
 \item{X}{The covariate data frame with \eqn{n=n_1+...+n_m} rows and q coloums.}
 
-\item{Y}{The (binary/categorical/continuous) outcome, which is a length \eqn{n} vector.}
+\item{Y}{The (binary/continuous) outcome, which is a length \eqn{n} vector.}
 
 \item{S}{The (numeric) source which is a length \eqn{n} vector.}
 

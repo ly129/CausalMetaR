@@ -190,11 +190,8 @@ STE_int <- function(
                         SCB_UB = ub_scb)
   }
 
-  # snames <- rep(paste("Study =", unique_S), no_x_tilde)
-  # xtildenames <- character(length = no_x_tilde * no_S)
-  # xtildenames[1:(no_x_tilde * no_S) %% no_S == 1] <- c(paste(names(X)[1], "=", unique_X))
   snames <- character(length = no_x_tilde * no_S)
-  snames[1:(no_x_tilde * no_S) %% no_x_tilde == 1] <- c(paste("Study =", unique_S))
+  snames[1:(no_x_tilde * no_S) %% no_x_tilde == 1] <- c(paste("Source =", unique_S))
   xtildenames <- rep(paste(X1_name, "=", unique_X), no_S)
 
   # Rearrange
@@ -205,7 +202,7 @@ STE_int <- function(
 
   # rearrange output
   reoutput <- vector(mode = "list", length = no_S)
-  names(reoutput) <- paste0("Study = ", unique_S)
+  names(reoutput) <- paste0("Source = ", unique_S)
 
   mat_with_name <- matrix(nrow = no_x_tilde, ncol = 3)
   rownames(mat_with_name) <- paste(X1_name, "=", unique_X)
@@ -230,7 +227,7 @@ STE_int <- function(
 
   # Put results in a data frame
   df_dif <- df_A1 <- df_A0 <-
-    data.frame(Study = rep(1:no_S, each = no_x_tilde),
+    data.frame(Source = rep(1:no_S, each = no_x_tilde),
                Subgroup = rep(1:no_x_tilde, times = no_S),
                Estimate = NA,
                SE = NA,

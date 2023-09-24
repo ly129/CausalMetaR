@@ -4,7 +4,7 @@
 \alias{plot.ATE_int}
 \title{Plot method for objects of class "ATE_int"}
 \usage{
-\method{plot}{ATE_int}(x, header = "Study", xlab = "Treatment Effect", ...)
+\method{plot}{ATE_int}(x, header = "Source", xlab = "Treatment Effect", ...)
 }
 \arguments{
 \item{x}{Object of class "ATE_int".}
