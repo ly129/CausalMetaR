@@ -4,14 +4,10 @@
 \alias{plot.ATE_int}
 \title{Plot method for objects of class "ATE_int"}
 \usage{
-\method{plot}{ATE_int}(x, header = "Source", xlab = "Treatment Effect", ...)
+\method{plot}{ATE_int}(x, ...)
 }
 \arguments{
 \item{x}{Object of class "ATE_int".}
-
-\item{header}{character string specifying the title of the column of subgroup names}
-
-\item{xlab}{character string specifying the title for the x-axis.}
 
 \item{...}{Other arguments, which are passed to \code{\link[metafor]{forest.rma}}.}
 }

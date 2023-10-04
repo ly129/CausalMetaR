@@ -191,7 +191,7 @@ STE_int <- function(
   }
 
   snames <- character(length = no_x_tilde * no_S)
-  snames[1:(no_x_tilde * no_S) %% no_x_tilde == 1] <- c(paste("Source =", unique_S))
+  snames[1:(no_x_tilde * no_S) %% no_x_tilde == 1] <- c(paste("Source", unique_S))
   xtildenames <- rep(paste(X1_name, "=", unique_X), no_S)
 
   # Rearrange

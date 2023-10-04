@@ -3,9 +3,9 @@
 #' This function creates forest plots of objects of class "STE_int".
 #'
 #' @param x Object of class "STE_int".
-#' @param header character string specifying the title of the column of subgroup names
-#' @param xlab character string specifying the title for the x-axis.
-#' @param include_scb logical scalar specifying whether to include simultaneous 95\% confidence bands in the forest plot
+#' @param source_names vector of character strings specifying the names of the sources.
+#' @param subgroup_names vector of character strings specifying the names of the subgroups.
+#' @param use_scb logical scalar specifying whether the intervals in the forest plot should be simultaneous confidence bands (rather than confidence intervals). The default is \code{FALSE}.
 #' @param ... Other arguments, which are passed to \code{\link[metafor]{forest.rma}}.
 #' @return No value is returned.
 #' @seealso \code{\link{STE_int}}
@@ -14,31 +14,67 @@
 #'
 #' @export
 
-plot.STE_int <- function(x, header = 'Subgroup', xlab = 'Treatment Effect',
-                       include_scb = TRUE, ...){
+plot.STE_int <- function(x, source_names, subgroup_names,
+                         use_scb = FALSE, ...){
   if (!inherits(x, "STE_int")){
     stop("Argument 'x' must be an object of class \"STE_int\".")
   }
+  all_args = as.list(match.call())[-1]
+  args <- all_args[!names(all_args) %in% c('x', 'use_scb', 'source_names', 'subgroup_names')]
 
-  forest(x = x$df_dif$Estimate,
-         vi = x$df_dif$SE^2,
-         slab = x$snames,
-         ilab = x$xtildenames,
-         ilab.xpos = -3,
-         header = header,
-         xlab = xlab,
-         ...)
+  no_S <- length(unique(x$df_dif$Source))
+  no_x_tilde <- length(unique(x$df_dif$Subgroup))
 
-  if (include_scb){
-    no_S <- length(unique(x$df_dif$Source))
-    no_x_tilde <- length(unique(x$df_dif$Subgroup))
+  if (missing(source_names)){
+    args$slab <- x$snames
+  } else {
+    if (length(source_names) != no_S){
+      stop(paste0('The length of source_names does not match the number of sources (', no_S, ')'))
+    }
+    slab <- character(length = no_x_tilde * no_S)
+    slab[1:(no_x_tilde * no_S) %% no_x_tilde == 1] <- source_names
+    args$slab <- slab
+  }
+  if (missing(subgroup_names)){
+    args$ilab <- x$xtildenames
+  } else {
+    if (length(subgroup_names) != no_x_tilde){
+      stop(paste0('The length of subgroup_names does not match the number of subgroups (', no_x_tilde, ')'))
+    }
+    args$ilab <- rep(subgroup_names, times = no_S)
+  }
+  if (!('shade' %in% names(args))){
+    shade_temp <- c(rep(T, times = no_x_tilde), rep(F, times = no_x_tilde))
+    args$shade <- rep(shade_temp, length.out = no_S * no_x_tilde)
+  }
+  if (!('xlab' %in% names(args))) {
+    args$xlab <- 'Treatment Effect'
+  }
+  if (!('ilab.xpos' %in% names(args))){
+    args$ilab.xpos <- -3
+  }
+  if (!('refline' %in% names(args))){
+    args$refline <- NA
+  }
+  args$x <- x$df_dif$Estimate
 
-    for (i in 1:(no_x_tilde * no_S)) {
-      graphics::segments(x0 = x$df_dif$scb.lb[i],
-                         y0 = no_x_tilde * no_S + 1 - i,
-                         x1 = x$df_dif$scb.ub[i])
+  if (!use_scb){
+    if (!('header' %in% names(args))){
+      args$header <- 'Source'
+    }
+    args$vi <- x$df_dif$SE^2
+  } else {
+    if (!('header' %in% names(args))){
+      args$header <- c('Source', 'Estimate [95% SCB]')
+    }
+    args$vi <- ((x$df_dif$scb.ub - x$df_dif$scb.lb) / (2 * qnorm(0.975)))^2
+    if ('level' %in% names(args)){
+      if (args$level != 0.95){
+        stop("The argument 'level' cannot be set to a value other than 0.95 when using simultaneous confidence bands.")
+      }
     }
   }
+  do.call(forest, args)
 }
 
 
@@ -47,8 +83,6 @@ plot.STE_int <- function(x, header = 'Subgroup', xlab = 'Treatment Effect',
 #' This function creates forest plots of objects of class "ATE_int".
 #'
 #' @param x Object of class "ATE_int".
-#' @param header character string specifying the title of the column of subgroup names
-#' @param xlab character string specifying the title for the x-axis.
 #' @param ... Other arguments, which are passed to \code{\link[metafor]{forest.rma}}.
 #' @return No value is returned.
 #' @seealso \code{\link{ATE_int}}
@@ -57,16 +91,32 @@ plot.STE_int <- function(x, header = 'Subgroup', xlab = 'Treatment Effect',
 #'
 #' @export
 
-plot.ATE_int <- function(x, header = 'Source', xlab = 'Treatment Effect', ...){
+plot.ATE_int <- function(x, ...){
   if (!inherits(x, "ATE_int")){
     stop("Argument 'x' must be an object of class \"ATE_int\".")
   }
 
-  forest(x = x$df_dif$Estimate,
-         vi = x$df_dif$SE^2,
-         header = header,
-         xlab = xlab,
-         ...)
+  all_args = as.list(match.call())[-1]
+  args <- all_args[!names(all_args) %in% c('x')]
+
+  if (!('shade' %in% names(args))){
+    args$shade <- 'zebra'
+  }
+  if (!('xlab' %in% names(args))) {
+    args$xlab <- 'Treatment Effect'
+  }
+  if (!('ilab.xpos' %in% names(args))){
+    args$ilab.xpos <- -3
+  }
+  if (!('refline' %in% names(args))){
+    args$refline <- NA
+  }
+  if (!('header' %in% names(args))){
+    args$header <- 'Source'
+  }
+  args$x <- x$df_dif$Estimate
+  args$vi <- x$df_dif$SE^2
+  do.call(forest, args)
 }
 
 

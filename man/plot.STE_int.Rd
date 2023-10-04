@@ -4,22 +4,16 @@
 \alias{plot.STE_int}
 \title{Plot method for objects of class "STE_int"}
 \usage{
-\method{plot}{STE_int}(
-  x,
-  header = "Subgroup",
-  xlab = "Treatment Effect",
-  include_scb = TRUE,
-  ...
-)
+\method{plot}{STE_int}(x, source_names, subgroup_names, use_scb = FALSE, ...)
 }
 \arguments{
 \item{x}{Object of class "STE_int".}
 
-\item{header}{character string specifying the title of the column of subgroup names}
+\item{source_names}{vector of character strings specifying the names of the sources.}
 
-\item{xlab}{character string specifying the title for the x-axis.}
+\item{subgroup_names}{vector of character strings specifying the names of the subgroups.}
 
-\item{include_scb}{logical scalar specifying whether to include simultaneous 95\% confidence bands in the forest plot}
+\item{use_scb}{logical scalar specifying whether the intervals in the forest plot should be simultaneous confidence bands (rather than confidence intervals). The default is \code{FALSE}.}
 
 \item{...}{Other arguments, which are passed to \code{\link[metafor]{forest.rma}}.}
 }
