@@ -23,6 +23,9 @@ No value is returned.
 \description{
 This function creates forest plots of objects of class "STE_int".
 }
+\details{
+Note that users may need to custom set the argument \code{ilab.xpos} which specifies the position (along the x-axis) of the subgroup labels. See \code{\link[metafor]{forest.rma}} for further details.
+}
 \seealso{
 \code{\link{STE_int}}
 }

@@ -2,6 +2,8 @@
 #'
 #' This function creates forest plots of objects of class "STE_int".
 #'
+#' Note that users may need to custom set the argument \code{ilab.xpos} which specifies the position (along the x-axis) of the subgroup labels. See \code{\link[metafor]{forest.rma}} for further details.
+#'
 #' @param x Object of class "STE_int".
 #' @param source_names vector of character strings specifying the names of the sources.
 #' @param subgroup_names vector of character strings specifying the names of the subgroups.
@@ -50,9 +52,6 @@ plot.STE_int <- function(x, source_names, subgroup_names,
   if (!('xlab' %in% names(args))) {
     args$xlab <- 'Treatment Effect'
   }
-  if (!('ilab.xpos' %in% names(args))){
-    args$ilab.xpos <- -3
-  }
   if (!('refline' %in% names(args))){
     args$refline <- NA
   }
@@ -73,6 +72,11 @@ plot.STE_int <- function(x, source_names, subgroup_names,
         stop("The argument 'level' cannot be set to a value other than 0.95 when using simultaneous confidence bands.")
       }
     }
+  }
+  if (!('ilab.xpos' %in% names(args))){
+    min_lb <- min(args$x - qnorm(0.975) * sqrt(args$vi))
+    median_est <- median(args$x)
+    args$ilab.xpos <- min_lb - (min_lb + median_est) / 2
   }
   do.call(forest, args)
 }
@@ -104,9 +108,6 @@ plot.ATE_int <- function(x, ...){
   }
   if (!('xlab' %in% names(args))) {
     args$xlab <- 'Treatment Effect'
-  }
-  if (!('ilab.xpos' %in% names(args))){
-    args$ilab.xpos <- -3
   }
   if (!('refline' %in% names(args))){
     args$refline <- NA
