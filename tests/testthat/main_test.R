@@ -270,4 +270,4 @@ test.ATE.S <- ATE_int(
     cvControl = list(V = 5L)
   )
 )
-test.ATE.S$Estimates
+test.ATE.S$df_dif
