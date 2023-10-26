@@ -171,19 +171,19 @@ ATE_int <- function(
   df_dif <-
     data.frame(Source = 1:no_S,
                Estimate = psi[, 3],
-               SE = psi_var[, 3],
+               SE = sqrt(psi_var[, 3]),
                ci.lb = lb[, 3],
                ci.ub = ub[, 3])
   df_A0 <-
     data.frame(Source = 1:no_S,
                Estimate = psi[, 2],
-               SE = psi_var[, 2],
+               SE = sqrt(psi_var[, 2]),
                ci.lb = lb[, 2],
                ci.ub = ub[, 2])
   df_A1 <-
     data.frame(Source = 1:no_S,
                Estimate = psi[, 1],
-               SE = psi_var[, 1],
+               SE = sqrt(psi_var[, 1]),
                ci.lb = lb[, 1],
                ci.ub = ub[, 1])
 

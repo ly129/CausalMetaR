@@ -125,9 +125,9 @@ Gen=function(n,n_m){
 }
 
 ###########------- Sample size specification
-n=10000
+n=100000
 #n=100000
-n_m=1000
+n_m=10000
 # n_m=2000
 # n_m=5000
 
@@ -271,3 +271,29 @@ test.ATE.S <- ATE_int(
   )
 )
 test.ATE.S$df_dif
+
+test.ATE.S.cf <- ATE_int_cf(
+  X = X, Y = Y, S = S, A = A,
+  source_model = "glmnet.multinom",
+  source_model_args = list(),
+  treatment_model_type = "separate",
+  treatment_model = "SuperLearner",
+  treatment_model_args = list(
+    family = binomial(),
+    SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+    cvControl = list(V = 5L)
+  ),
+  # R_model = "SuperLearner",
+  # R_model_args = list(
+  #   family = binomial(),
+  #   SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+  #   cvControl = list(V = 5L)
+  # ),
+  outcome_model = "SuperLearner",
+  outcome_model_args = list(
+    family = gaussian(),
+    SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+    cvControl = list(V = 5L)
+  )
+)
+test.ATE.S.cf$df_dif
