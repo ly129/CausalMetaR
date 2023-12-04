@@ -128,8 +128,8 @@ STE_int <- function(
 
   # estimators
 
-  eta1 <- PrA_XS * PrS_X
-  eta0 <- (1 - PrA_XS) * PrS_X
+  eta1 <- rowSums(PrA_XS * PrS_X)
+  eta0 <- rowSums((1 - PrA_XS) * PrS_X)
 
   unique_X <- sort(unique(X1))
   no_x_tilde <- length(unique_X)

@@ -58,7 +58,7 @@
 #'
 #' @export
 
-ATE_ext <- function(
+ATE_ext_cf <- function(
     X,
     X_external,
     Y,
@@ -72,7 +72,8 @@ ATE_ext <- function(
     external_model = "SuperLearner",
     external_model_args = list(),
     outcome_model = "SuperLearner",
-    outcome_model_args = list()
+    outcome_model_args = list(),
+    replications = 10L
 ) {
   # Total sample size
   n1 <- nrow(X)
@@ -91,127 +92,175 @@ ATE_ext <- function(
   X <- data.frame(model.matrix(~ ., data = X)[, -1])
   X_external <- data.frame(model.matrix(~ ., data = X_external)[, -1])
 
-  if (source_model %in% c("glmnet.multinom", "nnet.multinom")) {
-    source_model_args$Y <- S
-    source_model_args$X <- X
-    fit_source <- do.call(what = source_model, args = source_model_args)
-    PrS_X <- fit_source$pred
-  } else {
-    stop("Currently only support `glmnet.multinom` and `nnet.multinom`.")
-  }
-
-  PrA_XS <- matrix(nrow = n1, ncol = no_S)
-  if (treatment_model_type == "separate") {
-    fit_treatment <- vector(mode = 'list', length = no_S)
-    for (s in 1:no_S) {
-      id_s <- which(S == s)
-      treatment_model_args$Y <- A[id_s]
-      treatment_model_args$X <- X[id_s, ]
-      fit_treatment_s <- do.call(what = treatment_model,
-                                 args = treatment_model_args)
-      PrA_XS[, s] <- predict.SuperLearner(fit_treatment_s, newdata = X)$pred
-      fit_treatment[[s]] <- fit_treatment_s
+  ## sample splitting and cross fitting loop
+  K <- 5L
+  phi_array <- phi_var_array <- array(dim = c(3, K, replications))
+  for (r in 1:replications) {
+    ### assign k in 0, 1, 2, 3 to each individual
+    id_by_S <- partition <- vector(mode = "list", length = no_S)
+    for (s in unique_S) {
+      ids <- which(S == s)
+      ns <- length(ids)
+      partition[[s]] <- sample(rep(seq(K) - 1, length.out = ns))
+      id_by_S[[s]] <- ids
     }
-  } else if (treatment_model_type == "joint") {
-    S_factor <- as.factor(S)
-    S_factor <- model.matrix(~., data.frame(S_factor))[, -1]
-    S_factor_names <- colnames(S_factor)
-
-    treatment_model_args$Y <- A
-    treatment_model_args$X <- data.frame(X, S_factor)
-    fit_treatment <- do.call(what = treatment_model,
-                             args = treatment_model_args)
-    for (s in 1:no_S) {
-      S_mat <- matrix(0, nrow = n1, ncol = no_S - 1)
-      colnames(S_mat) <- S_factor_names
-      if (s > 1){
-        S_mat[, s - 1] <- 1
+    ext.id <- sample(rep(1:K, length.out = n0))
+    for (k in 1:K) {
+      test.id <- sm.id <- tm.id <- om.id <- xm.id <- integer()
+      ex_xm.id <- which(ext.id == k)
+      for (s in unique_S) {
+        test.id <- c(test.id, id_by_S[[s]][which(partition[[s]] == k %% K)])
+        sm.id <- c(sm.id, id_by_S[[s]][which(partition[[s]] == (k + 1) %% K)])
+        tm.id <- c(tm.id, id_by_S[[s]][which(partition[[s]] == (k + 2) %% K)])
+        om.id <- c(om.id, id_by_S[[s]][which(partition[[s]] == (k + 3) %% K)])
+        xm.id <- c(xm.id, id_by_S[[s]][which(partition[[s]] == (k + 4) %% K)])
       }
-      PrA_XS[, s] <- predict.SuperLearner(fit_treatment,
-                                          newdata = data.frame(X, S_mat))$pred
-    }
-  } else {
-    stop("Type has to be either 'separate' or 'joint'.")
-  }
+      X_test <- X[test.id, ]
+      Y_test <- Y[test.id]
+      A_test <- A[test.id]
+      S_test <- S[test.id]
 
-  external_model_args$Y <- c(rep(1, n1), rep(0, n0))
-  external_model_args$X <- rbind(X, X_external)
-  fit_external <- do.call(what = external_model, args = external_model_args)
-  PrR_X <- predict.SuperLearner(fit_external, newdata = X)$pred
+      X_sm <- X[sm.id, ]
+      Y_sm <- Y[sm.id]
+      A_sm <- A[sm.id]
+      S_sm <- S[sm.id]
 
-  outcome_model_args$Y <- Y
-  outcome_model_args$X <- data.frame(A, X)
-  fit_outcome <- do.call(what = outcome_model, args = outcome_model_args)
-  pred_Y1 <- predict.SuperLearner(fit_outcome,
-                                  newdata = data.frame(A = 1, X))$pred
-  pred_Y0 <- predict.SuperLearner(fit_outcome,
-                                  newdata = data.frame(A = 0, X))$pred
-  predY_AX <- cbind(pred_Y1, pred_Y0)
+      X_tm <- X[tm.id, ]
+      Y_tm <- Y[tm.id]
+      A_tm <- A[tm.id]
+      S_tm <- S[tm.id]
 
+      X_om <- X[om.id, ]
+      Y_om <- Y[om.id]
+      A_om <- A[om.id]
+      S_om <- S[om.id]
 
+      X_xm <- X[xm.id, ]
+      Y_xm <- Y[xm.id]
+      A_xm <- A[xm.id]
+      S_xm <- S[xm.id]
 
-  # estimators
+      X_ex_xm <- X_external[ex_xm.id, ]
 
-  eta1 <- rowSums(PrA_XS * PrS_X)
-  eta0 <- rowSums((1 - PrA_XS) * PrS_X)
+      # source model
+      if (source_model %in% c("glmnet.multinom", "nnet.multinom")) {
+        source_model_args$Y <- S
+        source_model_args$X <- X
+        source_model_args$newX <- X_test
+        fit_source <- do.call(what = source_model, args = source_model_args)
+        PrS_X <- fit_source$pred
+      } else {
+        stop("Currently only support `glmnet.multinom` and `nnet.multinom`.")
+      }
 
-  pred_Y1_X0 <- predict.SuperLearner(fit_outcome,
-                                     newdata = data.frame(A = 1, X_external))$pred
-  pred_Y0_X0 <- predict.SuperLearner(fit_outcome,
-                                     newdata = data.frame(A = 0, X_external))$pred
+      # treatment model
+      PrA_XS <- matrix(nrow = nrow(X_test), ncol = no_S)
+      if (treatment_model_type == "separate") {
+        fit_treatment <- vector(mode = 'list', length = no_S)
+        for (s in 1:no_S) {
+          id_s <- which(S_tm == s)
+          treatment_model_args$Y <- A_tm[id_s]
+          treatment_model_args$X <- X_tm[id_s, ]
+          fit_treatment_s <- do.call(what = treatment_model,
+                                     args = treatment_model_args)
+          PrA_XS[, s] <- predict.SuperLearner(fit_treatment_s, newdata = X_test)$pred
+          fit_treatment[[s]] <- fit_treatment_s
+        }
+      } else if (treatment_model_type == "joint") {
+        S_factor <- as.factor(S_tm)
+        S_factor <- model.matrix(~., data.frame(S_factor))[, -1]
+        S_factor_names <- colnames(S_factor)
 
-  pred_Y1_X1 <- predict.SuperLearner(fit_outcome,
-                                     newdata = data.frame(A = 1, X))$pred
-  pred_Y0_X1 <- predict.SuperLearner(fit_outcome,
-                                     newdata = data.frame(A = 0, X))$pred
+        treatment_model_args$Y <- A_tm
+        treatment_model_args$X <- data.frame(X_tm, S_factor)
+        fit_treatment <- do.call(what = treatment_model,
+                                 args = treatment_model_args)
+        for (s in 1:no_S) {
+          S_mat <- matrix(0, nrow = nrow(X_test), ncol = no_S - 1)
+          colnames(S_mat) <- S_factor_names
+          if (s > 1){
+            S_mat[, s - 1] <- 1
+          }
+          PrA_XS[, s] <- predict.SuperLearner(fit_treatment,
+                                              newdata = data.frame(X_test, S_mat))$pred
+        }
+      } else {
+        stop("Type has to be either 'separate' or 'joint'.")
+      }
 
-  # I_xr <- which(X0[, 1] == x_tilde)
+      # external model
+      external_model_args$Y <- c(rep(1, length(xm.id)), rep(0, length(ex_xm.id)))
+      external_model_args$X <- rbind(X_xm, X_ex_xm)
+      fit_external <- do.call(what = external_model, args = external_model_args)
+      PrR_X <- predict.SuperLearner(fit_external, newdata = X_test)$pred
 
-  gamma <- n/n0 # length(I_xr)
+      # outcome model
+      outcome_model_args$Y <- Y_om
+      outcome_model_args$X <- data.frame(A = A_om, X_om)
+      fit_outcome <- do.call(what = outcome_model, args = outcome_model_args)
+      pred_Y1 <- predict.SuperLearner(fit_outcome,
+                                      newdata = data.frame(A = 1, X_test))$pred
+      pred_Y0 <- predict.SuperLearner(fit_outcome,
+                                      newdata = data.frame(A = 0, X_test))$pred
+      predY_AX <- cbind(pred_Y1, pred_Y0)
 
-  tmp1 <- matrix(0, nrow = n0, ncol = 2)
-  tmp1[, 1] <- pred_Y1_X0   #[I_xr, ]
-  tmp1[, 2] <- pred_Y0_X0   #[I_xr, ]
+      # estimators
 
-  tmp2 <- matrix(0, nrow = n1, ncol = 2)
-  I_xa1 <- which(A == 1)
-  I_xa0 <- which(A == 0)
+      eta1 <- rowSums(PrA_XS * PrS_X)
+      eta0 <- rowSums((1 - PrA_XS) * PrS_X)
 
-  tmp2[I_xa1, 1] <- (1 - PrR_X[I_xa1])/PrR_X[I_xa1]/eta1[I_xa1] * (Y[I_xa1] - pred_Y1_X1[I_xa1])
-  tmp2[I_xa0, 2] <- (1 - PrR_X[I_xa0])/PrR_X[I_xa0]/eta0[I_xa0] * (Y[I_xa0] - pred_Y0_X1[I_xa0])
+      pred_Y1_X0 <- c(predict.SuperLearner(fit_outcome,
+                                           newdata = data.frame(A = 1, X_ex_xm))$pred)
+      pred_Y0_X0 <- c(predict.SuperLearner(fit_outcome,
+                                           newdata = data.frame(A = 0, X_ex_xm))$pred)
+      pred_Y1_X1 <- c(predict.SuperLearner(fit_outcome,
+                                           newdata = data.frame(A = 1, X_test))$pred)
+      pred_Y0_X1 <- c(predict.SuperLearner(fit_outcome,
+                                           newdata = data.frame(A = 0, X_test))$pred)
 
-  tmp <- colSums(rbind(tmp1, tmp2))
-  phi <- gamma/n * tmp
+      gamma <- n/n0 # length(I_xr)
 
-  tmp1 <- tmp1 - rep(phi, each = n0)
-  phi_var <- gamma/n^2 * colSums(rbind(tmp1, tmp2)^2)
+      tmp1 <- matrix(0, nrow = length(ex_xm.id), ncol = 2)
+      tmp1[, 1] <- pred_Y1_X0   #[I_xr, ]
+      tmp1[, 2] <- pred_Y0_X0   #[I_xr, ]
 
-  # ATE
-  plot_phi <- unname(phi[1] - phi[2])
-  plot_phi_var <- unname(phi_var[1] + phi_var[2])
-  plot_phi_CI <- plot_phi + c(-1, 1) * qnorm(p = 0.975) * sqrt(plot_phi_var)
+      tmp2 <- matrix(0, nrow = length(test.id), ncol = 2)
+      I_xa1 <- which(A_test == 1)
+      I_xa0 <- which(A_test == 0)
 
-  phi <- c(phi, plot_phi)
-  phi_var <- c(phi_var, plot_phi_var)
-  names(phi) <- c("A = 1", "A = 0", "Difference")
-  names(phi_var) <- c("A = 1", "A = 0", "Difference")
+      tmp2[I_xa1, 1] <- (1 - PrR_X[I_xa1])/PrR_X[I_xa1]/eta1[I_xa1] * (Y_test[I_xa1] - pred_Y1_X1[I_xa1])
+      tmp2[I_xa0, 2] <- (1 - PrR_X[I_xa0])/PrR_X[I_xa0]/eta0[I_xa0] * (Y_test[I_xa0] - pred_Y0_X1[I_xa0])
 
-  lb <- phi - qnorm(p = 0.975) * sqrt(phi_var)
-  ub <- phi + qnorm(p = 0.975) * sqrt(phi_var)
+      tmp <- colSums(rbind(tmp1, tmp2))
+      phi <- gamma/(length(ex_xm.id)+length(test.id)) * tmp
+
+      tmp1 <- tmp1 - rep(phi, each = length(ex_xm.id))
+      phi_var <- gamma/(length(ex_xm.id)+length(test.id))^2 * colSums(rbind(tmp1, tmp2)^2)
+
+      phi_array[, k, r] <- c(phi, phi[1] - phi[2])
+      phi_var_array[, k, r] <- c(phi_var, phi_var[1] + phi_var[2])
+    } # end of k loop
+  } # end of r loop
+
+  phi_cf <- apply(apply(phi_array, MARGIN = c(1, 3), FUN = mean), MARGIN = 1, FUN = median)
+  phi_var_cf <- apply(apply(phi_var_array, MARGIN = c(1, 3), FUN = mean), MARGIN = 1, FUN = median)
+
+  lb <- phi_cf - qnorm(p = 0.975) * sqrt(phi_var_cf)
+  ub <- phi_cf + qnorm(p = 0.975) * sqrt(phi_var_cf)
 
   df_dif <-
-    data.frame(Estimate = phi[3],
-               SE = phi_var[3],
+    data.frame(Estimate = phi_cf[3],
+               SE = phi_var_cf[3],
                ci.lb = lb[3],
                ci.ub = ub[3])
   df_A0 <-
-    data.frame(Estimate = phi[2],
-               SE = phi_var[2],
+    data.frame(Estimate = phi_cf[2],
+               SE = phi_var_cf[2],
                ci.lb = lb[2],
                ci.ub = ub[2])
   df_A1 <-
-    data.frame(Estimate = phi[1],
-               SE = phi_var[1],
+    data.frame(Estimate = phi_cf[1],
+               SE = phi_var_cf[1],
                ci.lb = lb[1],
                ci.ub = ub[1])
 

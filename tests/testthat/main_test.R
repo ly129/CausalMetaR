@@ -125,9 +125,9 @@ Gen=function(n,n_m){
 }
 
 ###########------- Sample size specification
-n=100000
+n=10000
 #n=100000
-n_m=10000
+n_m=1000
 # n_m=2000
 # n_m=5000
 
@@ -157,10 +157,10 @@ summary(Y)
 summary(S)
 dim(X)
 dim(X_external)
-names(X)[1] <- names(X_external)[1] <- "Subgroup"
+names(X)[1] <- names(X_external)[1] <- "SG"
 
 ### STE.S test
-test.STE.S <- STE_int(
+si <- STE_int(
   X = X, Y = Y, S = S, A = A,
   source_model = "glmnet.multinom",
   source_model_args = list(),
@@ -178,12 +178,12 @@ test.STE.S <- STE_int(
     cvControl = list(V = 5L)
   )
 )
-print(test.STE.S)
-summary(test.STE.S)
-plot(test.STE.S, include_scb = FALSE)
+print(si)
+summary(si)
+plot(si)
 
 ### STE.R test
-test.STE.R <- STE_ext(
+se <- STE_ext(
   X = X, Y = Y, S = S, A = A, X_external = X_external,
   source_model = "glmnet.multinom",
   source_model_args = list(),
@@ -207,7 +207,8 @@ test.STE.R <- STE_ext(
     cvControl = list(V = 5L)
   )
 )
-
+print(se)
+summary(se)
 
 
 
@@ -216,7 +217,7 @@ test.STE.R <- STE_ext(
 
 
 ### ATE.R test
-test.ATE.R <- ATE_ext(
+ae <- ATE_ext(
   X = X, Y = Y, S = S, A = A, X_external = X_external,
   source_model = "glmnet.multinom",
   source_model_args = list(),
@@ -240,13 +241,12 @@ test.ATE.R <- ATE_ext(
     cvControl = list(V = 5L)
   )
 )
-test.ATE.R$Estimate
-
-
-
+ae$df_dif
+ae$df_A0
+ae$df_A1
 
 ### ATE.S test
-test.ATE.S <- ATE_int(
+ai <- ATE_int(
   X = X, Y = Y, S = S, A = A,
   source_model = "glmnet.multinom",
   source_model_args = list(),
@@ -270,7 +270,10 @@ test.ATE.S <- ATE_int(
     cvControl = list(V = 5L)
   )
 )
-test.ATE.S$df_dif
+ai$df_dif
+summary(ai)
+print(ai)
+plot(ai)
 
 test.ATE.S.cf <- ATE_int_cf(
   X = X, Y = Y, S = S, A = A,
@@ -296,4 +299,95 @@ test.ATE.S.cf <- ATE_int_cf(
     cvControl = list(V = 5L)
   )
 )
-test.ATE.S.cf$df_dif
+test.ATE.S.cf$df_dif +
+  test.ATE.S.cf$df_A0 -
+  test.ATE.S.cf$df_A1
+
+sicf <- STE_int_cf(
+  X = X, Y = Y, S = S, A = A,
+  source_model = "glmnet.multinom",
+  source_model_args = list(),
+  treatment_model_type = "joint",
+  treatment_model = "SuperLearner",
+  treatment_model_args = list(
+    family = binomial(),
+    SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+    cvControl = list(V = 5L)
+  ),
+  # R_model = "SuperLearner",
+  # R_model_args = list(
+  #   family = binomial(),
+  #   SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+  #   cvControl = list(V = 5L)
+  # ),
+  outcome_model = "SuperLearner",
+  outcome_model_args = list(
+    family = gaussian(),
+    SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+    cvControl = list(V = 5L)
+  ),
+  replications = 10
+)
+sicf$df_dif +
+  sicf$df_A0 -
+  sicf$df_A1
+
+
+aecf <- ATE_ext_cf(
+  X = X, Y = Y, S = S, A = A, X_external = X_external,
+  source_model = "glmnet.multinom",
+  source_model_args = list(),
+  treatment_model_type = "separate",
+  treatment_model = "SuperLearner",
+  treatment_model_args = list(
+    family = binomial(),
+    SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+    cvControl = list(V = 5L)
+  ),
+  external_model = "SuperLearner",
+  external_model_args = list(
+    family = binomial(),
+    SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+    cvControl = list(V = 5L)
+  ),
+  outcome_model = "SuperLearner",
+  outcome_model_args = list(
+    family = gaussian(),
+    SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+    cvControl = list(V = 5L)
+  ),
+  replications = 10
+)
+aecf$df_dif +
+  aecf$df_A0 -
+  aecf$df_A1
+
+
+secf <- STE_ext_cf(
+  X = X, Y = Y, S = S, A = A, X_external = X_external,
+  source_model = "glmnet.multinom",
+  source_model_args = list(),
+  treatment_model_type = "separate",
+  treatment_model = "SuperLearner",
+  treatment_model_args = list(
+    family = binomial(),
+    SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+    cvControl = list(V = 5L)
+  ),
+  external_model = "SuperLearner",
+  external_model_args = list(
+    family = binomial(),
+    SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+    cvControl = list(V = 5L)
+  ),
+  outcome_model = "SuperLearner",
+  outcome_model_args = list(
+    family = gaussian(),
+    SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+    cvControl = list(V = 5L)
+  ),
+  replications = 10
+)
+secf$df_dif +
+  secf$df_A0 -
+  secf$df_A1

@@ -23,3 +23,7 @@ importFrom(stats,quantile)
 importFrom(stats,rnorm)
 
 export(ATE_int_cf)
+export(STE_int_cf)
+export(ATE_ext_cf)
+export(STE_ext_cf)
+export(error_check)

@@ -129,8 +129,8 @@ ATE_int <- function(
 
   # estimators
 
-  eta1 <- PrA_XS * PrS_X
-  eta0 <- (1 - PrA_XS) * PrS_X
+  eta1 <- rowSums(PrA_XS * PrS_X)
+  eta0 <- rowSums((1 - PrA_XS) * PrS_X)
 
   psi <- psi_var <- matrix(nrow = no_S, ncol = 2)
 

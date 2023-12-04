@@ -146,8 +146,8 @@ STE_ext <- function(
 
   # estimators
 
-  eta1 <- PrA_XS * PrS_X
-  eta0 <- (1 - PrA_XS) * PrS_X
+  eta1 <- rowSums(PrA_XS * PrS_X)
+  eta0 <- rowSums((1 - PrA_XS) * PrS_X)
 
   pred_Y1_X0 <- predict.SuperLearner(fit_outcome,
                                      newdata = data.frame(A = 1, X_external))$pred
