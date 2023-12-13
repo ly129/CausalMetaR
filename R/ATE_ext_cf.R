@@ -94,7 +94,7 @@ ATE_ext_cf <- function(
 
   ## sample splitting and cross fitting loop
   K <- 5L
-  phi_array <- phi_var_array <- array(dim = c(3, K, replications))
+  psi_array <- psi_var_array <- array(dim = c(3, K, replications))
   for (r in 1:replications) {
     ### assign k in 0, 1, 2, 3 to each individual
     id_by_S <- partition <- vector(mode = "list", length = no_S)
@@ -232,35 +232,35 @@ ATE_ext_cf <- function(
       tmp2[I_xa0, 2] <- (1 - PrR_X[I_xa0])/PrR_X[I_xa0]/eta0[I_xa0] * (Y_test[I_xa0] - pred_Y0_X1[I_xa0])
 
       tmp <- colSums(rbind(tmp1, tmp2))
-      phi <- gamma/(length(ex_xm.id)+length(test.id)) * tmp
+      psi <- gamma/(length(ex_xm.id)+length(test.id)) * tmp
 
-      tmp1 <- tmp1 - rep(phi, each = length(ex_xm.id))
-      phi_var <- gamma/(length(ex_xm.id)+length(test.id))^2 * colSums(rbind(tmp1, tmp2)^2)
+      tmp1 <- tmp1 - rep(psi, each = length(ex_xm.id))
+      psi_var <- gamma/(length(ex_xm.id)+length(test.id))^2 * colSums(rbind(tmp1, tmp2)^2)
 
-      phi_array[, k, r] <- c(phi, phi[1] - phi[2])
-      phi_var_array[, k, r] <- c(phi_var, phi_var[1] + phi_var[2])
+      psi_array[, k, r] <- c(psi, psi[1] - psi[2])
+      psi_var_array[, k, r] <- c(psi_var, psi_var[1] + psi_var[2])
     } # end of k loop
   } # end of r loop
 
-  phi_cf <- apply(apply(phi_array, MARGIN = c(1, 3), FUN = mean), MARGIN = 1, FUN = median)
-  phi_var_cf <- apply(apply(phi_var_array, MARGIN = c(1, 3), FUN = mean), MARGIN = 1, FUN = median)
+  psi_cf <- apply(apply(psi_array, MARGIN = c(1, 3), FUN = mean), MARGIN = 1, FUN = median)
+  psi_var_cf <- apply(apply(psi_var_array, MARGIN = c(1, 3), FUN = mean), MARGIN = 1, FUN = median)
 
-  lb <- phi_cf - qnorm(p = 0.975) * sqrt(phi_var_cf)
-  ub <- phi_cf + qnorm(p = 0.975) * sqrt(phi_var_cf)
+  lb <- psi_cf - qnorm(p = 0.975) * sqrt(psi_var_cf)
+  ub <- psi_cf + qnorm(p = 0.975) * sqrt(psi_var_cf)
 
   df_dif <-
-    data.frame(Estimate = phi_cf[3],
-               SE = phi_var_cf[3],
+    data.frame(Estimate = psi_cf[3],
+               SE = psi_var_cf[3],
                ci.lb = lb[3],
                ci.ub = ub[3])
   df_A0 <-
-    data.frame(Estimate = phi_cf[2],
-               SE = phi_var_cf[2],
+    data.frame(Estimate = psi_cf[2],
+               SE = psi_var_cf[2],
                ci.lb = lb[2],
                ci.ub = ub[2])
   df_A1 <-
-    data.frame(Estimate = phi_cf[1],
-               SE = phi_var_cf[1],
+    data.frame(Estimate = psi_cf[1],
+               SE = psi_var_cf[1],
                ci.lb = lb[1],
                ci.ub = ub[1])
 

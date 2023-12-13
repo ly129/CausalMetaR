@@ -181,37 +181,37 @@ ATE_ext <- function(
   tmp2[I_xa0, 2] <- (1 - PrR_X[I_xa0])/PrR_X[I_xa0]/eta0[I_xa0] * (Y[I_xa0] - pred_Y0_X1[I_xa0])
 
   tmp <- colSums(rbind(tmp1, tmp2))
-  phi <- gamma/n * tmp
+  psi <- gamma/n * tmp
 
-  tmp1 <- tmp1 - rep(phi, each = n0)
-  phi_var <- gamma/n^2 * colSums(rbind(tmp1, tmp2)^2)
+  tmp1 <- tmp1 - rep(psi, each = n0)
+  psi_var <- gamma/n^2 * colSums(rbind(tmp1, tmp2)^2)
 
   # ATE
-  plot_phi <- unname(phi[1] - phi[2])
-  plot_phi_var <- unname(phi_var[1] + phi_var[2])
-  plot_phi_CI <- plot_phi + c(-1, 1) * qnorm(p = 0.975) * sqrt(plot_phi_var)
+  plot_psi <- unname(psi[1] - psi[2])
+  plot_psi_var <- unname(psi_var[1] + psi_var[2])
+  plot_psi_CI <- plot_psi + c(-1, 1) * qnorm(p = 0.975) * sqrt(plot_psi_var)
 
-  phi <- c(phi, plot_phi)
-  phi_var <- c(phi_var, plot_phi_var)
-  names(phi) <- c("A = 1", "A = 0", "Difference")
-  names(phi_var) <- c("A = 1", "A = 0", "Difference")
+  psi <- c(psi, plot_psi)
+  psi_var <- c(psi_var, plot_psi_var)
+  names(psi) <- c("A = 1", "A = 0", "Difference")
+  names(psi_var) <- c("A = 1", "A = 0", "Difference")
 
-  lb <- phi - qnorm(p = 0.975) * sqrt(phi_var)
-  ub <- phi + qnorm(p = 0.975) * sqrt(phi_var)
+  lb <- psi - qnorm(p = 0.975) * sqrt(psi_var)
+  ub <- psi + qnorm(p = 0.975) * sqrt(psi_var)
 
   df_dif <-
-    data.frame(Estimate = phi[3],
-               SE = phi_var[3],
+    data.frame(Estimate = psi[3],
+               SE = psi_var[3],
                ci.lb = lb[3],
                ci.ub = ub[3])
   df_A0 <-
-    data.frame(Estimate = phi[2],
-               SE = phi_var[2],
+    data.frame(Estimate = psi[2],
+               SE = psi_var[2],
                ci.lb = lb[2],
                ci.ub = ub[2])
   df_A1 <-
-    data.frame(Estimate = phi[1],
-               SE = phi_var[1],
+    data.frame(Estimate = psi[1],
+               SE = psi_var[1],
                ci.lb = lb[1],
                ci.ub = ub[1])
 

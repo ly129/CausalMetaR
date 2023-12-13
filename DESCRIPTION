@@ -2,7 +2,7 @@ Package: CMetafoR
 Type: Package
 Title: Causally Interpretable Meta-Analysis
 Version: 0.1.0
-Authors@R: c(person("Yi", "Lian", role = "aut", email = "yi.lian@mail.mcgill.ca"),
+Authors@R: c(person("Yi", "Lian", role = "aut", email = "yi.lian@pennmedicine.upenn.edu"),
              person("Guanbo", "Wang", role = "aut", email = "gwang@hsph.harvard.edu"),
              person("Sean", "McGrath", role = c("aut", "cre"), email = "sean_mcgrath@g.harvard.edu", 
                     comment = c(ORCID = "0000-0002-7281-3516")),

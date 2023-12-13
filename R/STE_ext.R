@@ -162,7 +162,7 @@ STE_ext <- function(
   unique_EM <- sort(unique(X1))
   no_EM <- length(unique_EM)
 
-  phi <- phi_var <- matrix(nrow = length(unique_EM), ncol = 2)
+  psi <- psi_var <- matrix(nrow = length(unique_EM), ncol = 2)
   for (m in seq_along(unique_EM)) {
     EM <- unique_EM[m]
     I_xr <- which(X1_external == EM)
@@ -181,48 +181,48 @@ STE_ext <- function(
     tmp2[I_xa0, 2] <- (1 - PrR_X[I_xa0])/PrR_X[I_xa0]/eta0[I_xa0] * (Y[I_xa0] - pred_Y0_X1[I_xa0])
 
     tmp <- colSums(rbind(tmp1, tmp2))
-    phi[m, ] <- gamma/n * tmp
+    psi[m, ] <- gamma/n * tmp
 
-    tmp1[I_xr, ] <- tmp1[I_xr, ] - rep(phi[m, ], each = length(I_xr))
-    phi_var[m, ] <- gamma/n^2 * colSums(rbind(tmp1, tmp2)^2)
+    tmp1[I_xr, ] <- tmp1[I_xr, ] - rep(psi[m, ], each = length(I_xr))
+    psi_var[m, ] <- gamma/n^2 * colSums(rbind(tmp1, tmp2)^2)
   }
 
-  phi <- cbind(phi, unname(phi[, 1] - phi[, 2]))
-  phi_var <- cbind(phi_var, unname(phi_var[, 1] + phi_var[, 2]))
-  colnames(phi) <- colnames(phi_var) <- c("A = 1", "A = 0", "Difference")
-  rownames(phi) <- rownames(phi_var) <- paste(names(X)[1], "=", unique_EM)
+  psi <- cbind(psi, unname(psi[, 1] - psi[, 2]))
+  psi_var <- cbind(psi_var, unname(psi_var[, 1] + psi_var[, 2]))
+  colnames(psi) <- colnames(psi_var) <- c("A = 1", "A = 0", "Difference")
+  rownames(psi) <- rownames(psi_var) <- paste(names(X)[1], "=", unique_EM)
 
-  lb <- phi - qnorm(p = 0.975) * sqrt(phi_var)
-  ub <- phi + qnorm(p = 0.975) * sqrt(phi_var)
+  lb <- psi - qnorm(p = 0.975) * sqrt(psi_var)
+  ub <- psi + qnorm(p = 0.975) * sqrt(psi_var)
 
   tmax <- apply(abs(matrix(rnorm(no_EM * 1e6),
                            nrow = no_EM, ncol = 1e6)), 2, max)
   qtmax <- quantile(tmax, 0.95)
 
-  lb_scb <- phi - qtmax * sqrt(phi_var)
-  ub_scb <- phi + qtmax * sqrt(phi_var)
+  lb_scb <- psi - qtmax * sqrt(psi_var)
+  ub_scb <- psi + qtmax * sqrt(psi_var)
 
   # Put results in a data frame
   df_dif <-
     data.frame(Subgroup = unique_EM,
-               Estimate = phi[, 3],
-               SE = phi_var[, 3],
+               Estimate = psi[, 3],
+               SE = psi_var[, 3],
                ci.lb = lb[, 3],
                ci.ub = ub[, 3],
                scb.lb = lb_scb[, 3],
                scb.ub = ub_scb[, 3])
   df_A0 <-
     data.frame(Subgroup = unique_EM,
-               Estimate = phi[, 2],
-               SE = phi_var[, 2],
+               Estimate = psi[, 2],
+               SE = psi_var[, 2],
                ci.lb = lb[, 2],
                ci.ub = ub[, 2],
                scb.lb = lb_scb[, 2],
                scb.ub = ub_scb[, 2])
   df_A1 <-
     data.frame(Subgroup = unique_EM,
-               Estimate = phi[, 1],
-               SE = phi_var[, 1],
+               Estimate = psi[, 1],
+               SE = psi_var[, 1],
                ci.lb = lb[, 1],
                ci.ub = ub[, 1],
                scb.lb = lb_scb[, 1],

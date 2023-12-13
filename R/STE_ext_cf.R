@@ -251,8 +251,8 @@ STE_ext_cf <- function(
   psi_var_cf <- apply(apply(psi_var_array, MARGIN = c(1, 2, 4), FUN = mean), MARGIN = 1:2, FUN = median)
 
   qt <- qnorm(p = 0.975)
-  qtmax <- quantile(apply(abs(matrix(rnorm(no_EM * 1e6),
-                                     nrow = no_EM, ncol = 1e6)), 2, max), 0.95)
+  qtmax <- quantile(apply(abs(matrix(rnorm(no_x_tilde * 1e6),
+                                     nrow = no_x_tilde, ncol = 1e6)), 2, max), 0.95)
 
   lb <- t(psi_cf - qt * psi_var_cf)
   ub <- t(psi_cf + qt * psi_var_cf)

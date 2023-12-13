@@ -132,7 +132,7 @@ ATE_int <- function(
   eta1 <- rowSums(PrA_XS * PrS_X)
   eta0 <- rowSums((1 - PrA_XS) * PrS_X)
 
-  psi <- psi_var <- matrix(nrow = no_S, ncol = 2)
+  phi <- phi_var <- matrix(nrow = no_S, ncol = 2)
 
   for (s in unique_S) {
     tmp1 <- tmp2 <- matrix(0, nrow = n, ncol = 2)
@@ -151,39 +151,39 @@ ATE_int <- function(
 
     tmp <- tmp1 + tmp2
 
-    psi[s, ] <- kappa * colMeans(tmp)
+    phi[s, ] <- kappa * colMeans(tmp)
 
-    tmp1[I_xs, 1] <- pred_Y1[I_xs] - psi[s, 1]
-    tmp1[I_xs, 2] <- pred_Y0[I_xs] - psi[s, 2]
+    tmp1[I_xs, 1] <- pred_Y1[I_xs] - phi[s, 1]
+    tmp1[I_xs, 2] <- pred_Y0[I_xs] - phi[s, 2]
 
-    psi_var[s, ] <- kappa/n^2 * colSums((tmp1 + tmp2)^2)
+    phi_var[s, ] <- kappa/n^2 * colSums((tmp1 + tmp2)^2)
   }
 
-  psi <- cbind(psi, unname(psi[, 1] - psi[, 2]))
-  psi_var <- cbind(psi_var, unname(psi_var[, 1] + psi_var[, 2]))
+  phi <- cbind(phi, unname(phi[, 1] - phi[, 2]))
+  phi_var <- cbind(phi_var, unname(phi_var[, 1] + phi_var[, 2]))
 
-  rownames(psi) <- rownames(psi_var) <- paste0("S = ", unique_S)
-  colnames(psi) <- colnames(psi_var) <- c("A = 1", "A = 0", "Difference")
+  rownames(phi) <- rownames(phi_var) <- paste0("S = ", unique_S)
+  colnames(phi) <- colnames(phi_var) <- c("A = 1", "A = 0", "Difference")
 
-  lb <- psi - qnorm(p = 0.975) * sqrt(psi_var)
-  ub <- psi + qnorm(p = 0.975) * sqrt(psi_var)
+  lb <- phi - qnorm(p = 0.975) * sqrt(phi_var)
+  ub <- phi + qnorm(p = 0.975) * sqrt(phi_var)
 
   df_dif <-
     data.frame(Source = 1:no_S,
-               Estimate = psi[, 3],
-               SE = sqrt(psi_var[, 3]),
+               Estimate = phi[, 3],
+               SE = sqrt(phi_var[, 3]),
                ci.lb = lb[, 3],
                ci.ub = ub[, 3])
   df_A0 <-
     data.frame(Source = 1:no_S,
-               Estimate = psi[, 2],
-               SE = sqrt(psi_var[, 2]),
+               Estimate = phi[, 2],
+               SE = sqrt(phi_var[, 2]),
                ci.lb = lb[, 2],
                ci.ub = ub[, 2])
   df_A1 <-
     data.frame(Source = 1:no_S,
-               Estimate = psi[, 1],
-               SE = sqrt(psi_var[, 1]),
+               Estimate = phi[, 1],
+               SE = sqrt(phi_var[, 1]),
                ci.lb = lb[, 1],
                ci.ub = ub[, 1])
 

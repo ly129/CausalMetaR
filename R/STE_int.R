@@ -127,7 +127,6 @@ STE_int <- function(
   predY_AX <- cbind(pred_Y1, pred_Y0)
 
   # estimators
-
   eta1 <- rowSums(PrA_XS * PrS_X)
   eta0 <- rowSums((1 - PrA_XS) * PrS_X)
 
@@ -136,11 +135,11 @@ STE_int <- function(
   output <- vector(mode = "list", length = no_x_tilde)
   names(output) <- paste(X1_name, "=", unique_X)
 
-  plot_psi <- plot_psi_var <- numeric(no_x_tilde * no_S)
+  plot_phi <- plot_phi_var <- numeric(no_x_tilde * no_S)
   plot_scb <- matrix(nrow = no_x_tilde * no_S, ncol = 2)
 
   for (i in 1:no_x_tilde) {
-    psi <- psi_var <- matrix(nrow = no_S, ncol = 2)
+    phi <- phi_var <- matrix(nrow = no_S, ncol = 2)
     x_tilde <- unique_X[i]
     for (s in unique_S) {
       tmp1 <- tmp2 <- matrix(0, nrow = n, ncol = 2)
@@ -159,31 +158,31 @@ STE_int <- function(
 
       tmp <- tmp1 + tmp2
 
-      psi[s, ] <- kappa * colMeans(tmp)
+      phi[s, ] <- kappa * colMeans(tmp)
 
-      tmp1[I_xs, 1] <- pred_Y1[I_xs] - psi[s, 1]
-      tmp1[I_xs, 2] <- pred_Y0[I_xs] - psi[s, 2]
+      tmp1[I_xs, 1] <- pred_Y1[I_xs] - phi[s, 1]
+      tmp1[I_xs, 2] <- pred_Y0[I_xs] - phi[s, 2]
 
-      psi_var[s, ] <- kappa/n^2 * colSums((tmp1 + tmp2)^2)
+      phi_var[s, ] <- kappa/n^2 * colSums((tmp1 + tmp2)^2)
     }
-    psi <- cbind(psi, unname(psi[, 1] - psi[, 2]))
-    psi_var <- cbind(psi_var, unname(psi_var[, 1] + psi_var[, 2]))
+    phi <- cbind(phi, unname(phi[, 1] - phi[, 2]))
+    phi_var <- cbind(phi_var, unname(phi_var[, 1] + phi_var[, 2]))
 
-    rownames(psi) <- rownames(psi_var) <- paste0("S = ", unique_S)
-    colnames(psi) <- colnames(psi_var) <- c("A = 1", "A = 0", "Difference")
+    rownames(phi) <- rownames(phi_var) <- paste0("S = ", unique_S)
+    colnames(phi) <- colnames(phi_var) <- c("A = 1", "A = 0", "Difference")
 
-    lb <- psi - qnorm(p = 0.975) * sqrt(psi_var)
-    ub <- psi + qnorm(p = 0.975) * sqrt(psi_var)
+    lb <- phi - qnorm(p = 0.975) * sqrt(phi_var)
+    ub <- phi + qnorm(p = 0.975) * sqrt(phi_var)
 
     tmax <- apply(abs(matrix(rnorm(no_x_tilde * 1e6),
                              nrow = no_x_tilde, ncol = 1e6)), 2, max)
     qtmax <- quantile(tmax, 0.95)
 
-    lb_scb <- psi - qtmax * sqrt(psi_var)
-    ub_scb <- psi + qtmax * sqrt(psi_var)
+    lb_scb <- phi - qtmax * sqrt(phi_var)
+    ub_scb <- phi + qtmax * sqrt(phi_var)
 
-    output[[i]] <- list(Estimates = psi,
-                        Variances = psi_var,
+    output[[i]] <- list(Estimates = phi,
+                        Variances = phi_var,
                         CI_LB = lb,
                         CI_UB = ub,
                         SCB_LB = lb_scb,

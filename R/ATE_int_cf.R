@@ -78,7 +78,7 @@ ATE_int_cf <- function(
 
   ## sample splitting and cross fitting loop
   K <- 4L
-  psi_array <- psi_var_array <- array(dim = c(no_S, 3, K, replications))
+  phi_array <- phi_var_array <- array(dim = c(no_S, 3, K, replications))
   for (r in 1:replications) {
     ### assign k in 0, 1, 2, 3 to each individual
     id_by_S <- partition <- vector(mode = "list", length = no_S)
@@ -176,7 +176,7 @@ ATE_int_cf <- function(
       eta1 <- rowSums(PrA_XS * PrS_X)
       eta0 <- rowSums((1 - PrA_XS) * PrS_X)
 
-      psi <- psi_var <- matrix(nrow = no_S, ncol = 2)
+      phi <- phi_var <- matrix(nrow = no_S, ncol = 2)
 
       for (s in unique_S) {
         tmp1 <- tmp2 <- matrix(0, nrow = nrow(X_test), ncol = 2)
@@ -195,43 +195,43 @@ ATE_int_cf <- function(
 
         tmp <- tmp1 + tmp2
 
-        psi[s, ] <- kappa * colMeans(tmp)
+        phi[s, ] <- kappa * colMeans(tmp)
 
-        tmp1[I_xs, 1] <- pred_Y1[I_xs] - psi[s, 1]
-        tmp1[I_xs, 2] <- pred_Y0[I_xs] - psi[s, 2]
+        tmp1[I_xs, 1] <- pred_Y1[I_xs] - phi[s, 1]
+        tmp1[I_xs, 2] <- pred_Y0[I_xs] - phi[s, 2]
 
-        psi_var[s, ] <- kappa/nrow(X_test)^2 * colSums((tmp1 + tmp2)^2)
+        phi_var[s, ] <- kappa/nrow(X_test)^2 * colSums((tmp1 + tmp2)^2)
       }
 
-      psi <- cbind(psi, unname(psi[, 1] - psi[, 2]))
-      psi_var <- cbind(psi_var, unname(psi_var[, 1] + psi_var[, 2]))
-      # psi_var <- cbind(psi_var, unname(psi_var[, 1] + psi_var[, 2]))
+      phi <- cbind(phi, unname(phi[, 1] - phi[, 2]))
+      phi_var <- cbind(phi_var, unname(phi_var[, 1] + phi_var[, 2]))
+      # phi_var <- cbind(phi_var, unname(phi_var[, 1] + phi_var[, 2]))
 
-      # rownames(psi) <- rownames(psi_var) <- paste0("S = ", unique_S)
-      # colnames(psi) <- colnames(psi_var) <- c("A = 1", "A = 0", "Difference")
+      # rownames(phi) <- rownames(phi_var) <- paste0("S = ", unique_S)
+      # colnames(phi) <- colnames(phi_var) <- c("A = 1", "A = 0", "Difference")
       #
-      # lb <- psi - qnorm(p = 0.975) * sqrt(psi_var)
-      # ub <- psi + qnorm(p = 0.975) * sqrt(psi_var)
-      psi_array[, , k, r] <- psi
-      psi_var_array[, , k, r] <- psi_var
+      # lb <- phi - qnorm(p = 0.975) * sqrt(phi_var)
+      # ub <- phi + qnorm(p = 0.975) * sqrt(phi_var)
+      phi_array[, , k, r] <- phi
+      phi_var_array[, , k, r] <- phi_var
     }
   }
 
-# K_mean <- apply(psi_array, MARGIN = c(1, 2, 4), FUN = mean)
+# K_mean <- apply(phi_array, MARGIN = c(1, 2, 4), FUN = mean)
 # R_median <- apply(K_mean, MARGIN = c(1, 2), FUN = median)
 #
 # bias_term <- K_mean
 # for (r in 1:replications) {
 #   bias_term[, , r] <- (K_mean[, , r] - R_median)^2 + apply(K_mean, MARGIN = c(1, 2), FUN = var)
 # }
-# psi_var <- apply(bias_term, MARGIN = c(1, 2), FUN = median)
+# phi_var <- apply(bias_term, MARGIN = c(1, 2), FUN = median)
 #
 #   # estimators
 #
 #   eta1 <- PrA_XS * PrS_X
 #   eta0 <- (1 - PrA_XS) * PrS_X
 #
-#   psi <- psi_var <- matrix(nrow = no_S, ncol = 2)
+#   phi <- phi_var <- matrix(nrow = no_S, ncol = 2)
 #
 #   for (s in unique_S) {
 #     tmp1 <- tmp2 <- matrix(0, nrow = n, ncol = 2)
@@ -250,42 +250,42 @@ ATE_int_cf <- function(
 #
 #     tmp <- tmp1 + tmp2
 #
-#     psi[s, ] <- kappa * colMeans(tmp)
+#     phi[s, ] <- kappa * colMeans(tmp)
 #
-#     tmp1[I_xs, 1] <- pred_Y1[I_xs] - psi[s, 1]
-#     tmp1[I_xs, 2] <- pred_Y0[I_xs] - psi[s, 2]
+#     tmp1[I_xs, 1] <- pred_Y1[I_xs] - phi[s, 1]
+#     tmp1[I_xs, 2] <- pred_Y0[I_xs] - phi[s, 2]
 #
-#     psi_var[s, ] <- kappa/n^2 * colSums((tmp1 + tmp2)^2)
+#     phi_var[s, ] <- kappa/n^2 * colSums((tmp1 + tmp2)^2)
 #   }
 #
-#   psi <- cbind(psi, unname(psi[, 1] - psi[, 2]))
-#   psi_var <- cbind(psi_var, unname(psi_var[, 1] + psi_var[, 2]))
+#   phi <- cbind(phi, unname(phi[, 1] - phi[, 2]))
+#   phi_var <- cbind(phi_var, unname(phi_var[, 1] + phi_var[, 2]))
 #
-  psi_cf <- apply(apply(psi_array, MARGIN = c(1, 2, 4), FUN = mean), MARGIN = 1:2, FUN = median)
-  psi_var_cf <- apply(apply(psi_var_array, MARGIN = c(1, 2, 4), FUN = mean), MARGIN = 1:2, FUN = median)
+  phi_cf <- apply(apply(phi_array, MARGIN = c(1, 2, 4), FUN = mean), MARGIN = 1:2, FUN = median)
+  phi_var_cf <- apply(apply(phi_var_array, MARGIN = c(1, 2, 4), FUN = mean), MARGIN = 1:2, FUN = median)
 
-  rownames(psi_cf) <- rownames(psi_var_cf) <- paste0("S = ", unique_S)
-  colnames(psi_cf) <- colnames(psi_var_cf) <- c("A = 1", "A = 0", "Difference")
+  rownames(phi_cf) <- rownames(phi_var_cf) <- paste0("S = ", unique_S)
+  colnames(phi_cf) <- colnames(phi_var_cf) <- c("A = 1", "A = 0", "Difference")
 
-  lb <- psi_cf - qnorm(p = 0.975) * sqrt(psi_var_cf)
-  ub <- psi_cf + qnorm(p = 0.975) * sqrt(psi_var_cf)
+  lb <- phi_cf - qnorm(p = 0.975) * sqrt(phi_var_cf)
+  ub <- phi_cf + qnorm(p = 0.975) * sqrt(phi_var_cf)
 
   df_dif <-
     data.frame(Source = 1:no_S,
-               Estimate = psi_cf[, 3],
-               SE = sqrt(psi_var_cf[, 3]),
+               Estimate = phi_cf[, 3],
+               SE = sqrt(phi_var_cf[, 3]),
                ci.lb = lb[, 3],
                ci.ub = ub[, 3])
   df_A0 <-
     data.frame(Source = 1:no_S,
-               Estimate = psi_cf[, 2],
-               SE = sqrt(psi_var_cf[, 2]),
+               Estimate = phi_cf[, 2],
+               SE = sqrt(phi_var_cf[, 2]),
                ci.lb = lb[, 2],
                ci.ub = ub[, 2])
   df_A1 <-
     data.frame(Source = 1:no_S,
-               Estimate = psi_cf[, 1],
-               SE = sqrt(psi_var_cf[, 1]),
+               Estimate = phi_cf[, 1],
+               SE = sqrt(phi_var_cf[, 1]),
                ci.lb = lb[, 1],
                ci.ub = ub[, 1])
 

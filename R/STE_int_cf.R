@@ -73,30 +73,37 @@ STE_int_cf <- function(
   # Converting factor variables into dummy variables
   X1_name <- names(X)[1]
   X1 <- X[, 1]
-  # X_ori <- X
   X <- data.frame(model.matrix(~ ., data = X)[, -1])
   unique_X <- sort(unique(X1))
   no_x_tilde <- length(unique_X)
 
   ## sample splitting and cross fitting loop
   K <- 4L
-  psi_array <- psi_var_array <- array(dim = c(no_S, 3, no_x_tilde, K, replications))
+  phi_array <- phi_var_array <- array(dim = c(no_S, 3, no_x_tilde, K, replications))
   for (r in 1:replications) {
     ### assign k in 0, 1, 2, 3 to each individual
-    id_by_S <- partition <- vector(mode = "list", length = no_S)
+    id_by_SX <- partition <- vector(mode = "list", length = no_S)
     for (s in unique_S) {
-      ids <- which(S == s)
-      ns <- length(ids)
-      partition[[s]] <- sample(rep(seq(K) - 1, length.out = ns))
-      id_by_S[[s]] <- ids
+      for (i in unique_X) {
+        idsx <- which(X1 == i & S == s)
+        nsx <- length(idsx)
+        partition[[s]][[i]] <- sample(rep(seq(K) - 1, length.out = nsx))
+        id_by_SX[[s]][[i]] <- idsx
+      }
     }
     for (k in 1:K) {
       test.id <- sm.id <- tm.id <- om.id <- integer()
       for (s in unique_S) {
-        test.id <- c(test.id, id_by_S[[s]][which(partition[[s]] == k %% K)])
-        sm.id <- c(sm.id, id_by_S[[s]][which(partition[[s]] == (k + 1) %% K)])
-        tm.id <- c(tm.id, id_by_S[[s]][which(partition[[s]] == (k + 2) %% K)])
-        om.id <- c(om.id, id_by_S[[s]][which(partition[[s]] == (k + 3) %% K)])
+        id_S <- id_by_SX[[s]]
+        part_S <- partition[[s]]
+        for (i in unique_X) {
+          id_SX <- id_S[[i]]
+          part_SX <- part_S[[i]]
+          test.id <- c(test.id, id_SX[which(part_SX == k %% K)])
+          sm.id <- c(sm.id, id_SX[which(part_SX == (k + 1) %% K)])
+          tm.id <- c(tm.id, id_SX[which(part_SX == (k + 2) %% K)])
+          om.id <- c(om.id, id_SX[which(part_SX == (k + 3) %% K)])
+        }
       }
       X_test <- X[test.id, ]
       Y_test <- Y[test.id]
@@ -184,7 +191,7 @@ STE_int_cf <- function(
       names(output) <- paste(X1_name, "=", unique_X)
 
       for (i in 1:no_x_tilde) {
-        psi <- psi_var <- matrix(nrow = no_S, ncol = 2)
+        phi <- phi_var <- matrix(nrow = no_S, ncol = 2)
         x_tilde <- unique_X[i]
         for (s in unique_S) {
           tmp1 <- tmp2 <- matrix(0, nrow = nrow(X_test), ncol = 2)
@@ -203,44 +210,26 @@ STE_int_cf <- function(
 
           tmp <- tmp1 + tmp2
 
-          psi[s, ] <- kappa * colMeans(tmp)
+          phi[s, ] <- kappa * colMeans(tmp)
 
-          tmp1[I_xs, 1] <- pred_Y1[I_xs] - psi[s, 1]
-          tmp1[I_xs, 2] <- pred_Y0[I_xs] - psi[s, 2]
+          if (is.infinite(phi[s, 1])) stop("r", r, ", k", k, ", xtilde", i)
 
-          psi_var[s, ] <- kappa/nrow(X_test)^2 * colSums((tmp1 + tmp2)^2)
+          tmp1[I_xs, 1] <- pred_Y1[I_xs] - phi[s, 1]
+          tmp1[I_xs, 2] <- pred_Y0[I_xs] - phi[s, 2]
+
+          phi_var[s, ] <- kappa/nrow(X_test)^2 * colSums((tmp1 + tmp2)^2)
         }
-        psi <- cbind(psi, unname(psi[, 1] - psi[, 2]))
-        psi_var <- cbind(psi_var, unname(psi_var[, 1] + psi_var[, 2]))
+        phi <- cbind(phi, unname(phi[, 1] - phi[, 2]))
+        phi_var <- cbind(phi_var, unname(phi_var[, 1] + phi_var[, 2]))
 
-        psi_array[, , i, k, r] <- psi
-        psi_var_array[, , i, k, r] <- psi_var
-
-        # rownames(psi) <- rownames(psi_var) <- paste0("S = ", unique_S)
-        # colnames(psi) <- colnames(psi_var) <- c("A = 1", "A = 0", "Difference")
-
-        # lb <- psi - qnorm(p = 0.975) * sqrt(psi_var)
-        # ub <- psi + qnorm(p = 0.975) * sqrt(psi_var)
-
-        # tmax <- apply(abs(matrix(rnorm(no_x_tilde * 1e6),
-        #                          nrow = no_x_tilde, ncol = 1e6)), 2, max)
-        # qtmax <- quantile(tmax, 0.95)
-
-        # lb_scb <- psi - qtmax * sqrt(psi_var)
-        # ub_scb <- psi + qtmax * sqrt(psi_var)
-
-        # output[[i]] <- list(Estimates = psi,
-        #                     Variances = psi_var,
-        #                     CI_LB = lb,
-        #                     CI_UB = ub,
-        #                     SCB_LB = lb_scb,
-        #                     SCB_UB = ub_scb)
+        phi_array[, , i, k, r] <- phi
+        phi_var_array[, , i, k, r] <- phi_var
       }
     }
   }
 
-  psi_cf <- apply(apply(psi_array, MARGIN = c(1, 2, 3, 5), FUN = mean), MARGIN = 1:3, FUN = median)
-  psi_var_cf <- apply(apply(psi_var_array, MARGIN = c(1, 2, 3, 5), FUN = mean), MARGIN = 1:3, FUN = median)
+  phi_cf <- apply(apply(phi_array, MARGIN = c(1, 2, 3, 5), FUN = mean), MARGIN = 1:3, FUN = median)
+  phi_var_cf <- apply(apply(phi_var_array, MARGIN = c(1, 2, 3, 5), FUN = mean), MARGIN = 1:3, FUN = median)
 
   qt <- qnorm(p = 0.975)
   qtmax <- quantile(apply(abs(matrix(rnorm(no_x_tilde * 1e6),
@@ -254,13 +243,13 @@ STE_int_cf <- function(
     S_id <- df_A0[i, 1]
     X_id <- df_A0[i, 2]
     # Estimates
-    df_A0[i, 3] <- psi_cf[S_id, 2, X_id]
-    df_A1[i, 3] <- psi_cf[S_id, 1, X_id]
-    df_dif[i, 3] <- psi_cf[S_id, 3, X_id]
+    df_A0[i, 3] <- phi_cf[S_id, 2, X_id]
+    df_A1[i, 3] <- phi_cf[S_id, 1, X_id]
+    df_dif[i, 3] <- phi_cf[S_id, 3, X_id]
     # SE
-    df_A0[i, 4] <- sqrt(psi_var_cf[S_id, 2, X_id])
-    df_A1[i, 4] <- sqrt(psi_var_cf[S_id, 1, X_id])
-    df_dif[i, 4] <- sqrt(psi_var_cf[S_id, 3, X_id])
+    df_A0[i, 4] <- sqrt(phi_var_cf[S_id, 2, X_id])
+    df_A1[i, 4] <- sqrt(phi_var_cf[S_id, 1, X_id])
+    df_dif[i, 4] <- sqrt(phi_var_cf[S_id, 3, X_id])
   }
   # lb
   df_A0[, 5] <- df_A0[, 3] - qt * df_A0[, 4]
