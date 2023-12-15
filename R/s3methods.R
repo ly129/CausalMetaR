@@ -18,11 +18,11 @@
 
 plot.STE_nested <- function(x,
                             use_scb = FALSE,
-                            header = list("Source",
-                                          "Effect Modifier",
-                                          ifelse(use_scb,
-                                                 "Estimate [95% SCB]",
-                                                 "Estimate [95% CI]")),
+                            header = c("Source",
+                                       "Subgroup",
+                                       ifelse(use_scb,
+                                              "Estimate [95% SCB]",
+                                              "Estimate [95% CI]")),
                             source_names,
                             subgroup_names,
                             ...){
@@ -76,7 +76,7 @@ plot.STE_nested <- function(x,
     }
   }
 
-  args$header <- c(header[[1]], header[[3]])
+  args$header <- c(header[1], header[3])
 
   if (!('ilab.xpos' %in% names(args))){
     min_lb <- min(args$x - qnorm(0.975) * sqrt(args$vi))
@@ -84,15 +84,11 @@ plot.STE_nested <- function(x,
     args$ilab.xpos <- min_lb - (median_est - min_lb) # / 2
   }
 
-  # if(!('ilab.pos' %in% names(args))) {
-  #   args$ilab.pos <- 4
-  # }
-
   do.call(forest, args)
 
   text(x = args$ilab.xpos,
-       y = no_EM * no_S + 2.08,
-       labels = header[[2]],
+       y = no_EM * no_S + 2.01,
+       labels = header[2],
        font = 2)
 }
 

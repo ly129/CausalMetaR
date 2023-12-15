@@ -7,7 +7,7 @@
 \method{plot}{STE_nested}(
   x,
   use_scb = FALSE,
-  header = list("Source", "Effect Modifier", ifelse(use_scb, "Estimate [95\% SCB]",
+  header = c("Source", "Subgroup", ifelse(use_scb, "Estimate [95\% SCB]",
     "Estimate [95\% CI]")),
   source_names,
   subgroup_names,

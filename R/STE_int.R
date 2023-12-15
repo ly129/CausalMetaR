@@ -226,17 +226,23 @@ STE_nested <- function(
 
             phi_var[s, ] <- kappa/nrow(X_test)^2 * colSums((tmp1 + tmp2)^2)
           }
-          phi <- cbind(phi, unname(phi[, 1] - phi[, 2]))
-          phi_var <- cbind(phi_var, unname(phi_var[, 1] + phi_var[, 2]))
 
-          phi_array_cf[, , em, k, r] <- phi
-          phi_se_array_cf[, , em, k, r] <- sqrt(phi_var)
+          phi_array_cf[, , em, k, r] <- cbind(phi, phi[, 1] - phi[, 2])
+          phi_se_array_cf[, , em, k, r] <- sqrt(cbind(phi_var, phi_var[, 1] + phi_var[, 2]))
         }
       }
     }
 
-    phi_array <- apply(apply(phi_array_cf, MARGIN = c(1, 2, 3, 5), FUN = mean), MARGIN = 1:3, FUN = median)
-    phi_se_array <- apply(apply(phi_se_array_cf, MARGIN = c(1, 2, 3, 5), FUN = mean), MARGIN = 1:3, FUN = median)
+    phi_array <- apply(apply(phi_array_cf,
+                             MARGIN = c(1, 2, 3, 5),
+                             FUN = mean),
+                       MARGIN = 1:3,
+                       FUN = median)
+    phi_se_array <- apply(apply(phi_se_array_cf,
+                                MARGIN = c(1, 2, 3, 5),
+                                FUN = mean),
+                          MARGIN = 1:3,
+                          FUN = median)
     # end of STE_nested with cross-fitting
   } else {
     # start of regular STE_nested
@@ -322,11 +328,8 @@ STE_nested <- function(
 
         phi_var[s, ] <- kappa/n^2 * colSums((tmp1 + tmp2)^2)
       }
-      phi <- cbind(phi, phi[, 1] - phi[, 2])
-      phi_var <- cbind(phi_var, phi_var[, 1] + phi_var[, 2])
-
-      phi_array[, , em] <- phi
-      phi_se_array[, , em] <- sqrt(phi_var)
+      phi_array[, , em] <- cbind(phi, phi[, 1] - phi[, 2])
+      phi_se_array[, , em] <- sqrt(cbind(phi_var, phi_var[, 1] + phi_var[, 2]))
     }
   }
 
@@ -377,13 +380,17 @@ STE_nested <- function(
     }
   }
 
+  if (cross_fitting) {
+    fit_outcome <- fit_source <- fit_treatment <- NULL
+  }
+
   res <- list(
     df_dif = df_dif,
     df_A0 = df_A0,
     df_A1 = df_A1,
-    fit_outcome = ifelse(cross_fitting, NULL, fit_outcome),
-    fit_source = ifelse(cross_fitting, NULL, fit_source),
-    fit_treatment = ifelse(cross_fitting, NULL, fit_treatment),
+    fit_outcome = fit_outcome,
+    fit_source = fit_source,
+    fit_treatment = fit_treatment,
     outcome_model_args = outcome_model_args,
     source_model = source_model,
     treatment_model_args = treatment_model_args

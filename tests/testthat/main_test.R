@@ -168,7 +168,7 @@ dim(X_ext)
 si <- STE_nested(
   X = X, Y = Y, EM = EM, S = S, A = A,
   cross_fitting = FALSE,
-  source_model = "glmnet.multinom",
+  source_model = "nnet.multinom",
   source_model_args = list(),
   treatment_model_type = "separate",
   treatment_model = "SuperLearner",
