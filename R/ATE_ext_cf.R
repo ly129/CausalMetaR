@@ -94,7 +94,7 @@ ATE_ext_cf <- function(
 
   ## sample splitting and cross fitting loop
   K <- 5L
-  psi_array <- psi_var_array <- array(dim = c(3, K, replications))
+  psi_array <- psi_se_array <- array(dim = c(3, K, replications))
   for (r in 1:replications) {
     ### assign k in 0, 1, 2, 3 to each individual
     id_by_S <- partition <- vector(mode = "list", length = no_S)
@@ -238,12 +238,12 @@ ATE_ext_cf <- function(
       psi_var <- gamma/(length(ex_xm.id)+length(test.id))^2 * colSums(rbind(tmp1, tmp2)^2)
 
       psi_array[, k, r] <- c(psi, psi[1] - psi[2])
-      psi_var_array[, k, r] <- c(psi_var, psi_var[1] + psi_var[2])
+      psi_se_array[, k, r] <- c(psi_var, psi_var[1] + psi_var[2])
     } # end of k loop
   } # end of r loop
 
   psi_cf <- apply(apply(psi_array, MARGIN = c(1, 3), FUN = mean), MARGIN = 1, FUN = median)
-  psi_var_cf <- apply(apply(psi_var_array, MARGIN = c(1, 3), FUN = mean), MARGIN = 1, FUN = median)
+  psi_var_cf <- apply(apply(psi_se_array, MARGIN = c(1, 3), FUN = mean), MARGIN = 1, FUN = median)
 
   lb <- psi_cf - qnorm(p = 0.975) * sqrt(psi_var_cf)
   ub <- psi_cf + qnorm(p = 0.975) * sqrt(psi_var_cf)

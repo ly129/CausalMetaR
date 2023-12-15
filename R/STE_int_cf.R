@@ -3,11 +3,12 @@
 #' @description
 #' Doubly-robust and efficient estimator for the subgroup treatments effect (STE) of each internal source-specific target population using \eqn{m} multi-source data.
 #'
-#' @param X The covariate data frame with \eqn{n=n_1+...+n_m} rows and q coloums. The first column of X is the categorical effect modifier (\eqn{\widetilde X}).
-#' @param Y The (binary/continuous) outcome, which is a length \eqn{n} vector.
-#' @param S The (numeric) source which is a length \eqn{n} vector.
+#' @param X The covariate data frame with \eqn{n=n_1+...+n_m} rows and \eqn{q} columns.
+#' @param Y The outcome, which is a length \eqn{n} vector.
+#' @param EM The effect modifier which is a length \eqn{n} vector or factor. If \code{EM} is a factor, it will maintain its given (ordered) levels. If \code{G} is not a factor, it will be converted into a factor with default level order.
+#' @param S The source which is a length \eqn{n} vector or factor. If \code{S} is a factor, it will maintain its given (ordered) levels. If \code{S} is not a factor, it will be converted into a factor with default level order.
 #' @param A The (binary) treatment, which is a length \eqn{n} vector.
-#' @param source_model The multi-nomial model for estimating \eqn{P(S=s|X)}. It has two options: \code{glmnet.multinom} and \code{nnet.multinom}. The default is \code{glmnet.multinom}.
+#' @param source_model The multinomial model for estimating \eqn{P(S=s|X)}. It has two options: \code{glmnet.multinom} and \code{nnet.multinom}. The default is \code{glmnet.multinom}.
 #' @param source_model_args The arguments (in \pkg{SuperLearner}) for the source model.
 #' @param treatment_model_type The options for how the treatment_model \eqn{P(A=1|X, S=s)} is estimated. It includes \code{separate} and \code{joint}, with the default being \code{separate}. When \code{separate} is selected,
 #' \eqn{P(A=1|X, S=s)} is estimated by fitting the model (regressing \eqn{A} on \eqn{X}) within each specific internal source population (S=s). When \code{joint} is selected, \eqn{P(A=1|X, S=s)}
@@ -33,7 +34,7 @@
 #' When one source of data is a randomized trial, it is still recommended to estimate the propensity score for optimal efficiency.
 #' Since the non-parametric influence function is the same as the efficient semi-parametric efficient influence function when the propensity score is known and incorporating the assumption \eqn{Y\perp S|(X, A=a)}, the inference stays the same.
 #'
-#' @return An object of class "STE_int". This object is a list with the following elements:
+#' @return An object of class "STE_nested". This object is a list with the following elements:
 #'   \item{df_dif}{A data frame containing the subgroup treatment effect (mean difference) estimates for the internal populations.}
 #'   \item{df_A0}{A data frame containing the subgroup potential outcome mean estimates under A = 0 for the internal populations.}
 #'   \item{df_A1}{A data frame containing the subgroup potential outcome mean estimates under A = 1 for the internal populations.}
@@ -45,11 +46,12 @@
 #' @examples
 #'
 #' @export
-STE_int_cf <- function(
-    X,
-    Y,
-    S, # integer sequence starting from 1
-    A,
+STE_nested_cf <- function(
+    X, # predictor matrix
+    Y, # outcome
+    EM, # effect modifier
+    S, # source
+    A, # treatment
     source_model = "glmnet.multinom",
     source_model_args = list(),
     treatment_model_type = "separate",
@@ -66,25 +68,25 @@ STE_int_cf <- function(
   unique_S <- sort(unique(S))
   no_S <- length(unique_S)
 
-  # Error checking
-  error_check(X = X, X_external = NULL, Y = Y, S = S, A = A,
-              external = FALSE, ATE = FALSE)
+  # # Error checking
+  # error_check(X = X, X_external = NULL, Y = Y, S = S, A = A,
+  #             external = FALSE, ATE = FALSE)
 
   # Converting factor variables into dummy variables
   X1_name <- names(X)[1]
   X1 <- X[, 1]
   X <- data.frame(model.matrix(~ ., data = X)[, -1])
-  unique_X <- sort(unique(X1))
-  no_x_tilde <- length(unique_X)
+  unique_EM <- sort(unique(X1))
+  no_EM <- length(unique_EM)
 
   ## sample splitting and cross fitting loop
   K <- 4L
-  phi_array <- phi_var_array <- array(dim = c(no_S, 3, no_x_tilde, K, replications))
+  phi_array <- phi_se_array <- array(dim = c(no_S, 3, no_EM, K, replications))
   for (r in 1:replications) {
     ### assign k in 0, 1, 2, 3 to each individual
     id_by_SX <- partition <- vector(mode = "list", length = no_S)
     for (s in unique_S) {
-      for (i in unique_X) {
+      for (i in unique_EM) {
         idsx <- which(X1 == i & S == s)
         nsx <- length(idsx)
         partition[[s]][[i]] <- sample(rep(seq(K) - 1, length.out = nsx))
@@ -96,7 +98,7 @@ STE_int_cf <- function(
       for (s in unique_S) {
         id_S <- id_by_SX[[s]]
         part_S <- partition[[s]]
-        for (i in unique_X) {
+        for (i in unique_EM) {
           id_SX <- id_S[[i]]
           part_SX <- part_S[[i]]
           test.id <- c(test.id, id_SX[which(part_SX == k %% K)])
@@ -187,12 +189,12 @@ STE_int_cf <- function(
       eta0 <- rowSums((1 - PrA_XS) * PrS_X)
 
 
-      output <- vector(mode = "list", length = no_x_tilde)
-      names(output) <- paste(X1_name, "=", unique_X)
+      output <- vector(mode = "list", length = no_EM)
+      names(output) <- paste(X1_name, "=", unique_EM)
 
-      for (i in 1:no_x_tilde) {
+      for (i in 1:no_EM) {
         phi <- phi_var <- matrix(nrow = no_S, ncol = 2)
-        x_tilde <- unique_X[i]
+        x_tilde <- unique_EM[i]
         for (s in unique_S) {
           tmp1 <- tmp2 <- matrix(0, nrow = nrow(X_test), ncol = 2)
           I_xs <- which((X1_test == x_tilde) & (S_test == s))
@@ -223,23 +225,23 @@ STE_int_cf <- function(
         phi_var <- cbind(phi_var, unname(phi_var[, 1] + phi_var[, 2]))
 
         phi_array[, , i, k, r] <- phi
-        phi_var_array[, , i, k, r] <- phi_var
+        phi_se_array[, , i, k, r] <- phi_var
       }
     }
   }
 
   phi_cf <- apply(apply(phi_array, MARGIN = c(1, 2, 3, 5), FUN = mean), MARGIN = 1:3, FUN = median)
-  phi_var_cf <- apply(apply(phi_var_array, MARGIN = c(1, 2, 3, 5), FUN = mean), MARGIN = 1:3, FUN = median)
+  phi_var_cf <- apply(apply(phi_se_array, MARGIN = c(1, 2, 3, 5), FUN = mean), MARGIN = 1:3, FUN = median)
 
   qt <- qnorm(p = 0.975)
-  qtmax <- quantile(apply(abs(matrix(rnorm(no_x_tilde * 1e6),
-                                     nrow = no_x_tilde, ncol = 1e6)), 2, max), 0.95)
+  qtmax <- quantile(apply(abs(matrix(rnorm(no_EM * 1e6),
+                                     nrow = no_EM, ncol = 1e6)), 2, max), 0.95)
 
-  df_A0 <- df_A1 <- df_dif <- matrix(nrow = no_S * no_x_tilde, ncol = 8L)
-  df_A0[, 1] <- df_A1[, 1] <- df_dif[, 1] <- rep(unique_S, each = no_x_tilde)
-  df_A0[, 2] <- df_A1[, 2] <- df_dif[, 2] <- rep(unique_X, no_S)
+  df_A0 <- df_A1 <- df_dif <- matrix(nrow = no_S * no_EM, ncol = 8L)
+  df_A0[, 1] <- df_A1[, 1] <- df_dif[, 1] <- rep(unique_S, each = no_EM)
+  df_A0[, 2] <- df_A1[, 2] <- df_dif[, 2] <- rep(unique_EM, no_S)
 
-  for (i in 1:(no_S * no_x_tilde)) {
+  for (i in 1:(no_S * no_EM)) {
     S_id <- df_A0[i, 1]
     X_id <- df_A0[i, 2]
     # Estimates
@@ -281,9 +283,9 @@ STE_int_cf <- function(
                                                      "scb.lb",
                                                      "scb.ub")
 
-  snames <- character(length = no_x_tilde * no_S)
-  snames[1:(no_x_tilde * no_S) %% no_x_tilde == 1] <- c(paste("Source", unique_S))
-  xtildenames <- rep(paste(X1_name, "=", unique_X), no_S)
+  source_names <- character(length = no_EM * no_S)
+  source_names[1:(no_EM * no_S) %% no_EM == 1] <- c(paste("Source", unique_S))
+  subgroup_names <- rep(paste(X1_name, "=", unique_EM), no_S)
 
   res <- list(
     df_dif = df_dif,
@@ -294,10 +296,10 @@ STE_int_cf <- function(
     treatment_model_args = treatment_model_args
   )
 
-  res$snames <- snames
-  res$xtildenames <- xtildenames
+  res$source_names <- source_names
+  res$subgroup_names <- subgroup_names
 
-  class(res) <- 'STE_int'
+  class(res) <- 'STE_nested'
 
   return(res)
 }

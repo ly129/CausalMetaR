@@ -1,53 +1,61 @@
-#' Plot method for objects of class "STE_int"
+#' Plot method for objects of class "STE_nested"
 #'
-#' This function creates forest plots of objects of class "STE_int".
+#' This function creates forest plots of objects of class "STE_nested".
 #'
 #' Note that users may need to custom set the argument \code{ilab.xpos} which specifies the position (along the x-axis) of the subgroup labels. See \code{\link[metafor]{forest.rma}} for further details.
 #'
-#' @param x Object of class "STE_int".
+#' @param x Object of class "STE_nested".
 #' @param source_names vector of character strings specifying the names of the sources.
 #' @param subgroup_names vector of character strings specifying the names of the subgroups.
 #' @param use_scb logical scalar specifying whether the intervals in the forest plot should be simultaneous confidence bands (rather than confidence intervals). The default is \code{FALSE}.
 #' @param ... Other arguments, which are passed to \code{\link[metafor]{forest.rma}}.
 #' @return No value is returned.
-#' @seealso \code{\link{STE_int}}
+#' @seealso \code{\link{STE_nested}}
 #'
 #'
 #'
 #' @export
 
-plot.STE_int <- function(x, source_names, subgroup_names,
-                         use_scb = FALSE, ...){
-  if (!inherits(x, "STE_int")){
-    stop("Argument 'x' must be an object of class \"STE_int\".")
+plot.STE_nested <- function(x,
+                            use_scb = FALSE,
+                            header = list("Source",
+                                          "Effect Modifier",
+                                          ifelse(use_scb,
+                                                 "Estimate [95% SCB]",
+                                                 "Estimate [95% CI]")),
+                            source_names,
+                            subgroup_names,
+                            ...){
+  if (!inherits(x, "STE_nested")){
+    stop("Argument 'x' must be an object of class \"STE_nested\".")
   }
-  all_args = as.list(match.call())[-1]
+  all_args <- as.list(match.call())[-1]
   args <- all_args[!names(all_args) %in% c('x', 'use_scb', 'source_names', 'subgroup_names')]
 
   no_S <- length(unique(x$df_dif$Source))
-  no_x_tilde <- length(unique(x$df_dif$Subgroup))
+  no_EM <- length(unique(x$df_dif$Subgroup))
 
   if (missing(source_names)){
-    args$slab <- x$snames
+    args$slab <- x$source_names
   } else {
     if (length(source_names) != no_S){
       stop(paste0('The length of source_names does not match the number of sources (', no_S, ')'))
     }
-    slab <- character(length = no_x_tilde * no_S)
-    slab[1:(no_x_tilde * no_S) %% no_x_tilde == 1] <- source_names
+    slab <- character(length = no_EM * no_S)
+    slab[1:(no_EM * no_S) %% no_EM == 1] <- source_names
     args$slab <- slab
   }
   if (missing(subgroup_names)){
-    args$ilab <- x$xtildenames
+    args$ilab <- x$subgroup_names
   } else {
-    if (length(subgroup_names) != no_x_tilde){
-      stop(paste0('The length of subgroup_names does not match the number of subgroups (', no_x_tilde, ')'))
+    if (length(subgroup_names) != no_EM){
+      stop(paste0('The length of subgroup_names does not match the number of subgroups (', no_EM, ')'))
     }
     args$ilab <- rep(subgroup_names, times = no_S)
   }
   if (!('shade' %in% names(args))){
-    shade_temp <- c(rep(T, times = no_x_tilde), rep(F, times = no_x_tilde))
-    args$shade <- rep(shade_temp, length.out = no_S * no_x_tilde)
+    shade_temp <- c(rep(TRUE, times = no_EM), rep(FALSE, times = no_EM))
+    args$shade <- rep(shade_temp, length.out = no_S * no_EM)
   }
   if (!('xlab' %in% names(args))) {
     args$xlab <- 'Treatment Effect'
@@ -58,14 +66,8 @@ plot.STE_int <- function(x, source_names, subgroup_names,
   args$x <- x$df_dif$Estimate
 
   if (!use_scb){
-    if (!('header' %in% names(args))){
-      args$header <- 'Source'
-    }
     args$vi <- x$df_dif$SE^2
   } else {
-    if (!('header' %in% names(args))){
-      args$header <- c('Source', 'Estimate [95% SCB]')
-    }
     args$vi <- ((x$df_dif$scb.ub - x$df_dif$scb.lb) / (2 * qnorm(0.975)))^2
     if ('level' %in% names(args)){
       if (args$level != 0.95){
@@ -73,12 +75,25 @@ plot.STE_int <- function(x, source_names, subgroup_names,
       }
     }
   }
+
+  args$header <- c(header[[1]], header[[3]])
+
   if (!('ilab.xpos' %in% names(args))){
     min_lb <- min(args$x - qnorm(0.975) * sqrt(args$vi))
     median_est <- median(args$x)
-    args$ilab.xpos <- min_lb - (min_lb + median_est) / 2
+    args$ilab.xpos <- min_lb - (median_est - min_lb) # / 2
   }
+
+  # if(!('ilab.pos' %in% names(args))) {
+  #   args$ilab.pos <- 4
+  # }
+
   do.call(forest, args)
+
+  text(x = args$ilab.xpos,
+       y = no_EM * no_S + 2.08,
+       labels = header[[2]],
+       font = 2)
 }
 
 
@@ -123,30 +138,30 @@ plot.ATE_int <- function(x, ...){
 
 
 
-#' Print method for objects of class "ATE_int", "ATE_ext", "STE_int", or "STE_ext"
+#' Print method for objects of class "ATE_int", "ATE_ext", "STE_nested", or "STE_ext"
 #'
-#' Print method for objects of class "ATE_int", "ATE_ext", "STE_int", or "STE_ext"
+#' Print method for objects of class "ATE_int", "ATE_ext", "STE_nested", or "STE_ext"
 #'
-#' @param x Object of class "ATE_int", "ATE_ext", "STE_int", or "STE_ext".
+#' @param x Object of class "ATE_int", "ATE_ext", "STE_nested", or "STE_ext".
 #' @param digits Integer specifying the number of decimal places to display.
 #' @param ... Other arguments (ignored).
 #' @return No value is returned.
-#' @seealso \code{\link{ATE_int}}, \code{\link{ATE_ext}}, \code{\link{STE_int}}, \code{\link{STE_ext}}
+#' @seealso \code{\link{ATE_int}}, \code{\link{ATE_ext}}, \code{\link{STE_nested}}, \code{\link{STE_ext}}
 #'
 #'
 #'
 #' @export
 
-print.STE_int <- function(x, digits = 4, ...){
-  if (!inherits(x, "STE_int")){
-    stop("Argument 'x' must be an object of class \"STE_int\".")
+print.STE_nested <- function(x, digits = 4, ...){
+  if (!inherits(x, "STE_nested")){
+    stop("Argument 'x' must be an object of class \"STE_nested\".")
   }
 
   no_S <- length(unique(x$df_dif$Source))
-  no_x_tilde <- length(unique(x$df_dif$Subgroup))
+  no_EM <- length(unique(x$df_dif$Subgroup))
 
   source_num <- matrix(1:no_S, nrow = 1)
-  append_row <- matrix(NA, ncol = no_S, nrow = no_x_tilde - 1)
+  append_row <- matrix(NA, ncol = no_S, nrow = no_EM - 1)
   source_lab <- c(rbind(source_num, append_row))
 
   df_dif <- x$df_dif
@@ -158,7 +173,7 @@ print.STE_int <- function(x, digits = 4, ...){
   my_print(df_dif, digits = digits, ATE = FALSE, internal = TRUE)
 }
 
-#' @rdname print.STE_int
+#' @rdname print.STE_nested
 #' @export
 print.ATE_int <- function(x, digits = 4, ...){
   if (!inherits(x, "ATE_int")){
@@ -172,7 +187,7 @@ print.ATE_int <- function(x, digits = 4, ...){
 }
 
 
-#' @rdname print.STE_int
+#' @rdname print.STE_nested
 #' @export
 print.STE_ext <- function(x, digits = 4, ...){
   if (!inherits(x, "STE_ext")){
@@ -185,7 +200,7 @@ print.STE_ext <- function(x, digits = 4, ...){
   my_print(x$df_dif, digits = digits, ATE = FALSE, internal = FALSE)
 }
 
-#' @rdname print.STE_int
+#' @rdname print.STE_nested
 #' @export
 print.ATE_ext <- function(x, digits = 4, ...){
   if (!inherits(x, "ATE_ext")){
@@ -198,30 +213,30 @@ print.ATE_ext <- function(x, digits = 4, ...){
   my_print(x$df_dif, digits = digits, ATE = TRUE, internal = FALSE)
 }
 
-#' Summary method for objects of class "ATE_int", "ATE_ext", "STE_int", or "STE_ext"
+#' Summary method for objects of class "ATE_int", "ATE_ext", "STE_nested", or "STE_ext"
 #'
-#' Summary method for objects of class "ATE_int", "ATE_ext", "STE_int", or "STE_ext"
+#' Summary method for objects of class "ATE_int", "ATE_ext", "STE_nested", or "STE_ext"
 #'
-#' @param object Object of class "ATE_int", "ATE_ext", "STE_int", or "STE_ext".
+#' @param object Object of class "ATE_int", "ATE_ext", "STE_nested", or "STE_ext".
 #' @param digits Integer specifying the number of decimal places to display.
 #' @param ... Other arguments.
 #' @return No value is returned.
-#' @seealso \code{\link{ATE_int}}, \code{\link{ATE_ext}}, \code{\link{STE_int}}, \code{\link{STE_ext}}
+#' @seealso \code{\link{ATE_int}}, \code{\link{ATE_ext}}, \code{\link{STE_nested}}, \code{\link{STE_ext}}
 #'
 #'
 #'
 #' @export
 
-summary.STE_int <- function(object, digits = 4, ...){
-  if (!inherits(object, "STE_int")){
-    stop("Argument 'object' must be an object of class \"STE_int\".")
+summary.STE_nested <- function(object, digits = 4, ...){
+  if (!inherits(object, "STE_nested")){
+    stop("Argument 'object' must be an object of class \"STE_nested\".")
   }
 
   no_S <- length(unique(object$df_dif$Source))
-  no_x_tilde <- length(unique(object$df_dif$Subgroup))
+  no_EM <- length(unique(object$df_dif$Subgroup))
 
   source_num <- matrix(1:no_S, nrow = 1)
-  append_row <- matrix(NA, ncol = no_S, nrow = no_x_tilde - 1)
+  append_row <- matrix(NA, ncol = no_S, nrow = no_EM - 1)
   source_lab <- c(rbind(source_num, append_row))
 
   df_dif <- object$df_dif; df_dif$Source <- source_lab
@@ -249,7 +264,7 @@ summary.STE_int <- function(object, digits = 4, ...){
 }
 
 
-#' @rdname summary.STE_int
+#' @rdname summary.STE_nested
 #' @export
 summary.STE_ext <- function(object, digits = 4, ...){
   if (!inherits(object, "STE_ext")){
@@ -277,7 +292,7 @@ summary.STE_ext <- function(object, digits = 4, ...){
   cat(paste0('External model: ', paste0(object$external_model_args$SL.library, collapse = ', '), '\n'))
 }
 
-#' @rdname summary.STE_int
+#' @rdname summary.STE_nested
 #' @export
 summary.ATE_ext <- function(object, digits = 4, ...){
   if (!inherits(object, "ATE_ext")){
@@ -305,7 +320,7 @@ summary.ATE_ext <- function(object, digits = 4, ...){
   cat(paste0('External model: ', paste0(object$external_model_args$SL.library, collapse = ', '), '\n'))
 }
 
-#' @rdname summary.STE_int
+#' @rdname summary.STE_nested
 #' @export
 summary.ATE_int <- function(object, digits = 4, ...){
   if (!inherits(object, "ATE_int")){

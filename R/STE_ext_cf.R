@@ -85,12 +85,12 @@ STE_ext_cf <- function(
   X1 <- X[, 1]; X1_external <- X_external[, 1]
   X <- data.frame(model.matrix(~ ., data = X)[, -1])
   X_external <- data.frame(model.matrix(~ ., data = X_external)[, -1])
-  unique_X <- sort(unique(X1))
-  no_x_tilde <- length(unique_X)
+  unique_EM <- sort(unique(X1))
+  no_EM <- length(unique_EM)
 
   ## sample splitting and cross fitting loop
   K <- 5L
-  psi_array <- psi_var_array <- array(dim = c(3, no_x_tilde, K, replications))
+  psi_array <- psi_se_array <- array(dim = c(3, no_EM, K, replications))
   for (r in 1:replications) {
     ### assign k in 0, 1, 2, 3 to each individual
     id_by_S <- partition <- vector(mode = "list", length = no_S)
@@ -217,8 +217,8 @@ STE_ext_cf <- function(
                                          newdata = data.frame(A = 0, X_test))$pred)
 
       n_kr <- length(ex_xm.id) + length(test.id)
-      for (i in seq(no_x_tilde)) {
-        x_tilde <- unique_X[i]
+      for (i in seq(no_EM)) {
+        x_tilde <- unique_EM[i]
 
         I_xr <- which(X1_external[ex_xm.id] == x_tilde)
 
@@ -242,17 +242,17 @@ STE_ext_cf <- function(
         psi_var <- gamma/n_kr^2 * colSums(rbind(tmp1, tmp2)^2)
 
         psi_array[, i, k, r] <- c(psi, unname(psi[1] - psi[2]))
-        psi_var_array[, i, k, r] <- c(psi_var, unname(psi_var[2] + psi_var[2]))
+        psi_se_array[, i, k, r] <- c(psi_var, unname(psi_var[2] + psi_var[2]))
       }
     }
   }
 
   psi_cf <- apply(apply(psi_array, MARGIN = c(1, 2, 4), FUN = mean), MARGIN = 1:2, FUN = median)
-  psi_var_cf <- apply(apply(psi_var_array, MARGIN = c(1, 2, 4), FUN = mean), MARGIN = 1:2, FUN = median)
+  psi_var_cf <- apply(apply(psi_se_array, MARGIN = c(1, 2, 4), FUN = mean), MARGIN = 1:2, FUN = median)
 
   qt <- qnorm(p = 0.975)
-  qtmax <- quantile(apply(abs(matrix(rnorm(no_x_tilde * 1e6),
-                                     nrow = no_x_tilde, ncol = 1e6)), 2, max), 0.95)
+  qtmax <- quantile(apply(abs(matrix(rnorm(no_EM * 1e6),
+                                     nrow = no_EM, ncol = 1e6)), 2, max), 0.95)
 
   lb <- t(psi_cf - qt * psi_var_cf)
   ub <- t(psi_cf + qt * psi_var_cf)
@@ -264,7 +264,7 @@ STE_ext_cf <- function(
   psi <- t(psi_cf)
   psi_var <- t(psi_var_cf)
   df_dif <-
-    data.frame(Subgroup = unique_X,
+    data.frame(Subgroup = unique_EM,
                Estimate = psi[, 3],
                SE = psi_var[, 3],
                ci.lb = lb[, 3],
@@ -272,7 +272,7 @@ STE_ext_cf <- function(
                scb.lb = lb_scb[, 3],
                scb.ub = ub_scb[, 3])
   df_A0 <-
-    data.frame(Subgroup = unique_X,
+    data.frame(Subgroup = unique_EM,
                Estimate = psi[, 2],
                SE = psi_var[, 2],
                ci.lb = lb[, 2],
@@ -280,7 +280,7 @@ STE_ext_cf <- function(
                scb.lb = lb_scb[, 2],
                scb.ub = ub_scb[, 2])
   df_A1 <-
-    data.frame(Subgroup = unique_X,
+    data.frame(Subgroup = unique_EM,
                Estimate = psi[, 1],
                SE = psi_var[, 1],
                ci.lb = lb[, 1],

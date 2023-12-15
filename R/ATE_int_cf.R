@@ -78,7 +78,7 @@ ATE_int_cf <- function(
 
   ## sample splitting and cross fitting loop
   K <- 4L
-  phi_array <- phi_var_array <- array(dim = c(no_S, 3, K, replications))
+  phi_array <- phi_se_array <- array(dim = c(no_S, 3, K, replications))
   for (r in 1:replications) {
     ### assign k in 0, 1, 2, 3 to each individual
     id_by_S <- partition <- vector(mode = "list", length = no_S)
@@ -213,7 +213,7 @@ ATE_int_cf <- function(
       # lb <- phi - qnorm(p = 0.975) * sqrt(phi_var)
       # ub <- phi + qnorm(p = 0.975) * sqrt(phi_var)
       phi_array[, , k, r] <- phi
-      phi_var_array[, , k, r] <- phi_var
+      phi_se_array[, , k, r] <- phi_var
     }
   }
 
@@ -262,7 +262,7 @@ ATE_int_cf <- function(
 #   phi_var <- cbind(phi_var, unname(phi_var[, 1] + phi_var[, 2]))
 #
   phi_cf <- apply(apply(phi_array, MARGIN = c(1, 2, 4), FUN = mean), MARGIN = 1:2, FUN = median)
-  phi_var_cf <- apply(apply(phi_var_array, MARGIN = c(1, 2, 4), FUN = mean), MARGIN = 1:2, FUN = median)
+  phi_var_cf <- apply(apply(phi_se_array, MARGIN = c(1, 2, 4), FUN = mean), MARGIN = 1:2, FUN = median)
 
   rownames(phi_cf) <- rownames(phi_var_cf) <- paste0("S = ", unique_S)
   colnames(phi_cf) <- colnames(phi_var_cf) <- c("A = 1", "A = 0", "Difference")

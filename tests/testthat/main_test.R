@@ -143,27 +143,31 @@ dd <- subset(Data, R == 1)
 
 
 
-X_external <- Data[Data$R == 0, 1:10]
-X <- Data[Data$R == 1, 1:10]
-Y <- Data[Data$R == 1, ]$Y
-A <- Data[Data$R == 1, ]$A
-S <- Data[Data$R == 1, ]$S
-
-X[,1] <- LETTERS[X[, 1]]
-X_external[,1] <- LETTERS[X_external[, 1]]
-
-summary(A)
-summary(Y)
-summary(S)
-dim(X)
-dim(X_external)
-names(X)[1] <- names(X_external)[1] <- "SG"
-
+X_ext <- Data[Data$R == 0, 2:10]
+X <- Data[Data$R == 1, 2:10]
+Y <- Data$Y[Data$R == 1]
+A <- Data$A[Data$R == 1]
+S <- Data$S[Data$R == 1]
 S <- letters[S]
+EM <- Data$X1[Data$R == 1]
+EM <- LETTERS[EM]
+# EM <- factor(EM, levels = c("E", "D", "C", "B", "A"))
+EM_ext <- Data$X1[Data$R == 0]
+EM_ext <- LETTERS[EM_ext]
+
+table(A)
+summary(Y)
+table(S)
+table(EM)
+table(EM_ext)
+dim(X)
+dim(X_ext)
+
 
 ### STE.S test
-si <- STE_int(
-  X = X, Y = Y, S = S, A = A,
+si <- STE_nested(
+  X = X, Y = Y, EM = EM, S = S, A = A,
+  cross_fitting = FALSE,
   source_model = "glmnet.multinom",
   source_model_args = list(),
   treatment_model_type = "separate",
@@ -182,11 +186,13 @@ si <- STE_int(
 )
 print(si)
 summary(si)
-plot(si)
+plot(si, use_scb = TRUE)
+plot(si, use_scb = FALSE)
 
-
-sicf <- STE_int_cf(
-  X = X, Y = Y, S = S, A = A,
+sicf <- STE_nested(
+  X = X, Y = Y, EM = EM, S = S, A = A,
+  cross_fitting = TRUE,
+  replications = 5,
   source_model = "glmnet.multinom",
   source_model_args = list(),
   treatment_model_type = "joint",
@@ -207,8 +213,7 @@ sicf <- STE_int_cf(
     family = gaussian(),
     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
     cvControl = list(V = 5L)
-  ),
-  replications = 10
+  )
 )
 print(sicf)
 summary(sicf)

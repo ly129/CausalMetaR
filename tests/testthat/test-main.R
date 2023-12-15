@@ -155,8 +155,8 @@
 # dim(X0)
 #
 #
-# ### STE_int test
-# test_STE_int <- STE_int(
+# ### STE_nested test
+# test_STE_nested <- STE_nested(
 #   X = X, Y = Y, S = S, A = A,
 #   source_model = "SL.glmnet.multinom",
 #   source_model_args = list(),
@@ -174,7 +174,7 @@
 #     cvControl = list(V = 5L)
 #   )
 # )
-# test_STE_int
+# test_STE_nested
 #
 #
 # ### STE_ext test
