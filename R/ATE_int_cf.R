@@ -33,7 +33,7 @@
 #' When one source of data is a randomized trial, it is still recommended to estimate the propensity score for optimal efficiency.
 #' Since the non-parametric influence function is the same as the efficient semi-parametric efficient influence function when the propensity score is known and incorporating the assumption \eqn{Y\perp S|(X, A=a)}, the inference stays the same.
 #'
-#' @return An object of class "ATE_int". This object is a list with the following elements:
+#' @return An object of class "ATE_nested". This object is a list with the following elements:
 #'   \item{df_dif}{A data frame containing the treatment effect (mean difference) estimates for the internal populations.}
 #'   \item{df_A0}{A data frame containing the potential outcome mean estimates under A = 0 for the internal populations.}
 #'   \item{df_A1}{A data frame containing the potential outcome mean estimates under A = 1 for the internal populations.}
@@ -48,7 +48,7 @@
 #'
 #' @export
 
-ATE_int_cf <- function(
+ATE_nested_cf <- function(
     X,
     Y,
     S, # integer sequence starting from 1
@@ -298,7 +298,7 @@ ATE_int_cf <- function(
               outcome_model_args = outcome_model_args,
               source_model = source_model,
               treatment_model_args = treatment_model_args)
-  class(res) <- 'ATE_int'
+  class(res) <- 'ATE_nested'
 
   return(res)
 }

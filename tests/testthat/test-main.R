@@ -241,8 +241,8 @@
 #
 #
 #
-# ### ATE_int test
-# test_ATE_int <- ATE_int(
+# ### ATE_nested test
+# test_ATE_nested <- ATE_nested(
 #   X = X, Y = Y, S = S, A = A,
 #   source_model = "SL.glmnet.multinom",
 #   source_model_args = list(),
@@ -260,4 +260,4 @@
 #     cvControl = list(V = 5L)
 #   )
 # )
-# test_ATE_int
+# test_ATE_nested

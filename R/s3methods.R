@@ -93,26 +93,39 @@ plot.STE_nested <- function(x,
 }
 
 
-#' Plot method for objects of class "ATE_int"
+#' Plot method for objects of class "ATE_nested"
 #'
-#' This function creates forest plots of objects of class "ATE_int".
+#' This function creates forest plots of objects of class "ATE_nested".
 #'
-#' @param x Object of class "ATE_int".
+#' @param x Object of class "ATE_nested".
 #' @param ... Other arguments, which are passed to \code{\link[metafor]{forest.rma}}.
 #' @return No value is returned.
-#' @seealso \code{\link{ATE_int}}
+#' @seealso \code{\link{ATE_nested}}
 #'
 #'
 #'
 #' @export
 
-plot.ATE_int <- function(x, ...){
-  if (!inherits(x, "ATE_int")){
-    stop("Argument 'x' must be an object of class \"ATE_int\".")
+plot.ATE_nested <- function(x,
+                            source_names,
+                            ...){
+  if (!inherits(x, "ATE_nested")){
+    stop("Argument 'x' must be an object of class \"ATE_nested\".")
   }
 
   all_args = as.list(match.call())[-1]
   args <- all_args[!names(all_args) %in% c('x')]
+
+  no_S <- length(unique(x$df_dif$Source))
+
+  if (missing(source_names)){
+    args$slab <- x$source_names
+  } else {
+    if (length(source_names) != no_S){
+      stop(paste0('The length of source_names does not match the number of sources (', no_S, ')'))
+    }
+    args$slab <- source_names
+  }
 
   if (!('shade' %in% names(args))){
     args$shade <- 'zebra'
@@ -134,15 +147,15 @@ plot.ATE_int <- function(x, ...){
 
 
 
-#' Print method for objects of class "ATE_int", "ATE_ext", "STE_nested", or "STE_ext"
+#' Print method for objects of class "ATE_nested", "ATE_ext", "STE_nested", or "STE_ext"
 #'
-#' Print method for objects of class "ATE_int", "ATE_ext", "STE_nested", or "STE_ext"
+#' Print method for objects of class "ATE_nested", "ATE_ext", "STE_nested", or "STE_ext"
 #'
-#' @param x Object of class "ATE_int", "ATE_ext", "STE_nested", or "STE_ext".
+#' @param x Object of class "ATE_nested", "ATE_ext", "STE_nested", or "STE_ext".
 #' @param digits Integer specifying the number of decimal places to display.
 #' @param ... Other arguments (ignored).
 #' @return No value is returned.
-#' @seealso \code{\link{ATE_int}}, \code{\link{ATE_ext}}, \code{\link{STE_nested}}, \code{\link{STE_ext}}
+#' @seealso \code{\link{ATE_nested}}, \code{\link{ATE_ext}}, \code{\link{STE_nested}}, \code{\link{STE_ext}}
 #'
 #'
 #'
@@ -171,9 +184,9 @@ print.STE_nested <- function(x, digits = 4, ...){
 
 #' @rdname print.STE_nested
 #' @export
-print.ATE_int <- function(x, digits = 4, ...){
-  if (!inherits(x, "ATE_int")){
-    stop("Argument 'x' must be an object of class \"ATE_int\".")
+print.ATE_nested <- function(x, digits = 4, ...){
+  if (!inherits(x, "ATE_nested")){
+    stop("Argument 'x' must be an object of class \"ATE_nested\".")
   }
 
   cat('AVERAGE TREATMENT EFFECT ESTIMATES IN INTERNAL POPULATIONS\n\n')
@@ -209,15 +222,15 @@ print.ATE_ext <- function(x, digits = 4, ...){
   my_print(x$df_dif, digits = digits, ATE = TRUE, internal = FALSE)
 }
 
-#' Summary method for objects of class "ATE_int", "ATE_ext", "STE_nested", or "STE_ext"
+#' Summary method for objects of class "ATE_nested", "ATE_ext", "STE_nested", or "STE_ext"
 #'
-#' Summary method for objects of class "ATE_int", "ATE_ext", "STE_nested", or "STE_ext"
+#' Summary method for objects of class "ATE_nested", "ATE_ext", "STE_nested", or "STE_ext"
 #'
-#' @param object Object of class "ATE_int", "ATE_ext", "STE_nested", or "STE_ext".
+#' @param object Object of class "ATE_nested", "ATE_ext", "STE_nested", or "STE_ext".
 #' @param digits Integer specifying the number of decimal places to display.
 #' @param ... Other arguments.
 #' @return No value is returned.
-#' @seealso \code{\link{ATE_int}}, \code{\link{ATE_ext}}, \code{\link{STE_nested}}, \code{\link{STE_ext}}
+#' @seealso \code{\link{ATE_nested}}, \code{\link{ATE_ext}}, \code{\link{STE_nested}}, \code{\link{STE_ext}}
 #'
 #'
 #'
@@ -318,9 +331,9 @@ summary.ATE_ext <- function(object, digits = 4, ...){
 
 #' @rdname summary.STE_nested
 #' @export
-summary.ATE_int <- function(object, digits = 4, ...){
-  if (!inherits(object, "ATE_int")){
-    stop("Argument 'object' must be an object of class \"ATE_int\".")
+summary.ATE_nested <- function(object, digits = 4, ...){
+  if (!inherits(object, "ATE_nested")){
+    stop("Argument 'object' must be an object of class \"ATE_nested\".")
   }
 
   cat('AVERAGE TREATMENT EFFECT ESTIMATES IN AN INTERNAL POPULATIONS\n\n')
