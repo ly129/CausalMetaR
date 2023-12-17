@@ -4,7 +4,7 @@
 \alias{plot.ATE_nested}
 \title{Plot method for objects of class "ATE_nested"}
 \usage{
-\method{plot}{ATE_nested}(x, ...)
+\method{plot}{ATE_nested}(x, source_names, ...)
 }
 \arguments{
 \item{x}{Object of class "ATE_nested".}

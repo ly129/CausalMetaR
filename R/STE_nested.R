@@ -77,13 +77,18 @@ STE_nested <- function(
   S_dummy <- data.frame(model.matrix(~ 0 + S)[, -1])
   colnames(S_dummy) <- unique_S[-1]
 
-  # Number of EMs
+  # Number of EM
   if (!is.factor(EM)) EM <- factor(EM)
   unique_EM <- levels(EM)
   no_EM <- length(unique_EM)
   # EM with one-hot encoding to prevent potential problems in SuperLearner
   EM_dummy <- data.frame(model.matrix(~ 0 + EM)[, -1])
   colnames(EM_dummy) <- unique_EM[-1]
+
+  # Converting character variables into factor variables?
+
+  # Converting factor variables into dummy variables
+  X <- data.frame(model.matrix(~ ., data = X)[, -1])
 
   if (cross_fitting) {
     ## sample splitting and cross fitting loop
@@ -106,40 +111,40 @@ STE_nested <- function(
         }
       }
       for (k in 1:K) {
-        test.id <- sm.id <- tm.id <- om.id <- integer()
+        test_id <- sm_id <- tm_id <- om_id <- integer()
         for (s in unique_S) {
           id_S <- id_by_SX[[s]]
           part_S <- partition[[s]]
           for (em in unique_EM) {
             id_SX <- id_S[[em]]
             part_SX <- part_S[[em]]
-            test.id <- c(test.id, id_SX[which(part_SX == k %% K)])
-            sm.id <- c(sm.id, id_SX[which(part_SX == (k + 1) %% K)])
-            tm.id <- c(tm.id, id_SX[which(part_SX == (k + 2) %% K)])
-            om.id <- c(om.id, id_SX[which(part_SX == (k + 3) %% K)])
+            test_id <- c(test_id, id_SX[part_SX == k %% K])
+            sm_id <- c(sm_id, id_SX[part_SX == (k + 1) %% K])
+            tm_id <- c(tm_id, id_SX[part_SX == (k + 2) %% K])
+            om_id <- c(om_id, id_SX[part_SX == (k + 3) %% K])
           }
         }
-        X_test <- X[test.id, ]
-        Y_test <- Y[test.id]
-        A_test <- A[test.id]
-        S_test <- S[test.id]
-        EM_dummy_test <- EM_dummy[test.id, ]
-        EM_test <- EM[test.id]
+        X_test <- X[test_id, ]
+        Y_test <- Y[test_id]
+        A_test <- A[test_id]
+        S_test <- S[test_id]
+        EM_dummy_test <- EM_dummy[test_id, ]
+        EM_test <- EM[test_id]
 
-        X_sm <- X[sm.id, ]
-        S_sm <- S[sm.id]
-        EM_dummy_sm <- EM_dummy[sm.id, ]
+        X_sm <- X[sm_id, ]
+        S_sm <- S[sm_id]
+        EM_dummy_sm <- EM_dummy[sm_id, ]
 
-        X_tm <- X[tm.id, ]
-        A_tm <- A[tm.id]
-        S_tm <- S[tm.id]
-        if (treatment_model_type == "joint") S_dummy_tm <- S_dummy[tm.id, ]
-        EM_dummy_tm <- EM_dummy[tm.id, ]
+        X_tm <- X[tm_id, ]
+        A_tm <- A[tm_id]
+        S_tm <- S[tm_id]
+        if (treatment_model_type == "joint") S_dummy_tm <- S_dummy[tm_id, ]
+        EM_dummy_tm <- EM_dummy[tm_id, ]
 
-        X_om <- X[om.id, ]
-        Y_om <- Y[om.id]
-        A_om <- A[om.id]
-        EM_dummy_om <- EM_dummy[om.id, ]
+        X_om <- X[om_id, ]
+        Y_om <- Y[om_id]
+        A_om <- A[om_id]
+        EM_dummy_om <- EM_dummy[om_id, ]
 
         ## source model
         if (source_model %in% c("glmnet.multinom", "nnet.multinom")) {
@@ -180,7 +185,7 @@ STE_nested <- function(
                                                 newdata = data.frame(S_mat, EM_dummy_test, X_test))$pred
           }
         } else {
-          stop("Type has to be either 'separate' or 'joint'.")
+          stop("The 'treatment_model_type' has to be either 'separate' or 'joint'.")
         }
 
         ## outcome model
@@ -281,7 +286,7 @@ STE_nested <- function(
                                             newdata = data.frame(S_mat, EM_dummy, X))$pred
       }
     } else {
-      stop("Type has to be either 'separate' or 'joint'.")
+      stop("The 'treatment_model_type' has to be either 'separate' or 'joint'.")
     }
 
     outcome_model_args$Y <- Y

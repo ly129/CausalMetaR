@@ -147,15 +147,15 @@ plot.ATE_nested <- function(x,
 
 
 
-#' Print method for objects of class "ATE_nested", "ATE_ext", "STE_nested", or "STE_ext"
+#' Print method for objects of class "ATE_nested", "ATE_external", "STE_nested", or "STE_external"
 #'
-#' Print method for objects of class "ATE_nested", "ATE_ext", "STE_nested", or "STE_ext"
+#' Print method for objects of class "ATE_nested", "ATE_external", "STE_nested", or "STE_external"
 #'
-#' @param x Object of class "ATE_nested", "ATE_ext", "STE_nested", or "STE_ext".
+#' @param x Object of class "ATE_nested", "ATE_external", "STE_nested", or "STE_external".
 #' @param digits Integer specifying the number of decimal places to display.
 #' @param ... Other arguments (ignored).
 #' @return No value is returned.
-#' @seealso \code{\link{ATE_nested}}, \code{\link{ATE_ext}}, \code{\link{STE_nested}}, \code{\link{STE_ext}}
+#' @seealso \code{\link{ATE_nested}}, \code{\link{ATE_external}}, \code{\link{STE_nested}}, \code{\link{STE_external}}
 #'
 #'
 #'
@@ -198,9 +198,9 @@ print.ATE_nested <- function(x, digits = 4, ...){
 
 #' @rdname print.STE_nested
 #' @export
-print.STE_ext <- function(x, digits = 4, ...){
-  if (!inherits(x, "STE_ext")){
-    stop("Argument 'x' must be an object of class \"STE_ext\".")
+print.STE_external <- function(x, digits = 4, ...){
+  if (!inherits(x, "STE_external")){
+    stop("Argument 'x' must be an object of class \"STE_external\".")
   }
 
   cat('SUBGROUP TREATMENT EFFECT ESTIMATES IN AN EXTERNAL POPULATION\n\n')
@@ -211,9 +211,9 @@ print.STE_ext <- function(x, digits = 4, ...){
 
 #' @rdname print.STE_nested
 #' @export
-print.ATE_ext <- function(x, digits = 4, ...){
-  if (!inherits(x, "ATE_ext")){
-    stop("Argument 'x' must be an object of class \"ATE_ext\".")
+print.ATE_external <- function(x, digits = 4, ...){
+  if (!inherits(x, "ATE_external")){
+    stop("Argument 'x' must be an object of class \"ATE_external\".")
   }
 
   cat('AVERAGE TREATMENT EFFECT ESTIMATES IN AN EXTERNAL POPULATION\n\n')
@@ -222,15 +222,15 @@ print.ATE_ext <- function(x, digits = 4, ...){
   my_print(x$df_dif, digits = digits, ATE = TRUE, internal = FALSE)
 }
 
-#' Summary method for objects of class "ATE_nested", "ATE_ext", "STE_nested", or "STE_ext"
+#' Summary method for objects of class "ATE_nested", "ATE_external", "STE_nested", or "STE_external"
 #'
-#' Summary method for objects of class "ATE_nested", "ATE_ext", "STE_nested", or "STE_ext"
+#' Summary method for objects of class "ATE_nested", "ATE_external", "STE_nested", or "STE_external"
 #'
-#' @param object Object of class "ATE_nested", "ATE_ext", "STE_nested", or "STE_ext".
+#' @param object Object of class "ATE_nested", "ATE_external", "STE_nested", or "STE_external".
 #' @param digits Integer specifying the number of decimal places to display.
 #' @param ... Other arguments.
 #' @return No value is returned.
-#' @seealso \code{\link{ATE_nested}}, \code{\link{ATE_ext}}, \code{\link{STE_nested}}, \code{\link{STE_ext}}
+#' @seealso \code{\link{ATE_nested}}, \code{\link{ATE_external}}, \code{\link{STE_nested}}, \code{\link{STE_external}}
 #'
 #'
 #'
@@ -275,9 +275,9 @@ summary.STE_nested <- function(object, digits = 4, ...){
 
 #' @rdname summary.STE_nested
 #' @export
-summary.STE_ext <- function(object, digits = 4, ...){
-  if (!inherits(object, "STE_ext")){
-    stop("Argument 'object' must be an object of class \"STE_ext\".")
+summary.STE_external <- function(object, digits = 4, ...){
+  if (!inherits(object, "STE_external")){
+    stop("Argument 'object' must be an object of class \"STE_external\".")
   }
 
   cat('SUBGROUP TREATMENT EFFECT ESTIMATES IN AN EXTERNAL POPULATION\n\n')
@@ -303,9 +303,9 @@ summary.STE_ext <- function(object, digits = 4, ...){
 
 #' @rdname summary.STE_nested
 #' @export
-summary.ATE_ext <- function(object, digits = 4, ...){
-  if (!inherits(object, "ATE_ext")){
-    stop("Argument 'object' must be an object of class \"ATE_ext\".")
+summary.ATE_external <- function(object, digits = 4, ...){
+  if (!inherits(object, "ATE_external")){
+    stop("Argument 'object' must be an object of class \"ATE_external\".")
   }
 
   cat('AVERAGE TREATMENT EFFECT ESTIMATES IN AN EXTERNAL POPULATION\n\n')

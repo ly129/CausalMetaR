@@ -177,8 +177,8 @@
 # test_STE_nested
 #
 #
-# ### STE_ext test
-# test_STE_ext <- STE_ext(
+# ### STE_external test
+# test_STE_external <- STE_external(
 #   X = X, Y = Y, S = S, A = A, X0 = X0,
 #   source_model = "SL.glmnet.multinom",
 #   source_model_args = list(),
@@ -203,7 +203,7 @@
 #   ),
 #   EM = 1
 # )
-# test_STE_ext
+# test_STE_external
 #
 #
 #
@@ -211,8 +211,8 @@
 #
 #
 #
-# ### ATE_ext test
-# test_ATE_ext <- ATE_ext(
+# ### ATE_external test
+# test_ATE_external <- ATE_external(
 #   X = X, Y = Y, S = S, A = A, X0 = X0,
 #   source_model = "SL.glmnet.multinom",
 #   source_model_args = list(),
@@ -236,7 +236,7 @@
 #     cvControl = list(V = 5L)
 #   )
 # )
-# test_ATE_ext
+# test_ATE_external
 #
 #
 #

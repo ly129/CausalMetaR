@@ -267,12 +267,13 @@ plot(aicf)
 
 
 
-### STE.R test
-se <- STE_ext(
-  X = X, Y = Y, S = S, A = A, X_external = X_external,
+### STE_external test
+se <- STE_external(
+  X = X, Y = Y, EM = EM, S = S, A = A, X_external = X_ext, EM_external = EM_ext,
+  cross_fitting = FALSE,
   source_model = "glmnet.multinom",
   source_model_args = list(),
-  treatment_model_type = "joint",
+  treatment_model_type = "separate",
   treatment_model = "SuperLearner",
   treatment_model_args = list(
     family = binomial(),
@@ -295,11 +296,13 @@ se <- STE_ext(
 print(se)
 summary(se)
 
-secf <- STE_ext_cf(
-  X = X, Y = Y, S = S, A = A, X_external = X_external,
+secf <- STE_external(
+  X = X, Y = Y, EM = EM, S = S, A = A, X_external = X_ext, EM_external = EM_ext,
+  cross_fitting = FALSE,
+  replications = 10,
   source_model = "glmnet.multinom",
   source_model_args = list(),
-  treatment_model_type = "separate",
+  treatment_model_type = "joint",
   treatment_model = "SuperLearner",
   treatment_model_args = list(
     family = binomial(),
@@ -317,19 +320,13 @@ secf <- STE_ext_cf(
     family = gaussian(),
     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
     cvControl = list(V = 5L)
-  ),
-  replications = 10
+  )
 )
 print(secf)
 summary(secf)
 
-
-
-
-
-
-### ATE_ext test
-ae <- ATE_ext(
+### ATE_external test
+ae <- ATE_external(
   X = X, Y = Y, S = S, A = A, X_external = X_external,
   source_model = "glmnet.multinom",
   source_model_args = list(),
@@ -356,11 +353,13 @@ ae <- ATE_ext(
 summary(ae)
 print(ae)
 
-aecf <- ATE_ext_cf(
+aecf <- ATE_external(
   X = X, Y = Y, S = S, A = A, X_external = X_external,
+  cross_fitting = TRUE,
+  replications = 5L,
   source_model = "glmnet.multinom",
   source_model_args = list(),
-  treatment_model_type = "separate",
+  treatment_model_type = "joint",
   treatment_model = "SuperLearner",
   treatment_model_args = list(
     family = binomial(),
@@ -378,8 +377,7 @@ aecf <- ATE_ext_cf(
     family = gaussian(),
     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
     cvControl = list(V = 5L)
-  ),
-  replications = 10
+  )
 )
 summary(aecf)
 print(aecf)

@@ -2,21 +2,21 @@
 % Please edit documentation in R/s3methods.R
 \name{summary.STE_nested}
 \alias{summary.STE_nested}
-\alias{summary.STE_ext}
-\alias{summary.ATE_ext}
+\alias{summary.STE_external}
+\alias{summary.ATE_external}
 \alias{summary.ATE_nested}
-\title{Summary method for objects of class "ATE_nested", "ATE_ext", "STE_nested", or "STE_ext"}
+\title{Summary method for objects of class "ATE_nested", "ATE_external", "STE_nested", or "STE_external"}
 \usage{
 \method{summary}{STE_nested}(object, digits = 4, ...)
 
-\method{summary}{STE_ext}(object, digits = 4, ...)
+\method{summary}{STE_external}(object, digits = 4, ...)
 
-\method{summary}{ATE_ext}(object, digits = 4, ...)
+\method{summary}{ATE_external}(object, digits = 4, ...)
 
 \method{summary}{ATE_nested}(object, digits = 4, ...)
 }
 \arguments{
-\item{object}{Object of class "ATE_nested", "ATE_ext", "STE_nested", or "STE_ext".}
+\item{object}{Object of class "ATE_nested", "ATE_external", "STE_nested", or "STE_external".}
 
 \item{digits}{Integer specifying the number of decimal places to display.}
 
@@ -26,8 +26,8 @@
 No value is returned.
 }
 \description{
-Summary method for objects of class "ATE_nested", "ATE_ext", "STE_nested", or "STE_ext"
+Summary method for objects of class "ATE_nested", "ATE_external", "STE_nested", or "STE_external"
 }
 \seealso{
-\code{\link{ATE_nested}}, \code{\link{ATE_ext}}, \code{\link{STE_nested}}, \code{\link{STE_ext}}
+\code{\link{ATE_nested}}, \code{\link{ATE_external}}, \code{\link{STE_nested}}, \code{\link{STE_external}}
 }
