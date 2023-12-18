@@ -1,7 +1,9 @@
-# test
+## code to prepare `dat_nested` dataset goes here
+
 library("mvtnorm")
 library("rootSolve")
-library("CMetafoR")
+
+set.seed(20231218)
 
 generate_simulated_data <- function(n = 2000) {
   prevmi <- rbinom(n, size = 1, prob = 0.50)
@@ -94,20 +96,12 @@ Gen=function(n,n_m){
   A_R=rbinom(length(S_R),1,p=plogis(as.numeric(alpha_1%*%t(data.frame(cbind(rep(1,length(S_R)),X[which(R==1),])))+t(alpha_2*S_R)+alpha_3%*%t(sweep(X[which(R==1),],1,S_R,`*`)))))
   A=rep(NA,length(R))
   A[R==1]=A_R
-  # A1=rbinom(length(S_R[S_R==1]), size=1, p=plogis(as.numeric(alpha_1%*%t(data.frame(cbind(rep(1,length(S_R[S_R==1])),X[which(S_R==1),]))))))
-  # A2=rbinom(length(S_R[S_R==2]), size=1, p=plogis(as.numeric(alpha_2%*%t(data.frame(cbind(rep(1,length(S_R[S_R==2])),X[which(S_R==2),]))))))
-  # A3=rbinom(length(S_R[S_R==3]), size=1, p=plogis(as.numeric(alpha_3%*%t(data.frame(cbind(rep(1,length(S_R[S_R==3])),X[which(S_R==3),]))))))
-  # A_R=rep(NA,length(S_R));A_R[S_R==1]=A1;A_R[S_R==2]=A2;A_R[S_R==3]=A3
-  # A=rep(NA,length(R));A[R==1]=A_R
+
   ## Y
   f1=function(x) sin(x)
   f2=function(x) exp(-0.25*x)
   f3=function(x) 0.02*x^2+(2*(1+0.1*x))^2+2*(0.015*x)^3
-  # Y=1+5*A+
-  #   1*X[,1]+f1(theta_0[3]*X[,2])+f1(theta_0[4]*X[,3])+f1(theta_0[5]*X[,4])+f2(theta_0[6]*X[,5])+f2(theta_0[7]*X[,6])+f2(theta_0[8]*X[,7])+f3(theta_0[9]*X[,8])+f3(theta_0[10]*X[,9])+f3(theta_0[11]*X[,10])+
-  #   1.35*A*X1_2+1.4*A*X1_3+1.45*A*X1_4+1.5*A*X1_5+
-  #   0.8*A*X[,2]+0.7*A*X[,3]+0.6*A*X[,4]+0.5*A*X[,5]+
-  #   rnorm(n)
+
   Y1=1+5+X[,1]+
     f1(theta_0[3]*X[,2])+f1(theta_0[4]*X[,3])+f1(theta_0[5]*X[,4])+f2(theta_0[6]*X[,5])+f2(theta_0[7]*X[,6])+f2(theta_0[8]*X[,7])+f3(theta_0[9]*X[,8])+f3(theta_0[10]*X[,9])+f3(theta_0[11]*X[,10])+
     1.8*X1_1+0.35*X1_2+2.4*X1_3+1.45*X1_4+0.5*X1_5+
@@ -117,59 +111,31 @@ Gen=function(n,n_m){
     f1(theta_0[3]*X[,2])+f1(theta_0[4]*X[,3])+f1(theta_0[5]*X[,4])+f2(theta_0[6]*X[,5])+f2(theta_0[7]*X[,6])+f2(theta_0[8]*X[,7])+f3(theta_0[9]*X[,8])+f3(theta_0[10]*X[,9])+f3(theta_0[11]*X[,10])+
     rnorm(n)
   Y=Y0*(1-A)+Y1*A
-  #Y0=theta_0[1]+theta_0[2]*X[,1]+f1(theta_0[3]*X[,2])+f1(theta_0[4]*X[,3])+f1(theta_0[5]*X[,4])+f2(theta_0[6]*X[,5])+f2(theta_0[7]*X[,6])+f2(theta_0[8]*X[,7])+f3(theta_0[9]*X[,8])+f3(theta_0[10]*X[,9])+f3(theta_0[11]*X[,10])+rnorm(n)
-  #Y1=theta_1[1]+theta_1[2]*X[,1]+f1(theta_1[3]*X[,2])+f1(theta_1[4]*X[,3])+f1(theta_1[5]*X[,4])+f2(theta_1[6]*X[,5])+f2(theta_1[7]*X[,6])+f2(theta_1[8]*X[,7])+f3(theta_1[9]*X[,8])+f3(theta_1[10]*X[,9])+f3(theta_1[11]*X[,10])+rnorm(n)
-  #Y=Y0*(1-A)+Y1*A
 
   return(data.frame(X,R,S,A,Y,Y1,Y0))
 }
 
 ###########------- Sample size specification
 n=10000
-#n=100000
 n_m=1000
-# n_m=2000
-# n_m=5000
 
 Data=Gen(n, n_m)
-hist(Data$Y[which(Data$A==0)]);mean(Data$Y[which(Data$A==0)])
-hist(Data$Y[which(Data$A==1)]);mean(Data$Y[which(Data$A==1)])
-hist(Data$Y[which(Data$R==1)]);mean(Data$Y[which(Data$R==1)])
+names(Data)[1] <- "EM"
+Data$EM <- letters[Data$EM]
 
-dd <- subset(Data, R == 1)
+dat_nested <- subset(Data, R == 1)
+dat_external <- subset(Data, R == 0)
 
-
-
-
-
-
-X_ext <- Data[Data$R == 0, 2:10]
-X <- Data[Data$R == 1, 2:10]
-Y <- Data$Y[Data$R == 1]
-A <- Data$A[Data$R == 1]
-S <- Data$S[Data$R == 1]
-S <- letters[S]
-S = factor(S, levels = c("b", "a", "c"))
-EM <- Data$X1[Data$R == 1]
-EM <- LETTERS[EM]
-EM <- factor(EM, levels = c("E", "D", "C", "B", "A"))
-EM_ext <- Data$X1[Data$R == 0]
-EM_ext <- LETTERS[EM_ext]
-EM_ext <- factor(EM_ext, levels = c("E", "D", "C", "B", "A"))
-
-table(A)
-summary(Y)
-table(S)
-table(EM)
-table(EM_ext)
-dim(X)
-dim(X_ext)
-
+dat_nested$S <- LETTERS[dat_nested$S]
 
 ### STE_nested test
 # regular
-si <- STE_nested(
-  X = X, Y = Y, EM = EM, S = S, A = A,
+sn <- STE_nested(
+  X = dat_nested[, 2:9],
+  Y = dat_nested$Y,
+  EM = dat_nested$EM,
+  S = dat_nested$S,
+  A = dat_nested$A,
   cross_fitting = FALSE,
   source_model = "MN.nnet",
   source_model_args = list(),
@@ -185,14 +151,18 @@ si <- STE_nested(
     cvControl = list(V = 5L)
   )
 )
-print(si)
-summary(si)
-plot(si, use_scb = TRUE)
-plot(si, use_scb = FALSE)
+print(sn)
+summary(sn)
+plot(sn, use_scb = TRUE)
+plot(sn, use_scb = FALSE)
 
 # # cross-fitting
-# sicf <- STE_nested(
-#   X = X, Y = Y, EM = EM, S = S, A = A,
+# sncf <- STE_nested(
+#   X = dat_nested[, 2:9],
+#   Y = dat_nested$Y,
+#   EM = dat_nested$EM,
+#   S = dat_nested$S,
+#   A = dat_nested$A,
 #   cross_fitting = TRUE,
 #   replications = 5,
 #   source_model = "MN.glmnet",
@@ -209,16 +179,19 @@ plot(si, use_scb = FALSE)
 #     cvControl = list(V = 5L)
 #   )
 # )
-# print(sicf)
-# summary(sicf)
-# plot(sicf, use_scb = TRUE)
-# plot(sicf, use_scb = FALSE)
+# print(sncf)
+# summary(sncf)
+# plot(sncf, use_scb = TRUE)
+# plot(sncf, use_scb = FALSE)
 
 
 ### ATE_nested test
 # regular
-ai <- ATE_nested(
-  X = X, Y = Y, S = S, A = A,
+an <- ATE_nested(
+  X = dat_nested[, 2:9],
+  Y = dat_nested$Y,
+  S = dat_nested$S,
+  A = dat_nested$A,
   source_model = "MN.glmnet",
   source_model_args = list(),
   treatment_model_type = "separate",
@@ -233,12 +206,15 @@ ai <- ATE_nested(
     cvControl = list(V = 5L)
   )
 )
-summary(ai)
-print(ai)
-plot(ai)
+summary(an)
+print(an)
+plot(an)
 
-# aicf <- ATE_nested(
-#   X = X, Y = Y, S = S, A = A,
+# ancf <- ATE_nested(
+#   X = dat_nested[, 2:9],
+#   Y = dat_nested$Y,
+#   S = dat_nested$S,
+#   A = dat_nested$A,
 #   cross_fitting = TRUE,
 #   replications = 10L,
 #   source_model = "MN.glmnet",
@@ -255,19 +231,24 @@ plot(ai)
 #     cvControl = list(V = 5L)
 #   )
 # )
-# summary(aicf)
-# print(aicf)
-# plot(aicf)
+# summary(ancf)
+# print(ancf)
+# plot(ancf)
 
 
 
 ### STE_external test
 se <- STE_external(
-  X = X, Y = Y, EM = EM, S = S, A = A,
-  X_external = X_ext, EM_external = EM_ext,
+  X = dat_nested[, 2:9],
+  Y = dat_nested$Y,
+  EM = dat_nested$EM,
+  S = dat_nested$S,
+  A = dat_nested$A,
+  X_external = dat_external[, 2:9],
+  EM_external = dat_external$EM,
   cross_fitting = FALSE,
   source_model = "MN.glmnet",
-  source_model_args = list(),
+  source_model_args = list(trace = FALSE),
   treatment_model_type = "separate",
   treatment_model_args = list(
     family = binomial(),
@@ -289,7 +270,13 @@ print(se)
 summary(se)
 
 # secf <- STE_external(
-#   X = X, Y = Y, EM = EM, S = S, A = A, X_external = X_ext, EM_external = EM_ext,
+#   X = dat_nested[, 2:9],
+#   Y = dat_nested$Y,
+#   EM = dat_nested$EM,
+#   S = dat_nested$S,
+#   A = dat_nested$A,
+#   X_external = dat_external[, 2:9],
+#   EM_external = dat_external$EM,
 #   cross_fitting = FALSE,
 #   replications = 10,
 #   source_model = "MN.glmnet",
@@ -316,7 +303,11 @@ summary(se)
 
 ### ATE_external test
 ae <- ATE_external(
-  X = X, Y = Y, S = S, A = A, X_external = X_ext,
+  X = dat_nested[, 2:9],
+  Y = dat_nested$Y,
+  S = dat_nested$S,
+  A = dat_nested$A,
+  X_external = dat_external[, 2:9],
   source_model = "MN.glmnet",
   source_model_args = list(),
   treatment_model_type = "separate",

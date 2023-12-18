@@ -13,7 +13,7 @@
 #' @param cross_fitting Logical, indicating whether sample splitting and cross fitting procedure should be used.
 #' @param replications Integer, the number of sample splitting and cross fitting replications to performe, if \code{cross_fitting = TRUE}. Default is \code{10L}.
 #' @param source_model The (penalized) multinomial logistic regression for estimating \eqn{P(S=s|X)}. It has two options: "\code{MN.glmnet}" (default) and "\code{MN.nnet}", which use \pkg{glmnet} and \pkg{nnet} respectively.
-#' @param source_model_args The arguments (in \pkg{SuperLearner}) for the source model.
+#' @param source_model_args The arguments (in \pkg{glmnet} or \pkg{nnet}) for the source model.
 #' @param treatment_model_type How the propensity score \eqn{P(A=1|X)=\sum_{s \in S} P(A=1|X, S=s)P(S=s|X)} is estimated. Options include "\code{separate}" (default) and "\code{joint}". If "\code{separate}", \eqn{P(A=1|X, S=s)} is estimated by regressing \eqn{A} on \eqn{X} within each specific internal source population \eqn{S=s}. If "\code{joint}", \eqn{P(A=1|X, S=s)} is estimated by regressing \eqn{A} on \eqn{X} and \eqn{S} using the multi-source population.
 #' @param treatment_model_args The arguments (in \pkg{SuperLearner}) for the treatment model.
 #' @param external_model_args The arguments (in \pkg{SuperLearner}) for the external model.
@@ -44,7 +44,34 @@
 #'   \item{fit_external}{Fitted external model.}
 #'
 #' @examples
-#'
+#' se <- STE_external(
+#'   X = dat_nested[, 2:10],
+#'   Y = dat_nested$Y,
+#'   EM = dat_nested$EM,
+#'   S = dat_nested$S,
+#'   A = dat_nested$A,
+#'   X_external = dat_external[, 2:10],
+#'   EM_external = dat_external$EM,
+#'   cross_fitting = FALSE,
+#'   source_model = "MN.nnet",
+#'   source_model_args = list(trace = FALSE),
+#'   treatment_model_type = "separate",
+#'   treatment_model_args = list(
+#'     family = binomial(),
+#'     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+#'     cvControl = list(V = 5L)
+#'   ),
+#'   external_model_args = list(
+#'     family = binomial(),
+#'     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+#'     cvControl = list(V = 5L)
+#'   ),
+#'   outcome_model_args = list(
+#'     family = gaussian(),
+#'     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+#'     cvControl = list(V = 5L)
+#'   )
+#' )
 #' @export
 
 STE_external <- function(
