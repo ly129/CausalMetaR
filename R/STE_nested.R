@@ -3,21 +3,17 @@
 #' @description
 #' Doubly-robust and efficient estimator for the subgroup treatments effect (STE) of each internal source-specific target population using \eqn{m} multi-source data.
 #'
-#' @param X The covariate data frame with \eqn{n=n_1+...+n_m} rows and \eqn{q} columns.
-#' @param Y The (binary/continuous) outcome, which is a length \eqn{n} vector.
-#' @param EM The subgroup which is a length \eqn{n} vector or factor. If \code{EM} is a factor, it will maintain its given (ordered) levels. If \code{EM} is not a factor, it will be converted into a factor with default level order.
-#' @param S The source which is a length \eqn{n} vector or factor. If \code{S} is a factor, it will maintain its given (ordered) levels. If \code{S} is not a factor, it will be converted into a factor with default level order.
-#' @param A The (binary) treatment, which is a length \eqn{n} vector.
-#' @param source_model The multinomial model for estimating \eqn{P(S=s|X)}. It has two options: \code{MN.glmnet} and \code{MN.nnet}. The default is \code{MN.glmnet}.
+#' @param X The covariate data frame with \eqn{n=n_1+...+n_{|S|}} rows and \eqn{p} columns. Character variables will be converted to factors. Numeric variables will be used as is.
+#' @param EM The effect modifier, which is a vector or factor of length \eqn{n}. If \code{EM} is a factor, it will maintain its subgroup level order, otherwise it will be converted to a factor with default level order.
+#' @param Y The length \eqn{n} outcome vector.
+#' @param S The source indicator which is a length \eqn{n} vector or factor. If \code{S} is a factor, it will maintain its level order, otherwise it will be converted to a factor with default level order. The order will be carried over to the outputs and plots.
+#' @param A The binary treatment (1 for treated and 0 for untreated), which is a length \eqn{n} vector.
+#' @param cross_fitting Logical, indicating whether sample splitting and cross fitting procedure should be used.
+#' @param replications Integer, the number of sample splitting and cross fitting replications to performe, if \code{cross_fitting = TRUE}. Default is \code{10L}.
+#' @param source_model The (penalized) multinomial logistic regression for estimating \eqn{P(S=s|X)}. It has two options: "\code{MN.glmnet}" (default) and "\code{MN.nnet}", which use \pkg{glmnet} and \pkg{nnet} respectively.
 #' @param source_model_args The arguments (in \pkg{SuperLearner}) for the source model.
-#' @param treatment_model_type The options for how the treatment_model \eqn{P(A=1|X, S=s)} is estimated. It includes \code{separate} and \code{joint}, with the default being \code{separate}. When \code{separate} is selected,
-#' \eqn{P(A=1|X, S=s)} is estimated by fitting the model (regressing \eqn{A} on \eqn{X}) within each specific internal source population (S=s). When \code{joint} is selected, \eqn{P(A=1|X, S=s)}
-#' is estimated by fitting the model (regressing \eqn{A} on \eqn{X} and \eqn{S}) using the multi-source population and then estimating the probability by fitting the model while suppressing the \eqn{S=s}.
-#' In both cases, the propensity score is calculated as \eqn{P(A=1|X)=\sum_{s=1}^{m}P(A=1|X, S=s)P(S=s|X)}.
-#' @param treatment_model The treatment model \eqn{P(A=1|X, S=s)} is estimated using \pkg{SuperLearner}. If, for example, the preference is to use only logistic regression for the probability estimation,
-#' please ensure that only \code{glm} is included in the \pkg{SuperLearner} library within the \code{treatment_model_args}.
+#' @param treatment_model_type How the propensity score \eqn{P(A=1|X)=\sum_{s \in S} P(A=1|X, S=s)P(S=s|X)} is estimated. Options include "\code{separate}" (default) and "\code{joint}". If "\code{separate}", \eqn{P(A=1|X, S=s)} is estimated by regressing \eqn{A} on \eqn{X} within each specific internal source population \eqn{S=s}. If "\code{joint}", \eqn{P(A=1|X, S=s)} is estimated by regressing \eqn{A} on \eqn{X} and \eqn{S} using the multi-source population.
 #' @param treatment_model_args The arguments (in \pkg{SuperLearner}) for the treatment model.
-#' @param outcome_model The same as \code{treatment_model}.
 #' @param outcome_model_args The arguments (in \pkg{SuperLearner}) for the outcome model.
 #'
 #' @details

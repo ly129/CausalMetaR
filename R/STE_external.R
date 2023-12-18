@@ -3,28 +3,24 @@
 #' @description
 #' Doubly-robust and efficient estimator for the subgroup treatment effects (STE) of an external target population using \eqn{m} multi-source data.
 #'
-#' @param X The covariate data frame with \eqn{n=n_1+...+n_m} rows and \eqn{q} columns. The first column of X is the categorical effect modifier (\eqn{\widetilde X}).
-#' @param X_external The covariate matrix/data frame with \eqn{n_0} rows and \eqn{q} columns. The first column of X is the categorical effect modifier (\eqn{\widetilde X}).
-#' @param Y The (binary/continuous) outcome, which is a length \eqn{n} vector.
-#' @param S The (numeric) source which is a length \eqn{n} vector.
-#' @param A The (binary) treatment, which is a length \eqn{n} vector.
-#' @param source_model The multi-nomial model for estimating \eqn{P(S=s|X)}. It has two options: \code{MN.glmnet} and \code{MN.nnet}. The default is \code{MN.glmnet}.
+#' @param X The covariate data frame with \eqn{n=n_1+...+n_{|S|}} rows and \eqn{p} columns. Character variables will be converted to factors. Numeric variables will be used as is.
+#' @param X_external The external covariate data frame with \eqn{n_0} rows and \eqn{p} columns. The external data counterpart to \code{X}.
+#' @param EM The effect modifier, which is a vector or factor of length \eqn{n}. If \code{EM} is a factor, it will maintain its subgroup level order, otherwise it will be converted to a factor with default level order.
+#' @param EM_external The external effect modifier of length \eqn{n_0}. The external data counterpart to \code{EM}.
+#' @param Y The length \eqn{n} outcome vector.
+#' @param S The source indicator which is a length \eqn{n} vector or factor. If \code{S} is a factor, it will maintain its level order, otherwise it will be converted to a factor with default level order. The order will be carried over to the outputs and plots.
+#' @param A The binary treatment (1 for treated and 0 for untreated), which is a length \eqn{n} vector.
+#' @param cross_fitting Logical, indicating whether sample splitting and cross fitting procedure should be used.
+#' @param replications Integer, the number of sample splitting and cross fitting replications to performe, if \code{cross_fitting = TRUE}. Default is \code{10L}.
+#' @param source_model The (penalized) multinomial logistic regression for estimating \eqn{P(S=s|X)}. It has two options: "\code{MN.glmnet}" (default) and "\code{MN.nnet}", which use \pkg{glmnet} and \pkg{nnet} respectively.
 #' @param source_model_args The arguments (in \pkg{SuperLearner}) for the source model.
-#' @param treatment_model_type The options for how the treatment_model \eqn{P(A=1|X, S=s)} is estimated. It includes \code{separate} and \code{joint}, with the default being \code{separate}. When \code{separate} is selected,
-#' \eqn{P(A=1|X, S=s)} is estimated by fitting the model (regressing \eqn{A} on \eqn{X}) within each specific internal source population (S=s). When \code{joint} is selected, \eqn{P(A=1|X, S=s)}
-#' is estimated by fitting the model (regressing \eqn{A} on \eqn{X} and \eqn{S}) using the multi-source population and then estimating the probability by fitting the model while suppressing the \eqn{S=s}.
-#' In both cases, the propensity score is calculated as \eqn{P(A=1|X)=\sum_{s=1}^{m}P(A=1|X, S=s)P(S=s|X)}.
-#' @param treatment_model The treatment model \eqn{P(A=1|X, S=s)} is estimated using \pkg{SuperLearner}. If, for example, the preference is to use only logistic regression for the probability estimation,
-#' please ensure that only \code{glm} is included in the \pkg{SuperLearner} library within the \code{treatment_model_args}.
+#' @param treatment_model_type How the propensity score \eqn{P(A=1|X)=\sum_{s \in S} P(A=1|X, S=s)P(S=s|X)} is estimated. Options include "\code{separate}" (default) and "\code{joint}". If "\code{separate}", \eqn{P(A=1|X, S=s)} is estimated by regressing \eqn{A} on \eqn{X} within each specific internal source population \eqn{S=s}. If "\code{joint}", \eqn{P(A=1|X, S=s)} is estimated by regressing \eqn{A} on \eqn{X} and \eqn{S} using the multi-source population.
 #' @param treatment_model_args The arguments (in \pkg{SuperLearner}) for the treatment model.
-#' @param external_model The R model \eqn{P(R=1|W)} is estimated using \pkg{SuperLearner}. R is a binary variable indicating the multi-source data, i.e., R is 1 if the subject belongs to the multi-source data and 0 if the subject belongs to the external data.
-#' W is combination of X and X_external, i.e., W=rbind(X, X_external)
-#' @param external_model_args = list(),
-#' @param outcome_model The same as \code{treatment_model}.
+#' @param external_model_args The arguments (in \pkg{SuperLearner}) for the external model.
 #' @param outcome_model_args The arguments (in \pkg{SuperLearner}) for the outcome model.
 #'
 #' @details
-#' Data structure: multi-source data contain outcome Y, source S, treatment A, and covariates X (\eqn{n \times p}); external data contain only covariate X_external (\eqn{n_0 \times p}).
+#' Data structure: multi-source data contain outcome Y, source S, treatment A, covariates X (\eqn{n \times p}) and effect modifier EM; external data contain only covariate X_external (\eqn{n_0 \times p}) and effect modifier EM_external.
 #' Once X and X_external are defined, The indicator of multi-source data, R, can be defined, i.e., R is 1 if the subject belongs to the multi-source data and 0 if the subject belongs to the external data.
 #' The estimator is doubly robust and non-parametrically efficient. Three nuisance parameters are estimated,
 #' the R model \eqn{q(X)=P(R=1|X)}, the propensity score model \eqn{\eta_a(X)=P(A=a|X)}, and the outcome model \eqn{\mu_a(X)=E(Y|X, A=a)}. The nuisance parameters are allowed to be estimated by \pkg{SuperLearner}. The estimator is

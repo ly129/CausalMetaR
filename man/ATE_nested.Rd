@@ -14,36 +14,30 @@ ATE_nested(
   source_model = "MN.glmnet",
   source_model_args = list(),
   treatment_model_type = "separate",
-  treatment_model = "SuperLearner",
   treatment_model_args = list(),
-  outcome_model = "SuperLearner",
   outcome_model_args = list()
 )
 }
 \arguments{
-\item{X}{The covariate data frame with \eqn{n=n_1+...+n_m} rows and \eqn{q} columns.}
+\item{X}{The covariate data frame with \eqn{n=n_1+...+n_{|S|}} rows and \eqn{p} columns. Character variables will be converted to factors. Numeric variables will be used as is.}
 
-\item{Y}{The (binary/continuous) outcome, which is a length \eqn{n} vector.}
+\item{Y}{The length \eqn{n} outcome vector.}
 
-\item{S}{The (numeric) source which is a length \eqn{n} vector.}
+\item{S}{The source indicator which is a length \eqn{n} vector or factor. If \code{S} is a factor, it will maintain its level order, otherwise it will be converted to a factor with default level order. The order will be carried over to the outputs and plots.}
 
-\item{A}{The (binary) treatment, which is a length \eqn{n} vector.}
+\item{A}{The binary treatment (1 for treated and 0 for untreated), which is a length \eqn{n} vector.}
 
-\item{source_model}{The multi-nomial model for estimating \eqn{P(S=s|X)}. It has two options: \code{MN.glmnet} and \code{MN.nnet}. The default is \code{MN.glmnet}.}
+\item{cross_fitting}{Logical, indicating whether sample splitting and cross fitting procedure should be used.}
+
+\item{replications}{Integer, the number of sample splitting and cross fitting replications to performe, if \code{cross_fitting = TRUE}. Default is \code{10L}.}
+
+\item{source_model}{The (penalized) multinomial logistic regression for estimating \eqn{P(S=s|X)}. It has two options: "\code{MN.glmnet}" (default) and "\code{MN.nnet}", which use \pkg{glmnet} and \pkg{nnet} respectively.}
 
 \item{source_model_args}{The arguments (in \pkg{SuperLearner}) for the source model.}
 
-\item{treatment_model_type}{The options for how the treatment_model \eqn{P(A=1|X, S=s)} is estimated. It includes \code{separate} and \code{joint}, with the default being \code{separate}. When \code{separate} is selected,
-\eqn{P(A=1|X, S=s)} is estimated by fitting the model (regressing \eqn{A} on \eqn{X}) within each specific internal source population (S=s). When \code{joint} is selected, \eqn{P(A=1|X, S=s)}
-is estimated by fitting the model (regressing \eqn{A} on \eqn{X} and \eqn{S}) using the multi-source population and then estimating the probability by fitting the model while suppressing the \eqn{S=s}.
-In both cases, the propensity score is calculated as \eqn{P(A=1|X)=\sum_{s=1}^{m}P(A=1|X, S=s)P(S=s|X)}.}
-
-\item{treatment_model}{The treatment model \eqn{P(A=1|X, S=s)} is estimated using \pkg{SuperLearner}. If, for example, the preference is to use only logistic regression for the probability estimation,
-please ensure that only \code{glm} is included in the \pkg{SuperLearner} library within the \code{treatment_model_args}.}
+\item{treatment_model_type}{How the propensity score \eqn{P(A=1|X)=\sum_{s \in S} P(A=1|X, S=s)P(S=s|X)} is estimated. Options include "\code{separate}" (default) and "\code{joint}". If "\code{separate}", \eqn{P(A=1|X, S=s)} is estimated by regressing \eqn{A} on \eqn{X} within each specific internal source population \eqn{S=s}. If "\code{joint}", \eqn{P(A=1|X, S=s)} is estimated by regressing \eqn{A} on \eqn{X} and \eqn{S} using the multi-source population.}
 
 \item{treatment_model_args}{The arguments (in \pkg{SuperLearner}) for the treatment model.}
-
-\item{outcome_model}{The same as \code{treatment_model}.}
 
 \item{outcome_model_args}{The arguments (in \pkg{SuperLearner}) for the outcome model.}
 }
