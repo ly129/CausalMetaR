@@ -7,7 +7,7 @@
 #' @param Y The (binary/continuous) outcome, which is a length \eqn{n} vector.
 #' @param S The (numeric) source which is a length \eqn{n} vector.
 #' @param A The (binary) treatment, which is a length \eqn{n} vector.
-#' @param source_model The multi-nomial model for estimating \eqn{P(S=s|X)}. It has two options: \code{glmnet.multinom} and \code{nnet.multinom}. The default is \code{glmnet.multinom}.
+#' @param source_model The multi-nomial model for estimating \eqn{P(S=s|X)}. It has two options: \code{MN.glmnet} and \code{MN.nnet}. The default is \code{MN.glmnet}.
 #' @param source_model_args The arguments (in \pkg{SuperLearner}) for the source model.
 #' @param treatment_model_type The options for how the treatment_model \eqn{P(A=1|X, S=s)} is estimated. It includes \code{separate} and \code{joint}, with the default being \code{separate}. When \code{separate} is selected,
 #' \eqn{P(A=1|X, S=s)} is estimated by fitting the model (regressing \eqn{A} on \eqn{X}) within each specific internal source population (S=s). When \code{joint} is selected, \eqn{P(A=1|X, S=s)}
@@ -55,14 +55,15 @@ ATE_nested <- function(
     A, # treatment
     cross_fitting = FALSE,
     replications = 10L,
-    source_model = "glmnet.multinom",
+    source_model = "MN.glmnet",
     source_model_args = list(),
     treatment_model_type = "separate",
-    treatment_model = "SuperLearner",
     treatment_model_args = list(),
-    outcome_model = "SuperLearner",
     outcome_model_args = list()
 ) {
+  # For future possibilities
+  treatment_model <- outcome_model <- "SuperLearner"
+
   # # Error checking
   # error_check(X = X, X_external = NULL, Y = Y, S = S, A = A,
   #             external = FALSE, ATE = FALSE)
@@ -78,8 +79,10 @@ ATE_nested <- function(
   S_dummy <- data.frame(model.matrix(~ 0 + S)[, -1])
   colnames(S_dummy) <- unique_S[-1]
 
-  # Converting character variables into factor variables?
-
+  # Converting character variables into factor variables
+  X <- sapply(X, FUN = function(xx) {
+    if (is.character(xx)) xx <- factor(xx)
+  })
   # Converting factor variables into dummy variables
   X <- data.frame(model.matrix(~ ., data = X)[, -1])
 
@@ -128,14 +131,14 @@ ATE_nested <- function(
         A_om <- A[om_id]
 
         ## source model
-        if (source_model %in% c("glmnet.multinom", "nnet.multinom")) {
+        if (source_model %in% c("MN.glmnet", "MN.nnet")) {
           source_model_args$Y <- S_sm
           source_model_args$X <- X_sm
           source_model_args$newX <- X_test
           fit_source <- do.call(what = source_model, args = source_model_args)
           PrS_X <- fit_source$pred
         } else {
-          stop("Currently only support `glmnet.multinom` and `nnet.multinom`.")
+          stop("Currently only support `MN.glmnet` and `MN.nnet`.")
         }
 
         ## treatment model
@@ -227,13 +230,13 @@ ATE_nested <- function(
     # end of ATE_nested with cross-fitting
   } else {
     # start of regular ATE_nested
-    if (source_model %in% c("glmnet.multinom", "nnet.multinom")) {
+    if (source_model %in% c("MN.glmnet", "MN.nnet")) {
       source_model_args$Y <- S
       source_model_args$X <- X
       fit_source <- do.call(what = source_model, args = source_model_args)
       PrS_X <- fit_source$pred
     } else {
-      stop("Currently only support `glmnet.multinom` and `nnet.multinom`.")
+      stop("Currently only support `MN.glmnet` and `MN.nnet`.")
     }
 
     PrA_XS <- matrix(nrow = n, ncol = no_S)
@@ -275,7 +278,6 @@ ATE_nested <- function(
     predY_AX <- cbind(pred_Y1, pred_Y0)
 
     # estimators
-
     eta1 <- rowSums(PrA_XS * PrS_X)
     eta0 <- rowSums((1 - PrA_XS) * PrS_X)
 

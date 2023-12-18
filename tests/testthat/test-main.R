@@ -158,7 +158,7 @@
 # ### STE_nested test
 # test_STE_nested <- STE_nested(
 #   X = X, Y = Y, S = S, A = A,
-#   source_model = "SL.glmnet.multinom",
+#   source_model = "SL.MN.glmnet",
 #   source_model_args = list(),
 #   treatment_model_type = "separate",
 #   treatment_model = "SuperLearner",
@@ -180,7 +180,7 @@
 # ### STE_external test
 # test_STE_external <- STE_external(
 #   X = X, Y = Y, S = S, A = A, X0 = X0,
-#   source_model = "SL.glmnet.multinom",
+#   source_model = "SL.MN.glmnet",
 #   source_model_args = list(),
 #   treatment_model_type = "separate",
 #   treatment_model = "SuperLearner",
@@ -214,7 +214,7 @@
 # ### ATE_external test
 # test_ATE_external <- ATE_external(
 #   X = X, Y = Y, S = S, A = A, X0 = X0,
-#   source_model = "SL.glmnet.multinom",
+#   source_model = "SL.MN.glmnet",
 #   source_model_args = list(),
 #   treatment_model_type = "separate",
 #   treatment_model = "SuperLearner",
@@ -244,7 +244,7 @@
 # ### ATE_nested test
 # test_ATE_nested <- ATE_nested(
 #   X = X, Y = Y, S = S, A = A,
-#   source_model = "SL.glmnet.multinom",
+#   source_model = "SL.MN.glmnet",
 #   source_model_args = list(),
 #   treatment_model_type = "separate",
 #   treatment_model = "SuperLearner",

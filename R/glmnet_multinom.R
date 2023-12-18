@@ -1,6 +1,6 @@
 #
 
-glmnet.multinom <- function(Y, X, newX, s = "lambda.min", family = NULL, obsWeights = NULL, id = NULL, ...) {
+MN.glmnet <- function(Y, X, newX, s = "lambda.min", family = NULL, obsWeights = NULL, id = NULL, ...) {
   # load required packages
   # require('glmnet')
   Y <- as.factor(Y)
@@ -10,7 +10,7 @@ glmnet.multinom <- function(Y, X, newX, s = "lambda.min", family = NULL, obsWeig
   } else {
     newX <- as.matrix(newX)
   }
-  fit.glmnet.multinom <- glmnet::cv.glmnet(
+  fit.MN.glmnet <- glmnet::cv.glmnet(
     x = X,
     y = Y,
     family = "multinomial",
@@ -21,13 +21,13 @@ glmnet.multinom <- function(Y, X, newX, s = "lambda.min", family = NULL, obsWeig
 
   # pred is the predicted responses for newX (on the scale of the outcome)
   pred <- predict(
-    fit.glmnet.multinom,
+    fit.MN.glmnet,
     newx = newX,
     s = s,
     type = "response"
   )
   # fit returns all objects needed for predict.SL.template
-  fit <- list(object = fit.glmnet.multinom)
+  fit <- list(object = fit.MN.glmnet)
   # return a list with pred and fit
   out <- list(pred = pred[, , 1], fit = fit)
   return(out)
@@ -49,7 +49,7 @@ glmnet.multinom <- function(Y, X, newX, s = "lambda.min", family = NULL, obsWeig
 # if (missing(newX)) {
 #   newX <- X_test
 # }
-# fit.glmnet.multinom <- glmnet::cv.glmnet(
+# fit.MN.glmnet <- glmnet::cv.glmnet(
 #   x = X_sm,
 #   y = S_sm,
 #   family = "multinomial",
@@ -58,12 +58,12 @@ glmnet.multinom <- function(Y, X, newX, s = "lambda.min", family = NULL, obsWeig
 #
 # # pred is the predicted responses for newX (on the scale of the outcome)
 # pred <- predict(
-#   fit.glmnet.multinom,
+#   fit.MN.glmnet,
 #   newx = newX,
 #   s = s,
 #   type = "response"
 # )
 # # fit returns all objects needed for predict.SL.template
-# fit <- list(object = fit.glmnet.multinom)
+# fit <- list(object = fit.MN.glmnet)
 # # return a list with pred and fit
 # out <- list(pred = pred[, , 1], fit = fit)

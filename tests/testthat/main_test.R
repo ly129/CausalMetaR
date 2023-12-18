@@ -169,7 +169,7 @@ dim(X_ext)
 si <- STE_nested(
   X = X, Y = Y, EM = EM, S = S, A = A,
   cross_fitting = FALSE,
-  source_model = "nnet.multinom",
+  source_model = "MN.nnet",
   source_model_args = list(),
   treatment_model_type = "separate",
   treatment_model = "SuperLearner",
@@ -195,7 +195,7 @@ sicf <- STE_nested(
   X = X, Y = Y, EM = EM, S = S, A = A,
   cross_fitting = TRUE,
   replications = 5,
-  source_model = "glmnet.multinom",
+  source_model = "MN.glmnet",
   source_model_args = list(),
   treatment_model_type = "joint",
   treatment_model = "SuperLearner",
@@ -221,7 +221,7 @@ plot(sicf, use_scb = FALSE)
 # regular
 ai <- ATE_nested(
   X = X, Y = Y, S = S, A = A,
-  source_model = "glmnet.multinom",
+  source_model = "MN.glmnet",
   source_model_args = list(),
   treatment_model_type = "separate",
   treatment_model = "SuperLearner",
@@ -244,8 +244,8 @@ plot(ai)
 aicf <- ATE_nested(
   X = X, Y = Y, S = S, A = A,
   cross_fitting = TRUE,
-  replications = 50,
-  source_model = "glmnet.multinom",
+  replications = 10L,
+  source_model = "MN.glmnet",
   source_model_args = list(),
   treatment_model_type = "joint",
   treatment_model = "SuperLearner",
@@ -271,7 +271,7 @@ plot(aicf)
 se <- STE_external(
   X = X, Y = Y, EM = EM, S = S, A = A, X_external = X_ext, EM_external = EM_ext,
   cross_fitting = FALSE,
-  source_model = "glmnet.multinom",
+  source_model = "MN.glmnet",
   source_model_args = list(),
   treatment_model_type = "separate",
   treatment_model = "SuperLearner",
@@ -300,7 +300,7 @@ secf <- STE_external(
   X = X, Y = Y, EM = EM, S = S, A = A, X_external = X_ext, EM_external = EM_ext,
   cross_fitting = FALSE,
   replications = 10,
-  source_model = "glmnet.multinom",
+  source_model = "MN.glmnet",
   source_model_args = list(),
   treatment_model_type = "joint",
   treatment_model = "SuperLearner",
@@ -328,7 +328,7 @@ summary(secf)
 ### ATE_external test
 ae <- ATE_external(
   X = X, Y = Y, S = S, A = A, X_external = X_external,
-  source_model = "glmnet.multinom",
+  source_model = "MN.glmnet",
   source_model_args = list(),
   treatment_model_type = "separate",
   treatment_model = "SuperLearner",
@@ -357,7 +357,7 @@ aecf <- ATE_external(
   X = X, Y = Y, S = S, A = A, X_external = X_external,
   cross_fitting = TRUE,
   replications = 5L,
-  source_model = "glmnet.multinom",
+  source_model = "MN.glmnet",
   source_model_args = list(),
   treatment_model_type = "joint",
   treatment_model = "SuperLearner",

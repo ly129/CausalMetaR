@@ -12,7 +12,7 @@ ATE_external(
   A,
   cross_fitting = FALSE,
   replications = 10L,
-  source_model = "glmnet.multinom",
+  source_model = "MN.glmnet",
   source_model_args = list(),
   treatment_model_type = "separate",
   treatment_model = "SuperLearner",
@@ -34,7 +34,7 @@ ATE_external(
 
 \item{A}{The (binary) treatment, which is a length \eqn{n} vector.}
 
-\item{source_model}{The multi-nomial model for estimating \eqn{P(S=s|X)}. It has two options: \code{glmnet.multinom} and \code{nnet.multinom}. The default is \code{glmnet.multinom}.}
+\item{source_model}{The multi-nomial model for estimating \eqn{P(S=s|X)}. It has two options: \code{MN.glmnet} and \code{MN.nnet}. The default is \code{MN.glmnet}.}
 
 \item{source_model_args}{The arguments (in \pkg{SuperLearner}) for the source model.}
 
