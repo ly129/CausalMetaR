@@ -3,8 +3,8 @@
 #' @description
 #' Doubly-robust and efficient estimator for the subgroup treatment effects (STE) of an external target population using \eqn{m} multi-source data.
 #'
-#' @param X The covariate data frame with \eqn{n=n_1+...+n_m} rows and q coloums. The first column of X is the categorical effect modifier (\eqn{\widetilde X}).
-#' @param X_external The covariate matrix/data frame with \eqn{n_0} rows and q coloums. The first column of X is the categorical effect modifier (\eqn{\widetilde X}).
+#' @param X The covariate data frame with \eqn{n=n_1+...+n_m} rows and \eqn{q} columns. The first column of X is the categorical effect modifier (\eqn{\widetilde X}).
+#' @param X_external The covariate matrix/data frame with \eqn{n_0} rows and \eqn{q} columns. The first column of X is the categorical effect modifier (\eqn{\widetilde X}).
 #' @param Y The (binary/continuous) outcome, which is a length \eqn{n} vector.
 #' @param S The (numeric) source which is a length \eqn{n} vector.
 #' @param A The (binary) treatment, which is a length \eqn{n} vector.

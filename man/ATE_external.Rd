@@ -24,9 +24,9 @@ ATE_external(
 )
 }
 \arguments{
-\item{X}{The covariate data frame with \eqn{n=n_1+...+n_m} rows and q coloums.}
+\item{X}{The covariate data frame with \eqn{n=n_1+...+n_m} rows and \eqn{q} columns.}
 
-\item{X_external}{The covariate data frame with \eqn{n_0} rows and q coloums.}
+\item{X_external}{The covariate data frame with \eqn{n_0} rows and \eqn{q} columns.}
 
 \item{Y}{The (binary/continuous) outcome, which is a length \eqn{n} vector.}
 

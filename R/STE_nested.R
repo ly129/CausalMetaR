@@ -3,7 +3,7 @@
 #' @description
 #' Doubly-robust and efficient estimator for the subgroup treatments effect (STE) of each internal source-specific target population using \eqn{m} multi-source data.
 #'
-#' @param X The covariate data frame with \eqn{n=n_1+...+n_m} rows and q columns.
+#' @param X The covariate data frame with \eqn{n=n_1+...+n_m} rows and \eqn{q} columns.
 #' @param Y The (binary/continuous) outcome, which is a length \eqn{n} vector.
 #' @param EM The subgroup which is a length \eqn{n} vector or factor. If \code{EM} is a factor, it will maintain its given (ordered) levels. If \code{EM} is not a factor, it will be converted into a factor with default level order.
 #' @param S The source which is a length \eqn{n} vector or factor. If \code{S} is a factor, it will maintain its given (ordered) levels. If \code{S} is not a factor, it will be converted into a factor with default level order.
