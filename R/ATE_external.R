@@ -72,7 +72,8 @@
 #' )
 #' @import metafor
 #' @import SuperLearner
-#' @importFrom stats model.matrix predict qnorm quantile rnorm
+#' @importFrom stats model.matrix predict qnorm quantile rnorm median
+#' @importFrom graphics text
 #'
 #' @export
 
