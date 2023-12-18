@@ -67,14 +67,25 @@ STE_external <- function(
   # For future possibilities
   treatment_model <- external_model <- outcome_model <- "SuperLearner"
 
-  # # Error checking
-  # error_check(X = X, X_external = X_external, Y = Y, S = S, A = A,
-  #             external = TRUE, ATE = FALSE)
-
   # Total sample size
   n1 <- nrow(X)
   n0 <- nrow(X_external)
   n <- n0 + n1
+
+  # Checking lengths of all data inputs
+  if (length(EM) != n1 | length(Y) != n1 | length(S) != n1 | length(A) != n1){
+    stop(paste0('All data inputs must have the same length:\n',
+                'X has length ', n1, '.\n',
+                'EM has length ', length(EM), '.\n',
+                'Y has length ', length(Y), '.\n',
+                'S has length ', length(S), '.\n',
+                'A has length ', length(A), '.'))
+  }
+  if (length(EM_external) != n0){
+    stop(paste0('All external data inputs must have the same length:\n',
+                'X_external has length ', n0, '.\n',
+                'EM_external has length ', length(EM_external), '.'))
+  }
 
   # Number of sources
   if (!is.factor(S)) S <- factor(S)
@@ -102,17 +113,37 @@ STE_external <- function(
 
   if (no_EM != no_EM_ext) stop("Different number of subgroups in external data.")
 
+  # Covariates
+  if (ncol(X) != ncol(X_external)){
+    stop(paste0('X and X_external must have the same number of columns.'))
+  }
   # Converting character variables into factor variables
-  X <- sapply(X, FUN = function(xx) {
-    if (is.character(xx)) xx <- factor(xx)
-  })
-  X_external <- sapply(X_external, FUN = function(xx) {
-    if (is.character(xx)) xx <- factor(xx)
-  })
+  X <- as.data.frame(sapply(X, FUN = function(xx) {
+    if (is.character(xx)) {
+      factor(xx)
+    } else {
+      xx
+    }
+  }))
+  X_external <- as.data.frame(sapply(X_external, FUN = function(xx) {
+    if (is.character(xx)) {
+      factor(xx)
+    } else {
+      xx
+    }
+  }))
 
   # Converting factor variables into dummy variables
   X <- data.frame(model.matrix(~ ., data = X)[, -1])
   X_external <- data.frame(model.matrix(~ ., data = X_external)[, -1])
+
+  # Checking treatment data
+  if (!is.numeric(A)){
+    stop('A must be a numeric vector')
+  }
+  if (!all(A %in% c(0, 1))){
+    stop('A must only take values 0 or 1')
+  }
 
   if (cross_fitting) {
     K <- 5L

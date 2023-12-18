@@ -2,12 +2,13 @@
 #'
 #' This function creates forest plots of objects of class "STE_nested".
 #'
-#' Note that users may need to custom set the argument \code{ilab.xpos} which specifies the position (along the x-axis) of the subgroup labels. See \code{\link[metafor]{forest.rma}} for further details.
+#' Note that users may need to custom set the argument \code{ilab.xpos} which specifies the position (along the x-axis) of the effect modifier header and subgroup labels. See \code{\link[metafor]{forest.rma}} for further details.
 #'
 #' @param x Object of class "STE_nested".
-#' @param source_names vector of character strings specifying the names of the sources.
-#' @param subgroup_names vector of character strings specifying the names of the subgroups.
 #' @param use_scb logical scalar specifying whether the intervals in the forest plot should be simultaneous confidence bands (rather than confidence intervals). The default is \code{FALSE}.
+#' @param header optional, vector of character strings of length 3, headers for the source, effect modifier subgroup and the estimates in the forest plot.
+#' @param source_names optional, vector of character strings specifying the names of the sources. Defaults are the values in \code{S} provided by the user to \code{\link{STE_nested}}.
+#' @param subgroup_names optional, vector of character strings specifying the names of the effect modifier subgroups. Defaults are the values in \code{EM} provided by the user to \code{\link{STE_nested}}.
 #' @param ... Other arguments, which are passed to \code{\link[metafor]{forest.rma}}.
 #' @return No value is returned.
 #' @seealso \code{\link{STE_nested}}
@@ -32,21 +33,23 @@ plot.STE_nested <- function(x,
   all_args <- as.list(match.call())[-1]
   args <- all_args[!names(all_args) %in% c('x', 'use_scb', 'source_names', 'subgroup_names')]
 
-  no_S <- length(unique(x$df_dif$Source))
-  no_EM <- length(unique(x$df_dif$Subgroup))
+  no_S <- length(x$source_names)
+  no_EM <- length(x$subgroup_names)
 
+  slab <- character(length = no_EM * no_S)
   if (missing(source_names)){
-    args$slab <- x$source_names
+    slab[1:(no_EM * no_S) %% no_EM == 1] <- x$source_names
+    args$slab <- slab
   } else {
     if (length(source_names) != no_S){
       stop(paste0('The length of source_names does not match the number of sources (', no_S, ')'))
     }
-    slab <- character(length = no_EM * no_S)
     slab[1:(no_EM * no_S) %% no_EM == 1] <- source_names
     args$slab <- slab
   }
+
   if (missing(subgroup_names)){
-    args$ilab <- x$subgroup_names
+    args$ilab <- rep(x$subgroup_names, times = no_S)
   } else {
     if (length(subgroup_names) != no_EM){
       stop(paste0('The length of subgroup_names does not match the number of subgroups (', no_EM, ')'))
@@ -98,6 +101,7 @@ plot.STE_nested <- function(x,
 #' This function creates forest plots of objects of class "ATE_nested".
 #'
 #' @param x Object of class "ATE_nested".
+#' @param source_names optional, vector of character strings specifying the names of the sources. Defaults are the values in \code{S} provided by the user to \code{\link{ATE_nested}}.
 #' @param ... Other arguments, which are passed to \code{\link[metafor]{forest.rma}}.
 #' @return No value is returned.
 #' @seealso \code{\link{ATE_nested}}
@@ -166,10 +170,10 @@ print.STE_nested <- function(x, digits = 4, ...){
     stop("Argument 'x' must be an object of class \"STE_nested\".")
   }
 
-  no_S <- length(unique(x$df_dif$Source))
-  no_EM <- length(unique(x$df_dif$Subgroup))
+  no_S <- length(x$source_names)
+  no_EM <- length(x$subgroup_names)
 
-  source_num <- matrix(1:no_S, nrow = 1)
+  source_num <- matrix(x$source_names, nrow = 1)
   append_row <- matrix(NA, ncol = no_S, nrow = no_EM - 1)
   source_lab <- c(rbind(source_num, append_row))
 
@@ -241,10 +245,10 @@ summary.STE_nested <- function(object, digits = 4, ...){
     stop("Argument 'object' must be an object of class \"STE_nested\".")
   }
 
-  no_S <- length(unique(object$df_dif$Source))
-  no_EM <- length(unique(object$df_dif$Subgroup))
+  no_S <- length(object$source_names)
+  no_EM <- length(object$subgroup_names)
 
-  source_num <- matrix(1:no_S, nrow = 1)
+  source_num <- matrix(object$source_names, nrow = 1)
   append_row <- matrix(NA, ncol = no_S, nrow = no_EM - 1)
   source_lab <- c(rbind(source_num, append_row))
 

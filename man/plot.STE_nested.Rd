@@ -19,9 +19,11 @@
 
 \item{use_scb}{logical scalar specifying whether the intervals in the forest plot should be simultaneous confidence bands (rather than confidence intervals). The default is \code{FALSE}.}
 
-\item{source_names}{vector of character strings specifying the names of the sources.}
+\item{header}{optional, vector of character strings of length 3, headers for the source, effect modifier subgroup and the estimates in the forest plot.}
 
-\item{subgroup_names}{vector of character strings specifying the names of the subgroups.}
+\item{source_names}{optional, vector of character strings specifying the names of the sources. Defaults are the values in \code{S} provided by the user to \code{\link{STE_nested}}.}
+
+\item{subgroup_names}{optional, vector of character strings specifying the names of the effect modifier subgroups. Defaults are the values in \code{EM} provided by the user to \code{\link{STE_nested}}.}
 
 \item{...}{Other arguments, which are passed to \code{\link[metafor]{forest.rma}}.}
 }
@@ -32,7 +34,7 @@ No value is returned.
 This function creates forest plots of objects of class "STE_nested".
 }
 \details{
-Note that users may need to custom set the argument \code{ilab.xpos} which specifies the position (along the x-axis) of the subgroup labels. See \code{\link[metafor]{forest.rma}} for further details.
+Note that users may need to custom set the argument \code{ilab.xpos} which specifies the position (along the x-axis) of the effect modifier header and subgroup labels. See \code{\link[metafor]{forest.rma}} for further details.
 }
 \seealso{
 \code{\link{STE_nested}}

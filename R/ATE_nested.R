@@ -60,12 +60,17 @@ ATE_nested <- function(
   # For future possibilities
   treatment_model <- outcome_model <- "SuperLearner"
 
-  # # Error checking
-  # error_check(X = X, X_external = NULL, Y = Y, S = S, A = A,
-  #             external = FALSE, ATE = FALSE)
-
   # Total sample size
   n <- nrow(X)
+
+  # Checking lengths of all data inputs
+  if (length(Y) != n | length(S) != n | length(A) != n){
+    stop(paste0('All data inputs for the sources must have the same length:\n',
+                'X has length ', n, '.\n',
+                'Y has length ', length(Y), '.\n',
+                'S has length ', length(S), '.\n',
+                'A has length ', length(A), '.'))
+  }
 
   # Number of sources
   if (!is.factor(S)) S <- factor(S)
@@ -76,11 +81,23 @@ ATE_nested <- function(
   colnames(S_dummy) <- unique_S[-1]
 
   # Converting character variables into factor variables
-  X <- sapply(X, FUN = function(xx) {
-    if (is.character(xx)) xx <- factor(xx)
-  })
+  X <- as.data.frame(sapply(X, FUN = function(xx) {
+    if (is.character(xx)) {
+      factor(xx)
+    } else {
+      xx
+    }
+  }))
   # Converting factor variables into dummy variables
   X <- data.frame(model.matrix(~ ., data = X)[, -1])
+
+  # Checking treatment data
+  if (!is.numeric(A)){
+    stop('A must be a numeric vector')
+  }
+  if (!all(A %in% c(0, 1))){
+    stop('A must only take values 0 or 1')
+  }
 
   if (cross_fitting) {
     ## sample splitting and cross fitting loop

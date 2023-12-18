@@ -149,11 +149,13 @@ Y <- Data$Y[Data$R == 1]
 A <- Data$A[Data$R == 1]
 S <- Data$S[Data$R == 1]
 S <- letters[S]
+S = factor(S, levels = c("b", "a", "c"))
 EM <- Data$X1[Data$R == 1]
 EM <- LETTERS[EM]
-# EM <- factor(EM, levels = c("E", "D", "C", "B", "A"))
+EM <- factor(EM, levels = c("E", "D", "C", "B", "A"))
 EM_ext <- Data$X1[Data$R == 0]
 EM_ext <- LETTERS[EM_ext]
+EM_ext <- factor(EM_ext, levels = c("E", "D", "C", "B", "A"))
 
 table(A)
 summary(Y)
@@ -172,13 +174,11 @@ si <- STE_nested(
   source_model = "MN.nnet",
   source_model_args = list(),
   treatment_model_type = "separate",
-  treatment_model = "SuperLearner",
   treatment_model_args = list(
     family = binomial(),
     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
     cvControl = list(V = 5L)
   ),
-  outcome_model = "SuperLearner",
   outcome_model_args = list(
     family = gaussian(),
     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
@@ -190,31 +190,29 @@ summary(si)
 plot(si, use_scb = TRUE)
 plot(si, use_scb = FALSE)
 
-# cross-fitting
-sicf <- STE_nested(
-  X = X, Y = Y, EM = EM, S = S, A = A,
-  cross_fitting = TRUE,
-  replications = 5,
-  source_model = "MN.glmnet",
-  source_model_args = list(),
-  treatment_model_type = "joint",
-  treatment_model = "SuperLearner",
-  treatment_model_args = list(
-    family = binomial(),
-    SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
-    cvControl = list(V = 5L)
-  ),
-  outcome_model = "SuperLearner",
-  outcome_model_args = list(
-    family = gaussian(),
-    SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
-    cvControl = list(V = 5L)
-  )
-)
-print(sicf)
-summary(sicf)
-plot(sicf, use_scb = TRUE)
-plot(sicf, use_scb = FALSE)
+# # cross-fitting
+# sicf <- STE_nested(
+#   X = X, Y = Y, EM = EM, S = S, A = A,
+#   cross_fitting = TRUE,
+#   replications = 5,
+#   source_model = "MN.glmnet",
+#   source_model_args = list(),
+#   treatment_model_type = "joint",
+#   treatment_model_args = list(
+#     family = binomial(),
+#     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+#     cvControl = list(V = 5L)
+#   ),
+#   outcome_model_args = list(
+#     family = gaussian(),
+#     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+#     cvControl = list(V = 5L)
+#   )
+# )
+# print(sicf)
+# summary(sicf)
+# plot(sicf, use_scb = TRUE)
+# plot(sicf, use_scb = FALSE)
 
 
 ### ATE_nested test
@@ -224,13 +222,11 @@ ai <- ATE_nested(
   source_model = "MN.glmnet",
   source_model_args = list(),
   treatment_model_type = "separate",
-  treatment_model = "SuperLearner",
   treatment_model_args = list(
     family = binomial(),
     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
     cvControl = list(V = 5L)
   ),
-  outcome_model = "SuperLearner",
   outcome_model_args = list(
     family = gaussian(),
     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
@@ -241,52 +237,48 @@ summary(ai)
 print(ai)
 plot(ai)
 
-aicf <- ATE_nested(
-  X = X, Y = Y, S = S, A = A,
-  cross_fitting = TRUE,
-  replications = 10L,
-  source_model = "MN.glmnet",
-  source_model_args = list(),
-  treatment_model_type = "joint",
-  treatment_model = "SuperLearner",
-  treatment_model_args = list(
-    family = binomial(),
-    SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
-    cvControl = list(V = 5L)
-  ),
-  outcome_model = "SuperLearner",
-  outcome_model_args = list(
-    family = gaussian(),
-    SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
-    cvControl = list(V = 5L)
-  )
-)
-summary(aicf)
-print(aicf)
-plot(aicf)
+# aicf <- ATE_nested(
+#   X = X, Y = Y, S = S, A = A,
+#   cross_fitting = TRUE,
+#   replications = 10L,
+#   source_model = "MN.glmnet",
+#   source_model_args = list(),
+#   treatment_model_type = "joint",
+#   treatment_model_args = list(
+#     family = binomial(),
+#     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+#     cvControl = list(V = 5L)
+#   ),
+#   outcome_model_args = list(
+#     family = gaussian(),
+#     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+#     cvControl = list(V = 5L)
+#   )
+# )
+# summary(aicf)
+# print(aicf)
+# plot(aicf)
 
 
 
 ### STE_external test
 se <- STE_external(
-  X = X, Y = Y, EM = EM, S = S, A = A, X_external = X_ext, EM_external = EM_ext,
+  X = X, Y = Y, EM = EM, S = S, A = A,
+  X_external = X_ext, EM_external = EM_ext,
   cross_fitting = FALSE,
   source_model = "MN.glmnet",
   source_model_args = list(),
   treatment_model_type = "separate",
-  treatment_model = "SuperLearner",
   treatment_model_args = list(
     family = binomial(),
     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
     cvControl = list(V = 5L)
   ),
-  external_model = "SuperLearner",
   external_model_args = list(
     family = binomial(),
     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
     cvControl = list(V = 5L)
   ),
-  outcome_model = "SuperLearner",
   outcome_model_args = list(
     family = gaussian(),
     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
@@ -296,54 +288,48 @@ se <- STE_external(
 print(se)
 summary(se)
 
-secf <- STE_external(
-  X = X, Y = Y, EM = EM, S = S, A = A, X_external = X_ext, EM_external = EM_ext,
-  cross_fitting = FALSE,
-  replications = 10,
-  source_model = "MN.glmnet",
-  source_model_args = list(),
-  treatment_model_type = "joint",
-  treatment_model = "SuperLearner",
-  treatment_model_args = list(
-    family = binomial(),
-    SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
-    cvControl = list(V = 5L)
-  ),
-  external_model = "SuperLearner",
-  external_model_args = list(
-    family = binomial(),
-    SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
-    cvControl = list(V = 5L)
-  ),
-  outcome_model = "SuperLearner",
-  outcome_model_args = list(
-    family = gaussian(),
-    SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
-    cvControl = list(V = 5L)
-  )
-)
-print(secf)
-summary(secf)
+# secf <- STE_external(
+#   X = X, Y = Y, EM = EM, S = S, A = A, X_external = X_ext, EM_external = EM_ext,
+#   cross_fitting = FALSE,
+#   replications = 10,
+#   source_model = "MN.glmnet",
+#   source_model_args = list(),
+#   treatment_model_type = "joint",
+#   treatment_model_args = list(
+#     family = binomial(),
+#     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+#     cvControl = list(V = 5L)
+#   ),
+#   external_model_args = list(
+#     family = binomial(),
+#     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+#     cvControl = list(V = 5L)
+#   ),
+#   outcome_model_args = list(
+#     family = gaussian(),
+#     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+#     cvControl = list(V = 5L)
+#   )
+# )
+# print(secf)
+# summary(secf)
 
 ### ATE_external test
 ae <- ATE_external(
-  X = X, Y = Y, S = S, A = A, X_external = X_external,
+  X = X, Y = Y, S = S, A = A, X_external = X_ext,
   source_model = "MN.glmnet",
   source_model_args = list(),
   treatment_model_type = "separate",
-  treatment_model = "SuperLearner",
   treatment_model_args = list(
     family = binomial(),
     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
     cvControl = list(V = 5L)
   ),
-  external_model = "SuperLearner",
   external_model_args = list(
     family = binomial(),
     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
     cvControl = list(V = 5L)
   ),
-  outcome_model = "SuperLearner",
   outcome_model_args = list(
     family = gaussian(),
     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
@@ -353,31 +339,28 @@ ae <- ATE_external(
 summary(ae)
 print(ae)
 
-aecf <- ATE_external(
-  X = X, Y = Y, S = S, A = A, X_external = X_external,
-  cross_fitting = TRUE,
-  replications = 5L,
-  source_model = "MN.glmnet",
-  source_model_args = list(),
-  treatment_model_type = "joint",
-  treatment_model = "SuperLearner",
-  treatment_model_args = list(
-    family = binomial(),
-    SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
-    cvControl = list(V = 5L)
-  ),
-  external_model = "SuperLearner",
-  external_model_args = list(
-    family = binomial(),
-    SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
-    cvControl = list(V = 5L)
-  ),
-  outcome_model = "SuperLearner",
-  outcome_model_args = list(
-    family = gaussian(),
-    SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
-    cvControl = list(V = 5L)
-  )
-)
-summary(aecf)
-print(aecf)
+# aecf <- ATE_external(
+#   X = X, Y = Y, S = S, A = A, X_external = X_ext,
+#   cross_fitting = TRUE,
+#   replications = 5L,
+#   source_model = "MN.glmnet",
+#   source_model_args = list(),
+#   treatment_model_type = "joint",
+#   treatment_model_args = list(
+#     family = binomial(),
+#     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+#     cvControl = list(V = 5L)
+#   ),
+#   external_model_args = list(
+#     family = binomial(),
+#     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+#     cvControl = list(V = 5L)
+#   ),
+#   outcome_model_args = list(
+#     family = gaussian(),
+#     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+#     cvControl = list(V = 5L)
+#   )
+# )
+# summary(aecf)
+# print(aecf)

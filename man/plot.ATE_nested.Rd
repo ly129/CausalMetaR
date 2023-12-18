@@ -9,6 +9,8 @@
 \arguments{
 \item{x}{Object of class "ATE_nested".}
 
+\item{source_names}{optional, vector of character strings specifying the names of the sources. Defaults are the values in \code{S} provided by the user to \code{\link{ATE_nested}}.}
+
 \item{...}{Other arguments, which are passed to \code{\link[metafor]{forest.rma}}.}
 }
 \value{

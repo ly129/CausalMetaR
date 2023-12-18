@@ -59,12 +59,18 @@ STE_nested <- function(
   # For future possibilities
   treatment_model <- outcome_model <- "SuperLearner"
 
-  # # Error checking
-  # error_check(X = X, X_external = NULL, Y = Y, S = S, A = A,
-  #             external = FALSE, ATE = FALSE)
-
   # Total sample size
   n <- nrow(X)
+
+  # Checking lengths of all data inputs
+  if (length(EM) != n |length(Y) != n | length(S) != n | length(A) != n){
+    stop(paste0('All data inputs must have the same length:\n',
+                'X has length ', n, '.\n',
+                'EM has length ', length(EM), '.\n',
+                'Y has length ', length(Y), '.\n',
+                'S has length ', length(S), '.\n',
+                'A has length ', length(A), '.'))
+  }
 
   # Number of sources
   if (!is.factor(S)) S <- factor(S)
@@ -83,11 +89,23 @@ STE_nested <- function(
   colnames(EM_dummy) <- unique_EM[-1]
 
   # Converting character variables into factor variables
-  X <- sapply(X, FUN = function(xx) {
-    if (is.character(xx)) xx <- factor(xx)
-  })
+  X <- as.data.frame(sapply(X, FUN = function(xx) {
+    if (is.character(xx)) {
+      factor(xx)
+    } else {
+      xx
+    }
+  }))
   # Converting factor variables into dummy variables
   X <- data.frame(model.matrix(~ ., data = X)[, -1])
+
+  # Checking treatment data
+  if (!is.numeric(A)){
+    stop('A must be a numeric vector')
+  }
+  if (!all(A %in% c(0, 1))){
+    stop('A must only take values 0 or 1')
+  }
 
   if (cross_fitting) {
     ## sample splitting and cross fitting loop
@@ -400,9 +418,8 @@ STE_nested <- function(
     treatment_model_args = treatment_model_args
   )
 
-  source_names <- character(length = no_EM * no_S)
-  source_names[1:(no_EM * no_S) %% no_EM == 1] <- unique_S
-  subgroup_names <- rep(unique_EM, no_S)
+  source_names <- unique_S
+  subgroup_names <- unique_EM
 
   res$source_names <- source_names
   res$subgroup_names <- subgroup_names
