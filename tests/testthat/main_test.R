@@ -26,33 +26,33 @@ summary(sn)
 plot(sn, use_scb = TRUE)
 plot(sn, use_scb = FALSE)
 
-# # cross-fitting
-# sncf <- STE_nested(
-#   X = dat_nested[, 2:10],
-#   Y = dat_nested$Y,
-#   EM = dat_nested$EM,
-#   S = dat_nested$S,
-#   A = dat_nested$A,
-#   cross_fitting = TRUE,
-#   replications = 5,
-#   source_model = "MN.glmnet",
-#   source_model_args = list(),
-#   treatment_model_type = "joint",
-#   treatment_model_args = list(
-#     family = binomial(),
-#     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
-#     cvControl = list(V = 5L)
-#   ),
-#   outcome_model_args = list(
-#     family = gaussian(),
-#     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
-#     cvControl = list(V = 5L)
-#   )
-# )
-# print(sncf)
-# summary(sncf)
-# plot(sncf, use_scb = TRUE)
-# plot(sncf, use_scb = FALSE)
+# cross-fitting
+sncf <- STE_nested(
+  X = dat_nested[, 2:10],
+  Y = dat_nested$Y,
+  EM = dat_nested$EM,
+  S = dat_nested$S,
+  A = dat_nested$A,
+  cross_fitting = TRUE,
+  replications = 5,
+  source_model = "MN.nnet",
+  source_model_args = list(trace = FALSE),
+  treatment_model_type = "joint",
+  treatment_model_args = list(
+    family = binomial(),
+    SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+    cvControl = list(V = 5L)
+  ),
+  outcome_model_args = list(
+    family = gaussian(),
+    SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+    cvControl = list(V = 5L)
+  )
+)
+print(sncf)
+summary(sncf)
+plot(sncf, use_scb = TRUE)
+plot(sncf, use_scb = FALSE)
 
 
 ### ATE_nested test
