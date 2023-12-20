@@ -116,7 +116,7 @@ Gen=function(n,n_m){
 }
 
 ###########------- Sample size specification
-n=10000
+n=14000
 n_m=4000
 
 Data=Gen(n, n_m)
@@ -127,6 +127,7 @@ dat_nested <- subset(Data, R == 1)
 dat_external <- subset(Data, R == 0)
 
 dat_nested$S <- LETTERS[dat_nested$S]
+dat_nested <- dat_nested[order(dat_nested$S), ]
 
 dim(dat_nested); dim(dat_external)
 
