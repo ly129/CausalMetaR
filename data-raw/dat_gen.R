@@ -117,7 +117,7 @@ Gen=function(n,n_m){
 
 ###########------- Sample size specification
 n=10000
-n_m=1000
+n_m=4000
 
 Data=Gen(n, n_m)
 names(Data)[1] <- "EM"
