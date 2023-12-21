@@ -89,6 +89,5 @@ an <- ATE_nested(
 )
 }
 \references{
-Dahabreh, I.J., Robertson, S.E., Petito, L.C., Hernán, M.A. and Steingrimsson, J.A.. (2019) \emph{Efficient and robust methods for causally
-interpretable meta‐analysis: Transporting inferences from multiple randomized trials to a target population}, Biometrics.
+Robertson, S.E., Steingrimsson, J.A., Joyce, N.R., Stuart, E.A., & Dahabreh, I.J. (2021). \emph{Center-specific causal inference with multicenter trials: Reinterpreting trial evidence in the context of each participating center}. arXiv preprint arXiv:2104.05905.
 }
