@@ -15,6 +15,7 @@
 #' @param treatment_model_type How the propensity score \eqn{P(A=1|X)=\sum_{s \in S} P(A=1|X, S=s)P(S=s|X)} is estimated. Options include "\code{separate}" (default) and "\code{joint}". If "\code{separate}", \eqn{P(A=1|X, S=s)} is estimated by regressing \eqn{A} on \eqn{X} within each specific internal source population \eqn{S=s}. If "\code{joint}", \eqn{P(A=1|X, S=s)} is estimated by regressing \eqn{A} on \eqn{X} and \eqn{S} using the multi-source population.
 #' @param treatment_model_args The arguments (in \pkg{SuperLearner}) for the treatment model.
 #' @param outcome_model_args The arguments (in \pkg{SuperLearner}) for the outcome model.
+#' @param show_progress Logical, indicating whether to print a progress bar for the cross-fit replicates completed, if \code{cross_fitting = TRUE}.
 #'
 #' @details
 #' Data structure: multi-source data contain outcome Y, source S, treatment A, and covariates X (\eqn{n \times p}) with the first column being the categorical effect modifier (\eqn{\widetilde X}).
@@ -74,7 +75,8 @@ STE_nested <- function(
     source_model_args = list(),
     treatment_model_type = "separate",
     treatment_model_args = list(),
-    outcome_model_args = list()
+    outcome_model_args = list(),
+    show_progress = TRUE
 ) {
   # For future possibilities
   treatment_model <- outcome_model <- "SuperLearner"
@@ -128,6 +130,11 @@ STE_nested <- function(
   }
 
   if (cross_fitting) {
+    if (show_progress){
+      pb <- progress::progress_bar$new(total = replications,
+                                       clear = FALSE,
+                                       format = 'Cross-fitting progress [:bar] :percent, Elapsed time :elapsed, Est. time remaining :eta')
+    }
     ## sample splitting and cross fitting loop
     K <- 4L
     phi_array_cf <- phi_se_array_cf <- array(dim = c(no_S, 3, no_EM, K, replications),
@@ -272,6 +279,9 @@ STE_nested <- function(
           phi_array_cf[, , em, k, r] <- cbind(phi, phi[, 1] - phi[, 2])
           phi_se_array_cf[, , em, k, r] <- sqrt(cbind(phi_var, phi_var[, 1] + phi_var[, 2]))
         }
+      }
+      if (show_progress){
+        pb$tick()
       }
     }
 

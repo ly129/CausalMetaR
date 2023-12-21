@@ -15,7 +15,8 @@ ATE_nested(
   source_model_args = list(),
   treatment_model_type = "separate",
   treatment_model_args = list(),
-  outcome_model_args = list()
+  outcome_model_args = list(),
+  show_progress = TRUE
 )
 }
 \arguments{
@@ -29,7 +30,7 @@ ATE_nested(
 
 \item{cross_fitting}{Logical, indicating whether sample splitting and cross fitting procedure should be used.}
 
-\item{replications}{Integer, the number of sample splitting and cross fitting replications to performe, if \code{cross_fitting = TRUE}. Default is \code{10L}.}
+\item{replications}{Integer, the number of sample splitting and cross fitting replications to performed, if \code{cross_fitting = TRUE}. Default is \code{10L}.}
 
 \item{source_model}{The (penalized) multinomial logistic regression for estimating \eqn{P(S=s|X)}. It has two options: "\code{MN.glmnet}" (default) and "\code{MN.nnet}", which use \pkg{glmnet} and \pkg{nnet} respectively.}
 
@@ -40,6 +41,8 @@ ATE_nested(
 \item{treatment_model_args}{The arguments (in \pkg{SuperLearner}) for the treatment model.}
 
 \item{outcome_model_args}{The arguments (in \pkg{SuperLearner}) for the outcome model.}
+
+\item{show_progress}{Logical, indicating whether to print a progress bar for the cross-fit replicates completed, if \code{cross_fitting = TRUE}.}
 }
 \value{
 An object of class "ATE_nested". This object is a list with the following elements:

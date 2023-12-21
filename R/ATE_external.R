@@ -16,6 +16,7 @@
 #' @param treatment_model_args The arguments (in \pkg{SuperLearner}) for the treatment model.
 #' @param external_model_args The arguments (in \pkg{SuperLearner}) for the external model.
 #' @param outcome_model_args The arguments (in \pkg{SuperLearner}) for the outcome model.
+#' @param show_progress Logical, indicating whether to print a progress bar for the cross-fit replicates completed, if \code{cross_fitting = TRUE}.
 #'
 #' @details
 #' Data structure: multi-source data contain outcome Y, source S, treatment A, and covariates X (\eqn{n \times p}); external data contain only covariate X_external (\eqn{n_0 \times p}).
@@ -90,7 +91,8 @@ ATE_external <- function(
     treatment_model_type = "separate",
     treatment_model_args = list(),
     external_model_args = list(),
-    outcome_model_args = list()
+    outcome_model_args = list(),
+    show_progress = TRUE
 ) {
   # For future possibilities
   treatment_model <- external_model <- outcome_model <- "SuperLearner"
@@ -150,6 +152,11 @@ ATE_external <- function(
   }
 
   if (cross_fitting) {
+    if (show_progress){
+      pb <- progress::progress_bar$new(total = replications,
+                                       clear = FALSE,
+                                       format = 'Cross-fitting progress [:bar] :percent, Elapsed time :elapsed, Est. time remaining :eta')
+    }
     ## sample splitting and cross fitting loop
     K <- 5L
     psi_array_cf <- psi_se_array_cf <- array(dim = c(3, K, replications),
@@ -300,6 +307,9 @@ ATE_external <- function(
         psi_array_cf[, k, r] <- c(psi, psi[1] - psi[2])
         psi_se_array_cf[, k, r] <- sqrt(c(psi_var, psi_var[1] + psi_var[2]))
       } # end of k loop
+      if (show_progress){
+        pb$tick()
+      }
     } # end of r loop
 
     psi_array <- apply(apply(psi_array_cf, MARGIN = c(1, 3), FUN = mean), MARGIN = 1, FUN = median)

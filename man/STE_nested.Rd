@@ -16,7 +16,8 @@ STE_nested(
   source_model_args = list(),
   treatment_model_type = "separate",
   treatment_model_args = list(),
-  outcome_model_args = list()
+  outcome_model_args = list(),
+  show_progress = TRUE
 )
 }
 \arguments{
@@ -43,6 +44,8 @@ STE_nested(
 \item{treatment_model_args}{The arguments (in \pkg{SuperLearner}) for the treatment model.}
 
 \item{outcome_model_args}{The arguments (in \pkg{SuperLearner}) for the outcome model.}
+
+\item{show_progress}{Logical, indicating whether to print a progress bar for the cross-fit replicates completed, if \code{cross_fitting = TRUE}.}
 }
 \value{
 An object of class "STE_nested". This object is a list with the following elements:

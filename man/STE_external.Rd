@@ -19,7 +19,8 @@ STE_external(
   treatment_model_type = "separate",
   treatment_model_args = list(),
   external_model_args = list(),
-  outcome_model_args = list()
+  outcome_model_args = list(),
+  show_progress = TRUE
 )
 }
 \arguments{
@@ -52,6 +53,8 @@ STE_external(
 \item{external_model_args}{The arguments (in \pkg{SuperLearner}) for the external model.}
 
 \item{outcome_model_args}{The arguments (in \pkg{SuperLearner}) for the outcome model.}
+
+\item{show_progress}{Logical, indicating whether to print a progress bar for the cross-fit replicates completed, if \code{cross_fitting = TRUE}.}
 }
 \value{
 An object of class "STE_external". This object is a list with the following elements:

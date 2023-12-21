@@ -15,6 +15,7 @@ Imports:
     glmnet,
     metafor,
     nnet,
+    progress,
     SuperLearner
 Suggests: 
     testthat (>= 3.0.0)

@@ -8,12 +8,13 @@
 #' @param S The source indicator which is a length \eqn{n} vector or factor. If \code{S} is a factor, it will maintain its level order, otherwise it will be converted to a factor with default level order. The order will be carried over to the outputs and plots.
 #' @param A The binary treatment (1 for treated and 0 for untreated), which is a length \eqn{n} vector.
 #' @param cross_fitting Logical, indicating whether sample splitting and cross fitting procedure should be used.
-#' @param replications Integer, the number of sample splitting and cross fitting replications to performe, if \code{cross_fitting = TRUE}. Default is \code{10L}.
+#' @param replications Integer, the number of sample splitting and cross fitting replications to performed, if \code{cross_fitting = TRUE}. Default is \code{10L}.
 #' @param source_model The (penalized) multinomial logistic regression for estimating \eqn{P(S=s|X)}. It has two options: "\code{MN.glmnet}" (default) and "\code{MN.nnet}", which use \pkg{glmnet} and \pkg{nnet} respectively.
 #' @param source_model_args The arguments (in \pkg{glmnet} or \pkg{nnet}) for the source model.
 #' @param treatment_model_type How the propensity score \eqn{P(A=1|X)=\sum_{s \in S} P(A=1|X, S=s)P(S=s|X)} is estimated. Options include "\code{separate}" (default) and "\code{joint}". If "\code{separate}", \eqn{P(A=1|X, S=s)} is estimated by regressing \eqn{A} on \eqn{X} within each specific internal source population \eqn{S=s}. If "\code{joint}", \eqn{P(A=1|X, S=s)} is estimated by regressing \eqn{A} on \eqn{X} and \eqn{S} using the multi-source population.
 #' @param treatment_model_args The arguments (in \pkg{SuperLearner}) for the treatment model.
 #' @param outcome_model_args The arguments (in \pkg{SuperLearner}) for the outcome model.
+#' @param show_progress Logical, indicating whether to print a progress bar for the cross-fit replicates completed, if \code{cross_fitting = TRUE}.
 #'
 #' @details
 #' Data structure: multi-source data contain outcome Y, source S, treatment A, and covariates X (\eqn{n \times p}).
@@ -72,7 +73,8 @@ ATE_nested <- function(
     source_model_args = list(),
     treatment_model_type = "separate",
     treatment_model_args = list(),
-    outcome_model_args = list()
+    outcome_model_args = list(),
+    show_progress = TRUE
 ) {
   # For future possibilities
   treatment_model <- outcome_model <- "SuperLearner"
@@ -117,6 +119,11 @@ ATE_nested <- function(
   }
 
   if (cross_fitting) {
+    if (show_progress){
+      pb <- progress::progress_bar$new(total = replications,
+                                       clear = FALSE,
+                                       format = 'Cross-fitting progress [:bar] :percent, Elapsed time :elapsed, Est. time remaining :eta')
+    }
     ## sample splitting and cross fitting loop
     K <- 4L
     phi_array_cf <- phi_se_array_cf <- array(dim = c(no_S, 3, K, replications),
@@ -244,6 +251,9 @@ ATE_nested <- function(
 
         phi_array_cf[, , k, r] <- cbind(phi, phi[, 1] - phi[, 2])
         phi_se_array_cf[, , k, r] <- sqrt(cbind(phi_var, phi_var[, 1] + phi_var[, 2]))
+      }
+      if (show_progress){
+        pb$tick()
       }
     }
 
