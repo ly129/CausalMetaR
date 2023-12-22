@@ -131,5 +131,9 @@ dat_nested <- dat_nested[order(dat_nested$S), ]
 
 dim(dat_nested); dim(dat_external)
 
+dat_nested$S <- as.factor(dat_nested$S)
+dat_nested$EM <- as.factor(dat_nested$EM)
+dat_external$EM <- as.factor(dat_external$EM)
+
 usethis::use_data(dat_nested, overwrite = TRUE)
 usethis::use_data(dat_external, overwrite = TRUE)
