@@ -8,8 +8,7 @@ MN.nnet <- function(Y, X, newX, family = NULL, obsWeights = NULL, id = NULL, ...
 
   dtmp <- data.frame(Y = Y, X)
 
-  fit.MN.nnet <- nnet::multinom(formula = Y ~ ., data = dtmp, weights = obsWeights,
-                                trace = FALSE, ...)
+  fit.MN.nnet <- nnet::multinom(formula = Y ~ ., data = dtmp, weights = obsWeights, ...)
 
 
   # pred is the predicted responses for newX (on the scale of the outcome)

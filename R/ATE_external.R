@@ -151,6 +151,10 @@ ATE_external <- function(
     stop('A must only take values 0 or 1')
   }
 
+  if (source_model == "MN.nnet" & !('trace' %in% source_model_args)){
+    source_model_args$trace <- FALSE
+  }
+
   if (cross_fitting) {
     if (show_progress){
       pb <- progress::progress_bar$new(total = replications,

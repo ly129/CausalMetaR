@@ -83,7 +83,7 @@ sn <- STE_nested(
   A = dat_nested$A,
   cross_fitting = FALSE,
   source_model = "MN.nnet",
-  source_model_args = list(trace = FALSE),
+  source_model_args = list(),
   treatment_model_type = "separate",
   treatment_model_args = list(
     family = binomial(),
