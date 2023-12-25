@@ -47,11 +47,11 @@
 #'
 #' @examples
 #' ae <- ATE_external(
-#'   X = dat_nested[, 2:10],
+#'   X = dat_nested[, 1:10],
 #'   Y = dat_nested$Y,
 #'   S = dat_nested$S,
 #'   A = dat_nested$A,
-#'   X_external = dat_external[, 2:10],
+#'   X_external = dat_external[, 1:10],
 #'   source_model = "MN.glmnet",
 #'   source_model_args = list(),
 #'   treatment_model_type = "separate",

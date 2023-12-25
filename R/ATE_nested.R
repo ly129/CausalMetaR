@@ -42,7 +42,7 @@
 #'
 #' @examples
 #' an <- ATE_nested(
-#'   X = dat_nested[, 2:10],
+#'   X = dat_nested[, 1:10],
 #'   Y = dat_nested$Y,
 #'   S = dat_nested$S,
 #'   A = dat_nested$A,

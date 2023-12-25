@@ -24,7 +24,7 @@ for (cross_fitting in c(FALSE)){
         paste('ATE_nested with: cross_fitting = ', cross_fitting, ', treatment_model_type = ', treatment_model_type, ', source_model = ', source_model), {
           expect_no_error({
               res <- ATE_nested(
-                X = dat_nested[, 2:5],
+                X = dat_nested[, 1:5],
                 Y = dat_nested$Y,
                 S = dat_nested$S,
                 A = dat_nested$A,
@@ -43,7 +43,7 @@ for (cross_fitting in c(FALSE)){
         paste('STE_nested with: cross_fitting = ', cross_fitting, ', treatment_model_type = ', treatment_model_type, ', source_model = ', source_model), {
           expect_no_error({
               res <- STE_nested(
-                X = dat_nested[, 2:5],
+                X = dat_nested[, 1:5],
                 Y = dat_nested$Y,
                 EM = dat_nested$EM,
                 S = dat_nested$S,
