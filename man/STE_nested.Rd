@@ -2,7 +2,7 @@
 % Please edit documentation in R/STE_nested.R
 \name{STE_nested}
 \alias{STE_nested}
-\title{Transporting subgroup treatment effects (STE) from multi-source population to an internal source-specific population}
+\title{Transporting subgroup treatment effects (STE) from multi-source population to a nested population}
 \usage{
 STE_nested(
   X,
@@ -33,13 +33,13 @@ STE_nested(
 
 \item{cross_fitting}{Logical, indicating whether sample splitting and cross fitting procedure should be used.}
 
-\item{replications}{Integer, the number of sample splitting and cross fitting replications to performe, if \code{cross_fitting = TRUE}. Default is \code{10L}.}
+\item{replications}{Integer, the number of sample splitting and cross fitting replications to perform, if \code{cross_fitting = TRUE}. Default is \code{10L}.}
 
 \item{source_model}{The (penalized) multinomial logistic regression for estimating \eqn{P(S=s|X)}. It has two options: "\code{MN.glmnet}" (default) and "\code{MN.nnet}", which use \pkg{glmnet} and \pkg{nnet} respectively.}
 
 \item{source_model_args}{The arguments (in \pkg{glmnet} or \pkg{nnet}) for the source model.}
 
-\item{treatment_model_type}{How the propensity score \eqn{P(A=1|X)=\sum_{s \in S} P(A=1|X, S=s)P(S=s|X)} is estimated. Options include "\code{separate}" (default) and "\code{joint}". If "\code{separate}", \eqn{P(A=1|X, S=s)} is estimated by regressing \eqn{A} on \eqn{X} within each specific internal source population \eqn{S=s}. If "\code{joint}", \eqn{P(A=1|X, S=s)} is estimated by regressing \eqn{A} on \eqn{X} and \eqn{S} using the multi-source population.}
+\item{treatment_model_type}{How the propensity score \eqn{P(A=1|X)=\sum_{s \in S} P(A=1|X, S=s)P(S=s|X)} is estimated. Options include "\code{separate}" (default) and "\code{joint}". If "\code{separate}", \eqn{P(A=1|X, S=s)} is estimated by regressing \eqn{A} on \eqn{X} within each specific nested population \eqn{S=s}. If "\code{joint}", \eqn{P(A=1|X, S=s)} is estimated by regressing \eqn{A} on \eqn{X} and \eqn{S} using the multi-source population.}
 
 \item{treatment_model_args}{The arguments (in \pkg{SuperLearner}) for the treatment model.}
 
@@ -49,16 +49,16 @@ STE_nested(
 }
 \value{
 An object of class "STE_nested". This object is a list with the following elements:
-  \item{df_dif}{A data frame containing the subgroup treatment effect (mean difference) estimates for the internal populations.}
-  \item{df_A0}{A data frame containing the subgroup potential outcome mean estimates under A = 0 for the internal populations.}
-  \item{df_A1}{A data frame containing the subgroup potential outcome mean estimates under A = 1 for the internal populations.}
+  \item{df_dif}{A data frame containing the subgroup treatment effect (mean difference) estimates for the nested populations.}
+  \item{df_A0}{A data frame containing the subgroup potential outcome mean estimates under A = 0 for the nested populations.}
+  \item{df_A1}{A data frame containing the subgroup potential outcome mean estimates under A = 1 for the nested populations.}
   \item{fit_outcome}{Fitted outcome model.}
   \item{fit_source}{Fitted source model.}
   \item{fit_treatment}{Fitted treatment model(s).}
   \item{...}{Some additional elements.}
 }
 \description{
-Doubly-robust and efficient estimator for the subgroup treatments effect (STE) of each internal source-specific target population using \eqn{m} multi-source data.
+Doubly-robust and efficient estimator for the subgroup treatments effect (STE) of each nested target population using \eqn{m} multi-source data.
 }
 \details{
 Data structure: multi-source data contain outcome Y, source S, treatment A, and covariates X (\eqn{n \times p}) with the first column being the categorical effect modifier (\eqn{\widetilde X}).
@@ -69,7 +69,7 @@ the source model \eqn{q_s(X)=P(S=s|X)}, the propensity score model \eqn{\eta_a(X
  +I(A_i = a, \widetilde X_i=\widetilde x) \dfrac{\widehat q_{s}(X_i)}{\widehat \eta_a(X_i)}  \Big\{ Y_i - \widehat \mu_a(X_i) \Big\} \Bigg],
 }
 where \eqn{\widehat \kappa=\{n^{-1} \sum_{i=1}^n I(S_i=s, \widetilde X_i=\widetilde x)\}^{-1}}.
-To achieve the non-parametrical efficiency and asymptotic normality, it requires that \eqn{||\widehat \mu_a(X) -\mu_a(X)||\big\{||\widehat \eta_a(X) -\eta_a(X)||+||\widehat q_s(X) -q_s(X)||\big\}=o_p(n^{-1/2})}.
+To achieve non-parametric efficiency and asymptotic normality, it requires that \eqn{||\widehat \mu_a(X) -\mu_a(X)||\big\{||\widehat \eta_a(X) -\eta_a(X)||+||\widehat q_s(X) -q_s(X)||\big\}=o_p(n^{-1/2})}.
 In addition, to avoid the Donsker class assumption, the estimation is done by sample splitting and cross-fitting.
 When one source of data is a randomized trial, it is still recommended to estimate the propensity score for optimal efficiency.
 Since the non-parametric influence function is the same as the efficient semi-parametric efficient influence function when the propensity score is known and incorporating the assumption \eqn{Y\perp S|(X, A=a)}, the inference stays the same.

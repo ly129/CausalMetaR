@@ -1,17 +1,17 @@
-#' Transporting ATE from multi-source population to an internal source-specific population
+#' Transporting ATE from multi-source population to a nested population
 #'
 #' @description
-#' Doubly-robust and efficient estimator for the average treatment effects of each internal source-specific target population using \eqn{m} multi-source data.
+#' Doubly-robust and efficient estimator for the average treatment effects of each nested target population using \eqn{m} multi-source data.
 #'
 #' @param X The covariate data frame with \eqn{n=n_1+...+n_{|S|}} rows and \eqn{p} columns. Character variables will be converted to factors. Numeric variables will be used as is.
 #' @param Y The length \eqn{n} outcome vector.
 #' @param S The source indicator which is a length \eqn{n} vector or factor. If \code{S} is a factor, it will maintain its level order, otherwise it will be converted to a factor with default level order. The order will be carried over to the outputs and plots.
 #' @param A The binary treatment (1 for treated and 0 for untreated), which is a length \eqn{n} vector.
 #' @param cross_fitting Logical, indicating whether sample splitting and cross fitting procedure should be used.
-#' @param replications Integer, the number of sample splitting and cross fitting replications to performed, if \code{cross_fitting = TRUE}. Default is \code{10L}.
+#' @param replications Integer, the number of sample splitting and cross fitting replications to perform, if \code{cross_fitting = TRUE}. Default is \code{10L}.
 #' @param source_model The (penalized) multinomial logistic regression for estimating \eqn{P(S=s|X)}. It has two options: "\code{MN.glmnet}" (default) and "\code{MN.nnet}", which use \pkg{glmnet} and \pkg{nnet} respectively.
 #' @param source_model_args The arguments (in \pkg{glmnet} or \pkg{nnet}) for the source model.
-#' @param treatment_model_type How the propensity score \eqn{P(A=1|X)=\sum_{s \in S} P(A=1|X, S=s)P(S=s|X)} is estimated. Options include "\code{separate}" (default) and "\code{joint}". If "\code{separate}", \eqn{P(A=1|X, S=s)} is estimated by regressing \eqn{A} on \eqn{X} within each specific internal source population \eqn{S=s}. If "\code{joint}", \eqn{P(A=1|X, S=s)} is estimated by regressing \eqn{A} on \eqn{X} and \eqn{S} using the multi-source population.
+#' @param treatment_model_type How the propensity score \eqn{P(A=1|X)=\sum_{s \in S} P(A=1|X, S=s)P(S=s|X)} is estimated. Options include "\code{separate}" (default) and "\code{joint}". If "\code{separate}", \eqn{P(A=1|X, S=s)} is estimated by regressing \eqn{A} on \eqn{X} within each specific nested population \eqn{S=s}. If "\code{joint}", \eqn{P(A=1|X, S=s)} is estimated by regressing \eqn{A} on \eqn{X} and \eqn{S} using the multi-source population.
 #' @param treatment_model_args The arguments (in \pkg{SuperLearner}) for the treatment model.
 #' @param outcome_model_args The arguments (in \pkg{SuperLearner}) for the outcome model.
 #' @param show_progress Logical, indicating whether to print a progress bar for the cross-fit replicates completed, if \code{cross_fitting = TRUE}.
@@ -25,15 +25,15 @@
 #'  +I(A_i = a) \dfrac{\widehat q_{s}(X_i)}{\widehat \eta_a(X_i)}  \Big\{ Y_i - \widehat \mu_a(X_i) \Big\} \Bigg],
 #' }
 #' where \eqn{\widehat \kappa=\{n^{-1} \sum_{i=1}^n I(S_i=s)\}^{-1}}.
-#' To achieve the non-parametrical efficiency and asymptotic normality, it requires that \eqn{||\widehat \mu_a(X) -\mu_a(X)||\big\{||\widehat \eta_a(X) -\eta_a(X)||+||\widehat q_s(X) -q_s(X)||\big\}=o_p(n^{-1/2})}.
+#' To achieve non-parametric efficiency and asymptotic normality, it requires that \eqn{||\widehat \mu_a(X) -\mu_a(X)||\big\{||\widehat \eta_a(X) -\eta_a(X)||+||\widehat q_s(X) -q_s(X)||\big\}=o_p(n^{-1/2})}.
 #' In addition, to avoid the Donsker class assumption, the estimation is done by sample splitting and cross-fitting.
 #' When one source of data is a randomized trial, it is still recommended to estimate the propensity score for optimal efficiency.
 #' Since the non-parametric influence function is the same as the efficient semi-parametric efficient influence function when the propensity score is known and incorporating the assumption \eqn{Y\perp S|(X, A=a)}, the inference stays the same.
 #'
 #' @return An object of class "ATE_nested". This object is a list with the following elements:
-#'   \item{df_dif}{A data frame containing the treatment effect (mean difference) estimates for the internal populations.}
-#'   \item{df_A0}{A data frame containing the potential outcome mean estimates under A = 0 for the internal populations.}
-#'   \item{df_A1}{A data frame containing the potential outcome mean estimates under A = 1 for the internal populations.}
+#'   \item{df_dif}{A data frame containing the treatment effect (mean difference) estimates for the nested populations.}
+#'   \item{df_A0}{A data frame containing the potential outcome mean estimates under A = 0 for the nested populations.}
+#'   \item{df_A1}{A data frame containing the potential outcome mean estimates under A = 1 for the nested populations.}
 #'   \item{fit_outcome}{Fitted outcome model.}
 #'   \item{fit_source}{Fitted source model.}
 #'   \item{fit_treatment}{Fitted treatment model(s).}
