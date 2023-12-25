@@ -135,5 +135,8 @@ dat_nested$S <- as.factor(dat_nested$S)
 dat_nested$EM <- as.factor(dat_nested$EM)
 dat_external$EM <- as.factor(dat_external$EM)
 
+dat_nested$R <- dat_nested$Y0 <- dat_nested$Y1 <- NULL
+dat_external$R <- dat_external$Y0 <- dat_external$Y1 <- NULL
+
 usethis::use_data(dat_nested, overwrite = TRUE)
 usethis::use_data(dat_external, overwrite = TRUE)

@@ -6,15 +6,13 @@
 \title{Nested data}
 \format{
 `dat_nested`
-A data frame with 1019 rows and 16 columns
+A data frame with 3917 rows and 13 columns
 \describe{
  \item{EM}{Effect modifier}
  \item{X2, ..., X10}{9 covariates}
- \item{R}{Indicator for nested data: R = 1 for nested data (not used)}
  \item{S}{Source}
  \item{A}{Treatment: 1 - treated; 0 - untreated}
  \item{Y}{Outcome}
- \item{Y1, Y0}{Counterfactual outcomes (not used)}
 }
 }
 \usage{
