@@ -97,10 +97,10 @@ When a data source is a randomized trial, it is still recommended to estimate th
 }
 \examples{
 ae <- ATE_external(
-  X = dat_nested[, 1:10],
-  Y = dat_nested$Y,
-  S = dat_nested$S,
-  A = dat_nested$A,
+  X = dat_multisource[, 1:10],
+  Y = dat_multisource$Y,
+  S = dat_multisource$S,
+  A = dat_multisource$A,
   X_external = dat_external[, 1:10],
   source_model = "MN.glmnet",
   source_model_args = list(),

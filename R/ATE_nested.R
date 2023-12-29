@@ -57,10 +57,10 @@
 #'
 #' @examples
 #' an <- ATE_nested(
-#'   X = dat_nested[, 1:10],
-#'   Y = dat_nested$Y,
-#'   S = dat_nested$S,
-#'   A = dat_nested$A,
+#'   X = dat_multisource[, 1:10],
+#'   Y = dat_multisource$Y,
+#'   S = dat_multisource$S,
+#'   A = dat_multisource$A,
 #'   source_model = "MN.glmnet",
 #'   source_model_args = list(),
 #'   treatment_model_type = "separate",

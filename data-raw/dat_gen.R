@@ -123,20 +123,20 @@ Data=Gen(n, n_m)
 names(Data)[1] <- "EM"
 Data$EM <- letters[Data$EM]
 
-dat_nested <- subset(Data, R == 1)
+dat_multisource <- subset(Data, R == 1)
 dat_external <- subset(Data, R == 0)
 
-dat_nested$S <- LETTERS[dat_nested$S]
-dat_nested <- dat_nested[order(dat_nested$S), ]
+dat_multisource$S <- LETTERS[dat_multisource$S]
+dat_multisource <- dat_multisource[order(dat_multisource$S), ]
 
-dim(dat_nested); dim(dat_external)
+dim(dat_multisource); dim(dat_external)
 
-dat_nested$S <- as.factor(dat_nested$S)
-dat_nested$EM <- as.factor(dat_nested$EM)
+dat_multisource$S <- as.factor(dat_multisource$S)
+dat_multisource$EM <- as.factor(dat_multisource$EM)
 dat_external$EM <- as.factor(dat_external$EM)
 
-dat_nested$R <- dat_nested$Y0 <- dat_nested$Y1 <- NULL
+dat_multisource$R <- dat_multisource$Y0 <- dat_multisource$Y1 <- NULL
 dat_external$R <- dat_external$Y0 <- dat_external$Y1 <- NULL
 
-usethis::use_data(dat_nested, overwrite = TRUE)
+usethis::use_data(dat_multisource, overwrite = TRUE)
 usethis::use_data(dat_external, overwrite = TRUE)

@@ -38,11 +38,11 @@ Note that users may need to custom set the argument \code{ilab.xpos} which speci
 }
 \examples{
 sn <- STE_nested(
-  X = dat_nested[, 2:10],
-  Y = dat_nested$Y,
-  EM = dat_nested$EM,
-  S = dat_nested$S,
-  A = dat_nested$A,
+  X = dat_multisource[, 2:10],
+  Y = dat_multisource$Y,
+  EM = dat_multisource$EM,
+  S = dat_multisource$S,
+  A = dat_multisource$A,
   cross_fitting = FALSE,
   source_model = "MN.nnet",
   source_model_args = list(),

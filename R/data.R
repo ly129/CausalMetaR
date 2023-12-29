@@ -1,8 +1,8 @@
-#' Nested data
+#' Multi-source data
 #'
-#' Simulated nested dataset for CMetafoR
+#' Simulated multi-source dataset for CMetafoR
 #'
-#' @format `dat_nested`
+#' @format `dat_multisource`
 #' A data frame with 3917 rows and 13 columns
 #' \describe{
 #'  \item{EM}{Effect modifier}
@@ -11,7 +11,7 @@
 #'  \item{A}{Treatment: 1 - treated; 0 - untreated}
 #'  \item{Y}{Outcome}
 #' }
-"dat_nested"
+"dat_multisource"
 
 
 

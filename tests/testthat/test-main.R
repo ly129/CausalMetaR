@@ -24,10 +24,10 @@ for (cross_fitting in c(FALSE)){
         paste('ATE_nested with: cross_fitting = ', cross_fitting, ', treatment_model_type = ', treatment_model_type, ', source_model = ', source_model), {
           expect_no_error({
               res <- ATE_nested(
-                X = dat_nested[, 1:5],
-                Y = dat_nested$Y,
-                S = dat_nested$S,
-                A = dat_nested$A,
+                X = dat_multisource[, 1:5],
+                Y = dat_multisource$Y,
+                S = dat_multisource$S,
+                A = dat_multisource$A,
                 cross_fitting = cross_fitting,
                 source_model = source_model,
                 treatment_model_type = treatment_model_type,
@@ -43,11 +43,11 @@ for (cross_fitting in c(FALSE)){
         paste('STE_nested with: cross_fitting = ', cross_fitting, ', treatment_model_type = ', treatment_model_type, ', source_model = ', source_model), {
           expect_no_error({
               res <- STE_nested(
-                X = dat_nested[, 1:5],
-                Y = dat_nested$Y,
-                EM = dat_nested$EM,
-                S = dat_nested$S,
-                A = dat_nested$A,
+                X = dat_multisource[, 1:5],
+                Y = dat_multisource$Y,
+                EM = dat_multisource$EM,
+                S = dat_multisource$S,
+                A = dat_multisource$A,
                 cross_fitting = cross_fitting,
                 source_model = source_model,
                 treatment_model_type = treatment_model_type,
@@ -63,11 +63,11 @@ for (cross_fitting in c(FALSE)){
         paste('ATE_external with: cross_fitting = ', cross_fitting, ', treatment_model_type = ', treatment_model_type, ', source_model = ', source_model), {
           expect_no_error({
               res <- ATE_external(
-                X = dat_nested[, 2:5],
+                X = dat_multisource[, 2:5],
                 X_external = dat_external[, 2:5],
-                Y = dat_nested$Y,
-                S = dat_nested$S,
-                A = dat_nested$A,
+                Y = dat_multisource$Y,
+                S = dat_multisource$S,
+                A = dat_multisource$A,
                 cross_fitting = cross_fitting,
                 source_model = source_model,
                 treatment_model_type = treatment_model_type,
@@ -84,13 +84,13 @@ for (cross_fitting in c(FALSE)){
         paste('STE_external with: cross_fitting = ', cross_fitting, ', treatment_model_type = ', treatment_model_type, ', source_model = ', source_model), {
           expect_no_error({
               res <- STE_external(
-                X = dat_nested[, 2:5],
+                X = dat_multisource[, 2:5],
                 X_external = dat_external[, 2:5],
-                Y = dat_nested$Y,
-                EM = dat_nested$EM,
+                Y = dat_multisource$Y,
+                EM = dat_multisource$EM,
                 EM_external = dat_external$EM,
-                S = dat_nested$S,
-                A = dat_nested$A,
+                S = dat_multisource$S,
+                A = dat_multisource$A,
                 cross_fitting = cross_fitting,
                 source_model = source_model,
                 treatment_model_type = treatment_model_type,

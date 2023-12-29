@@ -102,11 +102,11 @@ When a data source is a randomized trial, it is still recommended to estimate th
 }
 \examples{
 se <- STE_external(
-  X = dat_nested[, 2:10],
-  Y = dat_nested$Y,
-  EM = dat_nested$EM,
-  S = dat_nested$S,
-  A = dat_nested$A,
+  X = dat_multisource[, 2:10],
+  Y = dat_multisource$Y,
+  EM = dat_multisource$EM,
+  S = dat_multisource$S,
+  A = dat_multisource$A,
   X_external = dat_external[, 2:10],
   EM_external = dat_external$EM,
   cross_fitting = FALSE,

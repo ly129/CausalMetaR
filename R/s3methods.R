@@ -15,11 +15,11 @@
 #'
 #' @examples
 #' sn <- STE_nested(
-#'   X = dat_nested[, 2:10],
-#'   Y = dat_nested$Y,
-#'   EM = dat_nested$EM,
-#'   S = dat_nested$S,
-#'   A = dat_nested$A,
+#'   X = dat_multisource[, 2:10],
+#'   Y = dat_multisource$Y,
+#'   EM = dat_multisource$EM,
+#'   S = dat_multisource$S,
+#'   A = dat_multisource$A,
 #'   cross_fitting = FALSE,
 #'   source_model = "MN.nnet",
 #'   source_model_args = list(),
@@ -130,10 +130,10 @@ plot.STE_nested <- function(x,
 #'
 #' @examples
 #' an <- ATE_nested(
-#'   X = dat_nested[, 1:10],
-#'   Y = dat_nested$Y,
-#'   S = dat_nested$S,
-#'   A = dat_nested$A,
+#'   X = dat_multisource[, 1:10],
+#'   Y = dat_multisource$Y,
+#'   S = dat_multisource$S,
+#'   A = dat_multisource$A,
 #'   source_model = "MN.glmnet",
 #'   source_model_args = list(),
 #'   treatment_model_type = "separate",
@@ -205,11 +205,11 @@ plot.ATE_nested <- function(x,
 #'
 #' @examples
 #' sn <- STE_nested(
-#'   X = dat_nested[, 2:10],
-#'   Y = dat_nested$Y,
-#'   EM = dat_nested$EM,
-#'   S = dat_nested$S,
-#'   A = dat_nested$A,
+#'   X = dat_multisource[, 2:10],
+#'   Y = dat_multisource$Y,
+#'   EM = dat_multisource$EM,
+#'   S = dat_multisource$S,
+#'   A = dat_multisource$A,
 #'   cross_fitting = FALSE,
 #'   source_model = "MN.nnet",
 #'   source_model_args = list(),
@@ -302,11 +302,11 @@ print.ATE_external <- function(x, digits = 4, ...){
 #'
 #' @examples
 #' sn <- STE_nested(
-#'   X = dat_nested[, 2:10],
-#'   Y = dat_nested$Y,
-#'   EM = dat_nested$EM,
-#'   S = dat_nested$S,
-#'   A = dat_nested$A,
+#'   X = dat_multisource[, 2:10],
+#'   Y = dat_multisource$Y,
+#'   EM = dat_multisource$EM,
+#'   S = dat_multisource$S,
+#'   A = dat_multisource$A,
 #'   cross_fitting = FALSE,
 #'   source_model = "MN.nnet",
 #'   source_model_args = list(),
