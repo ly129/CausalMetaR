@@ -3,22 +3,21 @@
 \docType{data}
 \name{dat_multisource}
 \alias{dat_multisource}
-\title{Multi-source data}
+\title{Multi-source dataset}
 \format{
-`dat_multisource`
-A data frame with 3917 rows and 13 columns
-\describe{
- \item{EM}{Effect modifier}
- \item{X2, ..., X10}{9 covariates}
- \item{S}{Source}
- \item{A}{Treatment: 1 - treated; 0 - untreated}
- \item{Y}{Outcome}
+A data frame with 3,917 rows and 13 columns. The columns are:
+\tabular{ll}{
+ \code{EM} \tab Effect modifier. \cr
+ \code{X2}, ..., \code{X10} \tab Covariates. \cr
+ \code{S} \tab Source indicator. \cr
+ \code{A} \tab Treatment (1 for treated and 0 for untreated). \cr
+ \code{Y} \tab Outcome.
 }
 }
 \usage{
 dat_multisource
 }
 \description{
-Simulated multi-source dataset for CMetafoR
+Simulated multi-source dataset consisting of 3 sources.
 }
 \keyword{datasets}
