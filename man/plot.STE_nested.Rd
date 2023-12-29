@@ -36,6 +36,31 @@ This function creates forest plots of objects of class "STE_nested".
 \details{
 Note that users may need to custom set the argument \code{ilab.xpos} which specifies the position (along the x-axis) of the effect modifier header and subgroup labels. See \code{\link[metafor]{forest.rma}} for further details.
 }
+\examples{
+sn <- STE_nested(
+  X = dat_nested[, 2:10],
+  Y = dat_nested$Y,
+  EM = dat_nested$EM,
+  S = dat_nested$S,
+  A = dat_nested$A,
+  cross_fitting = FALSE,
+  source_model = "MN.nnet",
+  source_model_args = list(),
+  treatment_model_type = "separate",
+  treatment_model_args = list(
+    family = binomial(),
+    SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+    cvControl = list(V = 5L)
+  ),
+  outcome_model_args = list(
+    family = gaussian(),
+    SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+    cvControl = list(V = 5L)
+  )
+)
+plot(sn)
+
+}
 \seealso{
 \code{\link{STE_nested}}
 }

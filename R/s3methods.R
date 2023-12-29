@@ -13,7 +13,29 @@
 #' @return No value is returned.
 #' @seealso \code{\link{STE_nested}}
 #'
-#'
+#' @examples
+#' sn <- STE_nested(
+#'   X = dat_nested[, 2:10],
+#'   Y = dat_nested$Y,
+#'   EM = dat_nested$EM,
+#'   S = dat_nested$S,
+#'   A = dat_nested$A,
+#'   cross_fitting = FALSE,
+#'   source_model = "MN.nnet",
+#'   source_model_args = list(),
+#'   treatment_model_type = "separate",
+#'   treatment_model_args = list(
+#'     family = binomial(),
+#'     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+#'     cvControl = list(V = 5L)
+#'   ),
+#'   outcome_model_args = list(
+#'     family = gaussian(),
+#'     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+#'     cvControl = list(V = 5L)
+#'   )
+#' )
+#' plot(sn)
 #'
 #' @export
 
@@ -106,7 +128,27 @@ plot.STE_nested <- function(x,
 #' @return No value is returned.
 #' @seealso \code{\link{ATE_nested}}
 #'
-#'
+#' @examples
+#' an <- ATE_nested(
+#'   X = dat_nested[, 1:10],
+#'   Y = dat_nested$Y,
+#'   S = dat_nested$S,
+#'   A = dat_nested$A,
+#'   source_model = "MN.glmnet",
+#'   source_model_args = list(),
+#'   treatment_model_type = "separate",
+#'   treatment_model_args = list(
+#'     family = binomial(),
+#'     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+#'     cvControl = list(V = 5L)
+#'   ),
+#'   outcome_model_args = list(
+#'     family = gaussian(),
+#'     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+#'     cvControl = list(V = 5L)
+#'   )
+#' )
+#' plot(an)
 #'
 #' @export
 
@@ -161,7 +203,29 @@ plot.ATE_nested <- function(x,
 #' @return No value is returned.
 #' @seealso \code{\link{ATE_nested}}, \code{\link{ATE_external}}, \code{\link{STE_nested}}, \code{\link{STE_external}}
 #'
-#'
+#' @examples
+#' sn <- STE_nested(
+#'   X = dat_nested[, 2:10],
+#'   Y = dat_nested$Y,
+#'   EM = dat_nested$EM,
+#'   S = dat_nested$S,
+#'   A = dat_nested$A,
+#'   cross_fitting = FALSE,
+#'   source_model = "MN.nnet",
+#'   source_model_args = list(),
+#'   treatment_model_type = "separate",
+#'   treatment_model_args = list(
+#'     family = binomial(),
+#'     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+#'     cvControl = list(V = 5L)
+#'   ),
+#'   outcome_model_args = list(
+#'     family = gaussian(),
+#'     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+#'     cvControl = list(V = 5L)
+#'   )
+#' )
+#' print(sn)
 #'
 #' @export
 
@@ -236,7 +300,29 @@ print.ATE_external <- function(x, digits = 4, ...){
 #' @return No value is returned.
 #' @seealso \code{\link{ATE_nested}}, \code{\link{ATE_external}}, \code{\link{STE_nested}}, \code{\link{STE_external}}
 #'
-#'
+#' @examples
+#' sn <- STE_nested(
+#'   X = dat_nested[, 2:10],
+#'   Y = dat_nested$Y,
+#'   EM = dat_nested$EM,
+#'   S = dat_nested$S,
+#'   A = dat_nested$A,
+#'   cross_fitting = FALSE,
+#'   source_model = "MN.nnet",
+#'   source_model_args = list(),
+#'   treatment_model_type = "separate",
+#'   treatment_model_args = list(
+#'     family = binomial(),
+#'     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+#'     cvControl = list(V = 5L)
+#'   ),
+#'   outcome_model_args = list(
+#'     family = gaussian(),
+#'     SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+#'     cvControl = list(V = 5L)
+#'   )
+#' )
+#' summary(sn)
 #'
 #' @export
 

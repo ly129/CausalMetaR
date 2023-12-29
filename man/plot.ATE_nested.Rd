@@ -19,6 +19,29 @@ No value is returned.
 \description{
 This function creates forest plots of objects of class "ATE_nested".
 }
+\examples{
+an <- ATE_nested(
+  X = dat_nested[, 1:10],
+  Y = dat_nested$Y,
+  S = dat_nested$S,
+  A = dat_nested$A,
+  source_model = "MN.glmnet",
+  source_model_args = list(),
+  treatment_model_type = "separate",
+  treatment_model_args = list(
+    family = binomial(),
+    SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+    cvControl = list(V = 5L)
+  ),
+  outcome_model_args = list(
+    family = gaussian(),
+    SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"),
+    cvControl = list(V = 5L)
+  )
+)
+plot(an)
+
+}
 \seealso{
 \code{\link{ATE_nested}}
 }
