@@ -244,7 +244,7 @@ print.STE_nested <- function(x, digits = 4, ...){
   df_dif <- x$df_dif
   df_dif$Source <- source_lab
 
-  cat('SUBGROUP TREATMENT EFFECT ESTIMATES IN INTERNAL POPULATIONS\n\n')
+  cat('SUBGROUP TREATMENT EFFECT ESTIMATES IN NESTED POPULATIONS\n\n')
   cat('Treatment effect (mean difference) estimates:\n')
   cat("---------------------------------------------\n")
   my_print(df_dif, digits = digits, ATE = FALSE, internal = TRUE)
@@ -257,7 +257,7 @@ print.ATE_nested <- function(x, digits = 4, ...){
     stop("Argument 'x' must be an object of class \"ATE_nested\".")
   }
 
-  cat('AVERAGE TREATMENT EFFECT ESTIMATES IN INTERNAL POPULATIONS\n\n')
+  cat('AVERAGE TREATMENT EFFECT ESTIMATES IN NESTED POPULATIONS\n\n')
   cat('Treatment effect (mean difference) estimates:\n')
   cat("---------------------------------------------\n")
   my_print(x$df_dif, digits = digits, ATE = TRUE, internal = TRUE)
@@ -342,7 +342,7 @@ summary.STE_nested <- function(object, digits = 4, ...){
   df_A0 <- object$df_A0; df_A0$Source <- source_lab
   df_A1 <- object$df_A1; df_A1$Source <- source_lab
 
-  cat('SUBGROUP TREATMENT EFFECT ESTIMATES IN INTERNAL POPULATIONS\n\n')
+  cat('SUBGROUP TREATMENT EFFECT ESTIMATES IN NESTED POPULATIONS\n\n')
   cat('Treatment effect (mean difference) estimates:\n')
   cat("---------------------------------------------\n")
   my_print(df_dif, digits = digits, ATE = FALSE, internal = TRUE)
@@ -426,7 +426,7 @@ summary.ATE_nested <- function(object, digits = 4, ...){
     stop("Argument 'object' must be an object of class \"ATE_nested\".")
   }
 
-  cat('AVERAGE TREATMENT EFFECT ESTIMATES IN AN INTERNAL POPULATIONS\n\n')
+  cat('AVERAGE TREATMENT EFFECT ESTIMATES IN NESTED POPULATIONS\n\n')
   cat('Treatment effect (mean difference) estimates:\n')
   cat("---------------------------------------------\n")
   my_print(object$df_dif, digits = digits, ATE = TRUE, internal = TRUE)
