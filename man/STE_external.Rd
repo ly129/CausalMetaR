@@ -2,7 +2,7 @@
 % Please edit documentation in R/STE_external.R
 \name{STE_external}
 \alias{STE_external}
-\title{Transporting subgroup treatment effects (STE) from multi-source population to an external population}
+\title{Estimating the Subgroup Treatment Effect (STE) in an external target population using multi-source data}
 \usage{
 STE_external(
   X,
@@ -24,37 +24,37 @@ STE_external(
 )
 }
 \arguments{
-\item{X}{The covariate data frame with \eqn{n=n_1+...+n_{|S|}} rows and \eqn{p} columns. Character variables will be converted to factors. Numeric variables will be used as is.}
+\item{X}{Data frame (or matrix) containing the covariate data in the multi-source data. It should have \eqn{n} rows and \eqn{p} columns. Character variables will be converted to factors.}
 
-\item{X_external}{The external covariate data frame with \eqn{n_0} rows and \eqn{p} columns. The external data counterpart to \code{X}.}
+\item{X_external}{Data frame (or matrix) containing the covariate data in the external target population. It should have \eqn{n_0} rows and \eqn{p} columns. This is the external data counterpart to the \code{X} argument.}
 
-\item{EM}{The effect modifier, which is a vector or factor of length \eqn{n}. If \code{EM} is a factor, it will maintain its subgroup level order, otherwise it will be converted to a factor with default level order.}
+\item{EM}{Vector of length \eqn{n} containing the effect modifier in the multi-source data. If \code{EM} is a factor, it will maintain its subgroup level order; otherwise it will be converted to a factor with default level order.}
 
-\item{EM_external}{The external effect modifier of length \eqn{n_0}. The external data counterpart to \code{EM}.}
+\item{EM_external}{Vector of length \eqn{n_0} containing the effect modifier in the external data. This is the external data counterpart to the \code{EM} argument.}
 
-\item{Y}{The length \eqn{n} outcome vector.}
+\item{Y}{Vector of length \eqn{n} containing the outcome.}
 
-\item{S}{The source indicator which is a length \eqn{n} vector or factor. If \code{S} is a factor, it will maintain its level order, otherwise it will be converted to a factor with default level order. The order will be carried over to the outputs and plots.}
+\item{S}{Vector of length \eqn{n} containing the source indicator. If \code{S} is a factor, it will maintain its level order; otherwise it will be converted to a factor with the default level order. The order will be carried over to the outputs and plots.}
 
-\item{A}{The binary treatment (1 for treated and 0 for untreated), which is a length \eqn{n} vector.}
+\item{A}{Vector of length \eqn{n} containing the binary treatment (1 for treated and 0 for untreated).}
 
-\item{cross_fitting}{Logical, indicating whether sample splitting and cross fitting procedure should be used.}
+\item{cross_fitting}{Logical specifying whether sample splitting and cross fitting should be used.}
 
-\item{replications}{Integer, the number of sample splitting and cross fitting replications to perform, if \code{cross_fitting = TRUE}. Default is \code{10L}.}
+\item{replications}{Integer specifying the number of sample splitting and cross fitting replications to perform, if \code{cross_fitting = TRUE}. The default is \code{10L}.}
 
-\item{source_model}{The (penalized) multinomial logistic regression for estimating \eqn{P(S=s|X)}. It has two options: "\code{MN.glmnet}" (default) and "\code{MN.nnet}", which use \pkg{glmnet} and \pkg{nnet} respectively.}
+\item{source_model}{Character string specifying the (penalized) multinomial logistic regression for estimating the source model. It has two options: "\code{MN.glmnet}" (default) and "\code{MN.nnet}", which use \pkg{glmnet} and \pkg{nnet} respectively.}
 
-\item{source_model_args}{The arguments (in \pkg{glmnet} or \pkg{nnet}) for the source model.}
+\item{source_model_args}{List specifying the arguments for the source model (in \pkg{glmnet} or \pkg{nnet}).}
 
-\item{treatment_model_type}{How the propensity score \eqn{P(A=1|X)=\sum_{s \in S} P(A=1|X, S=s)P(S=s|X)} is estimated. Options include "\code{separate}" (default) and "\code{joint}". If "\code{separate}", \eqn{P(A=1|X, S=s)} is estimated by regressing \eqn{A} on \eqn{X} within each specific internal source population \eqn{S=s}. If "\code{joint}", \eqn{P(A=1|X, S=s)} is estimated by regressing \eqn{A} on \eqn{X} and \eqn{S} using the multi-source population.}
+\item{treatment_model_type}{Character string specifying how the treatment model is estimated. Options include "\code{separate}" (default) and "\code{joint}". If "\code{separate}", the treatment model (i.e., \eqn{P(A=1|X, S=s)}) is estimated by regressing \eqn{A} on \eqn{X} within each specific nested population \eqn{S=s}. If "\code{joint}", the treatment model is estimated by regressing \eqn{A} on \eqn{X} and \eqn{S} using the multi-source population.}
 
-\item{treatment_model_args}{The arguments (in \pkg{SuperLearner}) for the treatment model.}
+\item{treatment_model_args}{List specifying the arguments for the treatment model (in \pkg{SuperLearner}).}
 
-\item{external_model_args}{The arguments (in \pkg{SuperLearner}) for the external model.}
+\item{external_model_args}{List specifying the arguments for the external model (in \pkg{SuperLearner}).}
 
-\item{outcome_model_args}{The arguments (in \pkg{SuperLearner}) for the outcome model.}
+\item{outcome_model_args}{List specifying the arguments for the outcome model  (in \pkg{SuperLearner}).}
 
-\item{show_progress}{Logical, indicating whether to print a progress bar for the cross-fit replicates completed, if \code{cross_fitting = TRUE}.}
+\item{show_progress}{Logical specifying whether to print a progress bar for the cross-fit replicates completed, if \code{cross_fitting = TRUE}.}
 }
 \value{
 An object of class "STE_external". This object is a list with the following elements:
@@ -67,22 +67,38 @@ An object of class "STE_external". This object is a list with the following elem
   \item{fit_external}{Fitted external model.}
 }
 \description{
-Doubly-robust and efficient estimator for the subgroup treatment effects (STE) of an external target population using \eqn{m} multi-source data.
+Doubly-robust and efficient estimator for the STE in an external target population using multi-source data.
 }
 \details{
-Data structure: multi-source data contain outcome Y, source S, treatment A, covariates X (\eqn{n \times p}) and effect modifier EM; external data contain only covariate X_external (\eqn{n_0 \times p}) and effect modifier EM_external.
-Once X and X_external are defined, The indicator of multi-source data, R, can be defined, i.e., R is 1 if the subject belongs to the multi-source data and 0 if the subject belongs to the external data.
-The estimator is doubly robust and non-parametrically efficient. Three nuisance parameters are estimated,
-the R model \eqn{q(X)=P(R=1|X)}, the propensity score model \eqn{\eta_a(X)=P(A=a|X)}, and the outcome model \eqn{\mu_a(X)=E(Y|X, A=a)}. The nuisance parameters are allowed to be estimated by \pkg{SuperLearner}. The estimator is
+\strong{Data structure:}
+
+The multi-source dataset consists the outcome \code{Y}, source \code{S}, treatment \code{A}, covariates \code{X} (\eqn{n \times p}), and effect modifier \code{EM} in the nested populations. The data sources can be trials, observational studies, or a combination of both.
+
+The external dataset contains only covariates \code{X_external} (\eqn{n_0 \times p}) and the effect modifier \code{EM_external}.
+
+\strong{Estimation of nuissance parameters:}
+
+The following models are fit:
+\itemize{
+\item External model: \eqn{q(X)=P(R=1|X)}, where \eqn{R} takes value 1 if the subject belongs to any of the nested dataset and 0 if the subject belongs to the external dataset
+\item Propensity score model: \eqn{\eta_a(X)=P(A=a|X)}. We perform the decomposition \eqn{P(A=a|X)=\sum_{s} P(A=a|X, S=s)P(S=s|X)} and estimate \eqn{P(A=1|X, S=s)} (i.e., the treatment model) and \eqn{P(S=s|X)} (i.e., the source model).
+\item Outcome model: \eqn{\mu_a(X)=E(Y|X, A=a)}
+}
+The models are estimated by \pkg{SuperLearner} with the exception of the source model which is estimated by \pkg{glmnet} or \pkg{nnet}.
+
+\strong{STE estimation:}
+
+The estimator is
 \deqn{
  \dfrac{\widehat \kappa}{N}\sum\limits_{i=1}^{N} \Bigg[ I(R_i = 0) \widehat \mu_a(X_i)
  +I(A_i = a, R_i=1) \dfrac{1-\widehat q(X_i)}{\widehat \eta_a(X_i)\widehat q(X_i)}  \Big\{ Y_i - \widehat \mu_a(X_i) \Big\} \Bigg],
 }
-where \eqn{N=n+n_0}, and \eqn{\widehat \kappa=\{N^{-1} \sum_{i=1}^N I(R_i=0)\}^{-1}}.
-To achieve non-parametric efficiency and asymptotic normality, it requires that \eqn{||\widehat \mu_a(X) -\mu_a(X)||\big\{||\widehat \eta_a(X) -\eta_a(X)||+||\widehat q(X) -q(X)||\big\}=o_p(n^{-1/2})}.
-In addition, to avoid the Donsker class assumption, the estimation is done by sample splitting and cross-fitting.
-When one source of data is a randomized trial, it is still recommended to estimate the propensity score for optimal efficiency.
-Since the non-parametric influence function is the same as the efficient semi-parametric efficient influence function when the propensity score is known and incorporating the assumption \eqn{Y\perp S|(X, A=a)}, the inference stays the same.
+where \eqn{N=n+n_0}, \eqn{\widehat \kappa=\{N^{-1} \sum_{i=1}^N I(R_i=0)\}^{-1}}, and  and \eqn{\widetilde X} denotes the effect modifier.
+
+The estimator is doubly robust and non-parametrically efficient. To achieve non-parametric efficiency and asymptotic normality, it requires that \eqn{||\widehat \mu_a(X) -\mu_a(X)||\big\{||\widehat \eta_a(X) -\eta_a(X)||+||\widehat q(X) -q(X)||\big\}=o_p(n^{-1/2})}.
+In addition, sample splitting and cross-fitting can be performed to avoid the Donsker class assumption.
+
+When a data source is a randomized trial, it is still recommended to estimate the propensity score for optimal efficiency.
 }
 \examples{
 se <- STE_external(

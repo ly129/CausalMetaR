@@ -40,7 +40,7 @@ ATE_external(
 
 \item{source_model_args}{List specifying the arguments for the source model (in \pkg{glmnet} or \pkg{nnet}).}
 
-\item{treatment_model_type}{Character string specifying how the propensity score is estimated. Options include "\code{separate}" (default) and "\code{joint}". If "\code{separate}", the source model (i.e., \eqn{P(A=1|X, S=s)}) is estimated by regressing \eqn{A} on \eqn{X} within each specific nested population \eqn{S=s}. If "\code{joint}", the source model is estimated by regressing \eqn{A} on \eqn{X} and \eqn{S} using the multi-source population.}
+\item{treatment_model_type}{Character string specifying how the treatment model is estimated. Options include "\code{separate}" (default) and "\code{joint}". If "\code{separate}", the treatment model (i.e., \eqn{P(A=1|X, S=s)}) is estimated by regressing \eqn{A} on \eqn{X} within each specific nested population \eqn{S=s}. If "\code{joint}", the treatment model is estimated by regressing \eqn{A} on \eqn{X} and \eqn{S} using the multi-source population.}
 
 \item{treatment_model_args}{List specifying the arguments for the treatment model (in \pkg{SuperLearner}).}
 
@@ -88,11 +88,12 @@ The ATE estimator is
  +I(A_i = a, R_i=1) \dfrac{1-\widehat q(X_i)}{\widehat \eta_a(X_i)\widehat q(X_i)}  \Big\{ Y_i - \widehat \mu_a(X_i) \Big\} \Bigg],
 }
 where \eqn{N=n+n_0}, and \eqn{\widehat \kappa=\{N^{-1} \sum_{i=1}^N I(R_i=0)\}^{-1}}.
+
 This estimator is doubly robust and non-parametrically efficient.
 To achieve non-parametric efficiency and asymptotic normality, it requires that \eqn{||\widehat \mu_a(X) -\mu_a(X)||\big\{||\widehat \eta_a(X) -\eta_a(X)||+||\widehat q(X) -q(X)||\big\}=o_p(n^{-1/2})}.
 In addition, sample splitting and cross-fitting can be performed to avoid the Donsker class assumption.
 
-When one data source is a randomized trial, it is still recommended to estimate the propensity score for optimal efficiency.
+When a data source is a randomized trial, it is still recommended to estimate the propensity score for optimal efficiency.
 }
 \examples{
 ae <- ATE_external(

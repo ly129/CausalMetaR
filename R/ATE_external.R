@@ -12,7 +12,7 @@
 #' @param replications Integer specifying the number of sample splitting and cross fitting replications to perform, if \code{cross_fitting = TRUE}. The default is \code{10L}.
 #' @param source_model Character string specifying the (penalized) multinomial logistic regression for estimating the source model. It has two options: "\code{MN.glmnet}" (default) and "\code{MN.nnet}", which use \pkg{glmnet} and \pkg{nnet} respectively.
 #' @param source_model_args List specifying the arguments for the source model (in \pkg{glmnet} or \pkg{nnet}).
-#' @param treatment_model_type Character string specifying how the propensity score is estimated. Options include "\code{separate}" (default) and "\code{joint}". If "\code{separate}", the source model (i.e., \eqn{P(A=1|X, S=s)}) is estimated by regressing \eqn{A} on \eqn{X} within each specific nested population \eqn{S=s}. If "\code{joint}", the source model is estimated by regressing \eqn{A} on \eqn{X} and \eqn{S} using the multi-source population.
+#' @param treatment_model_type Character string specifying how the treatment model is estimated. Options include "\code{separate}" (default) and "\code{joint}". If "\code{separate}", the treatment model (i.e., \eqn{P(A=1|X, S=s)}) is estimated by regressing \eqn{A} on \eqn{X} within each specific nested population \eqn{S=s}. If "\code{joint}", the treatment model is estimated by regressing \eqn{A} on \eqn{X} and \eqn{S} using the multi-source population.
 #' @param treatment_model_args List specifying the arguments for the treatment model (in \pkg{SuperLearner}).
 #' @param external_model_args List specifying the arguments for the external model (in \pkg{SuperLearner}).
 #' @param outcome_model_args List specifying the arguments for the outcome model  (in \pkg{SuperLearner}).
@@ -44,11 +44,12 @@
 #'  +I(A_i = a, R_i=1) \dfrac{1-\widehat q(X_i)}{\widehat \eta_a(X_i)\widehat q(X_i)}  \Big\{ Y_i - \widehat \mu_a(X_i) \Big\} \Bigg],
 #' }
 #' where \eqn{N=n+n_0}, and \eqn{\widehat \kappa=\{N^{-1} \sum_{i=1}^N I(R_i=0)\}^{-1}}.
+#'
 #' This estimator is doubly robust and non-parametrically efficient.
 #' To achieve non-parametric efficiency and asymptotic normality, it requires that \eqn{||\widehat \mu_a(X) -\mu_a(X)||\big\{||\widehat \eta_a(X) -\eta_a(X)||+||\widehat q(X) -q(X)||\big\}=o_p(n^{-1/2})}.
 #' In addition, sample splitting and cross-fitting can be performed to avoid the Donsker class assumption.
 #'
-#' When one data source is a randomized trial, it is still recommended to estimate the propensity score for optimal efficiency.
+#' When a data source is a randomized trial, it is still recommended to estimate the propensity score for optimal efficiency.
 #'
 #' @return An object of class "ATE_external". This object is a list with the following elements:
 #'   \item{df_dif}{A data frame containing the treatment effect (mean difference) estimates for the extenal data.}
