@@ -14,7 +14,7 @@
 #' @param replications Integer specifying the number of sample splitting and cross fitting replications to perform, if \code{cross_fitting = TRUE}. The default is \code{10L}.
 #' @param source_model Character string specifying the (penalized) multinomial logistic regression for estimating the source model. It has two options: "\code{MN.glmnet}" (default) and "\code{MN.nnet}", which use \pkg{glmnet} and \pkg{nnet} respectively.
 #' @param source_model_args List specifying the arguments for the source model (in \pkg{glmnet} or \pkg{nnet}).
-#' @param treatment_model_type Character string specifying how the treatment model is estimated. Options include "\code{separate}" (default) and "\code{joint}". If "\code{separate}", the treatment model (i.e., \eqn{P(A=1|X, S=s)}) is estimated by regressing \eqn{A} on \eqn{X} within each specific nested population \eqn{S=s}. If "\code{joint}", the treatment model is estimated by regressing \eqn{A} on \eqn{X} and \eqn{S} using the multi-source population.
+#' @param treatment_model_type Character string specifying how the treatment model is estimated. Options include "\code{separate}" (default) and "\code{joint}". If "\code{separate}", the treatment model (i.e., \eqn{P(A=1|X, S=s)}) is estimated by regressing \eqn{A} on \eqn{X} within each specific internal population \eqn{S=s}. If "\code{joint}", the treatment model is estimated by regressing \eqn{A} on \eqn{X} and \eqn{S} using the multi-source population.
 #' @param treatment_model_args List specifying the arguments for the treatment model (in \pkg{SuperLearner}).
 #' @param external_model_args List specifying the arguments for the external model (in \pkg{SuperLearner}).
 #' @param outcome_model_args List specifying the arguments for the outcome model  (in \pkg{SuperLearner}).
@@ -24,7 +24,7 @@
 #'
 #' \strong{Data structure:}
 #'
-#' The multi-source dataset consists the outcome \code{Y}, source \code{S}, treatment \code{A}, covariates \code{X} (\eqn{n \times p}), and effect modifier \code{EM} in the nested populations. The data sources can be trials, observational studies, or a combination of both.
+#' The multi-source dataset consists the outcome \code{Y}, source \code{S}, treatment \code{A}, covariates \code{X} (\eqn{n \times p}), and effect modifier \code{EM} in the internal populations. The data sources can be trials, observational studies, or a combination of both.
 #'
 #' The external dataset contains only covariates \code{X_external} (\eqn{n_0 \times p}) and the effect modifier \code{EM_external}.
 #'
@@ -32,7 +32,7 @@
 #'
 #' The following models are fit:
 #' \itemize{
-#' \item External model: \eqn{q(X)=P(R=1|X)}, where \eqn{R} takes value 1 if the subject belongs to any of the nested dataset and 0 if the subject belongs to the external dataset
+#' \item External model: \eqn{q(X)=P(R=1|X)}, where \eqn{R} takes value 1 if the subject belongs to any of the internal dataset and 0 if the subject belongs to the external dataset
 #' \item Propensity score model: \eqn{\eta_a(X)=P(A=a|X)}. We perform the decomposition \eqn{P(A=a|X)=\sum_{s} P(A=a|X, S=s)P(S=s|X)} and estimate \eqn{P(A=1|X, S=s)} (i.e., the treatment model) and \eqn{P(S=s|X)} (i.e., the source model).
 #' \item Outcome model: \eqn{\mu_a(X)=E(Y|X, A=a)}
 #' }

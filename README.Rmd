@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The `CMetafoR` package provides robust and efficient methods for estimating causal effects in a target population using a multi-source dataset. The multi-source data can be a collection of trials, observational studies, or a combination of both, which have the same data structure (outcome, treatment, and covariates). The target population can be based on a nested dataset or an external dataset where only covariate information is available. The causal estimands available are average treatment effects and subgroup treatment effects.
+The `CMetafoR` package provides robust and efficient methods for estimating causal effects in a target population using a multi-source dataset. The multi-source data can be a collection of trials, observational studies, or a combination of both, which have the same data structure (outcome, treatment, and covariates). The target population can be based on an internal dataset or an external dataset where only covariate information is available. The causal estimands available are average treatment effects and subgroup treatment effects.
 
 ## Installation
 

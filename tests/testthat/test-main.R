@@ -21,9 +21,9 @@ for (cross_fitting in c(FALSE)){
     for (source_model in c('MN.nnet', 'MN.glmnet')){
 
       test_that(
-        paste('ATE_nested with: cross_fitting = ', cross_fitting, ', treatment_model_type = ', treatment_model_type, ', source_model = ', source_model), {
+        paste('ATE_internal with: cross_fitting = ', cross_fitting, ', treatment_model_type = ', treatment_model_type, ', source_model = ', source_model), {
           expect_no_error({
-              res <- ATE_nested(
+              res <- ATE_internal(
                 X = dat_multisource[, 1:5],
                 Y = dat_multisource$Y,
                 S = dat_multisource$S,
@@ -40,9 +40,9 @@ for (cross_fitting in c(FALSE)){
         })
 
       test_that(
-        paste('STE_nested with: cross_fitting = ', cross_fitting, ', treatment_model_type = ', treatment_model_type, ', source_model = ', source_model), {
+        paste('STE_internal with: cross_fitting = ', cross_fitting, ', treatment_model_type = ', treatment_model_type, ', source_model = ', source_model), {
           expect_no_error({
-              res <- STE_nested(
+              res <- STE_internal(
                 X = dat_multisource[, 1:5],
                 Y = dat_multisource$Y,
                 EM = dat_multisource$EM,

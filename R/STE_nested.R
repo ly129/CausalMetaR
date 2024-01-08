@@ -1,7 +1,7 @@
-#' Estimating the Subgroup Treatment Effect (STE) in a nested target population using multi-source data
+#' Estimating the Subgroup Treatment Effect (STE) in an internal target population using multi-source data
 #'
 #' @description
-#' Doubly-robust and efficient estimator for the STE in each nested target population using multi-source data.
+#' Doubly-robust and efficient estimator for the STE in each internal target population using multi-source data.
 #'
 #' @param X Data frame (or matrix) containing the covariate data in the multi-source data. It should have \eqn{n} rows and \eqn{p} columns. Character variables will be converted to factors.
 #' @param EM Vector of length \eqn{n} containing the effect modifier in the multi-source data. If \code{EM} is a factor, it will maintain its subgroup level order; otherwise it will be converted to a factor with default level order.
@@ -12,7 +12,7 @@
 #' @param replications Integer specifying the number of sample splitting and cross fitting replications to perform, if \code{cross_fitting = TRUE}. The default is \code{10L}.
 #' @param source_model Character string specifying the (penalized) multinomial logistic regression for estimating the source model. It has two options: "\code{MN.glmnet}" (default) and "\code{MN.nnet}", which use \pkg{glmnet} and \pkg{nnet} respectively.
 #' @param source_model_args List specifying the arguments for the source model (in \pkg{glmnet} or \pkg{nnet}).
-#' @param treatment_model_type Character string specifying how the treatment model is estimated. Options include "\code{separate}" (default) and "\code{joint}". If "\code{separate}", the treatment model (i.e., \eqn{P(A=1|X, S=s)}) is estimated by regressing \eqn{A} on \eqn{X} within each specific nested population \eqn{S=s}. If "\code{joint}", the treatment model is estimated by regressing \eqn{A} on \eqn{X} and \eqn{S} using the multi-source population.
+#' @param treatment_model_type Character string specifying how the treatment model is estimated. Options include "\code{separate}" (default) and "\code{joint}". If "\code{separate}", the treatment model (i.e., \eqn{P(A=1|X, S=s)}) is estimated by regressing \eqn{A} on \eqn{X} within each specific internal population \eqn{S=s}. If "\code{joint}", the treatment model is estimated by regressing \eqn{A} on \eqn{X} and \eqn{S} using the multi-source population.
 #' @param treatment_model_args List specifying the arguments for the treatment model (in \pkg{SuperLearner}).
 #' @param outcome_model_args List specifying the arguments for the outcome model  (in \pkg{SuperLearner}).
 #' @param show_progress Logical specifying whether to print a progress bar for the cross-fit replicates completed, if \code{cross_fitting = TRUE}.
@@ -21,7 +21,7 @@
 #'
 #' \strong{Data structure:}
 #'
-#' The multi-source dataset consists the outcome \code{Y}, source \code{S}, treatment \code{A}, covariates \code{X} (\eqn{n \times p}), and effect modifier \code{EM} in the nested populations. The data sources can be trials, observational studies, or a combination of both.
+#' The multi-source dataset consists the outcome \code{Y}, source \code{S}, treatment \code{A}, covariates \code{X} (\eqn{n \times p}), and effect modifier \code{EM} in the internal populations. The data sources can be trials, observational studies, or a combination of both.
 #'
 #' \strong{Estimation of nuissance parameters:}
 #'
@@ -46,17 +46,17 @@
 #'
 #' When a data source is a randomized trial, it is still recommended to estimate the propensity score for optimal efficiency.
 #'
-#' @return An object of class "STE_nested". This object is a list with the following elements:
-#'   \item{df_dif}{A data frame containing the subgroup treatment effect (mean difference) estimates for the nested populations.}
-#'   \item{df_A0}{A data frame containing the subgroup potential outcome mean estimates under A = 0 for the nested populations.}
-#'   \item{df_A1}{A data frame containing the subgroup potential outcome mean estimates under A = 1 for the nested populations.}
+#' @return An object of class "STE_internal". This object is a list with the following elements:
+#'   \item{df_dif}{A data frame containing the subgroup treatment effect (mean difference) estimates for the internal populations.}
+#'   \item{df_A0}{A data frame containing the subgroup potential outcome mean estimates under A = 0 for the internal populations.}
+#'   \item{df_A1}{A data frame containing the subgroup potential outcome mean estimates under A = 1 for the internal populations.}
 #'   \item{fit_outcome}{Fitted outcome model.}
 #'   \item{fit_source}{Fitted source model.}
 #'   \item{fit_treatment}{Fitted treatment model(s).}
 #'   \item{...}{Some additional elements.}
 #'
 #' @examples
-#' sn <- STE_nested(
+#' sn <- STE_internal(
 #'   X = dat_multisource[, 2:10],
 #'   Y = dat_multisource$Y,
 #'   EM = dat_multisource$EM,
@@ -78,7 +78,7 @@
 #'   )
 #' )
 #' @export
-STE_nested <- function(
+STE_internal <- function(
     X, # predictor matrix
     Y, # outcome
     EM, # effect modifier
@@ -314,9 +314,9 @@ STE_nested <- function(
                                 FUN = mean),
                           MARGIN = 1:3,
                           FUN = median)
-    # end of STE_nested with cross-fitting
+    # end of STE_internal with cross-fitting
   } else {
-    # start of regular STE_nested
+    # start of regular STE_internal
     if (source_model %in% c("MN.glmnet", "MN.nnet")) {
       source_model_args$Y <- S
       source_model_args$X <- data.frame(EM_dummy, X)
@@ -473,7 +473,7 @@ STE_nested <- function(
   res$source_names <- source_names
   res$subgroup_names <- subgroup_names
 
-  class(res) <- 'STE_nested'
+  class(res) <- 'STE_internal'
 
   return(res)
 }

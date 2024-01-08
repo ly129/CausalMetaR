@@ -1,4 +1,4 @@
-## code to prepare `dat_nested` dataset goes here
+## code to prepare `dat_multisource` and `dat_external` datasets goes here
 
 library("mvtnorm")
 library("rootSolve")

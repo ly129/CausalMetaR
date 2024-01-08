@@ -40,7 +40,7 @@ ATE_external(
 
 \item{source_model_args}{List specifying the arguments for the source model (in \pkg{glmnet} or \pkg{nnet}).}
 
-\item{treatment_model_type}{Character string specifying how the treatment model is estimated. Options include "\code{separate}" (default) and "\code{joint}". If "\code{separate}", the treatment model (i.e., \eqn{P(A=1|X, S=s)}) is estimated by regressing \eqn{A} on \eqn{X} within each specific nested population \eqn{S=s}. If "\code{joint}", the treatment model is estimated by regressing \eqn{A} on \eqn{X} and \eqn{S} using the multi-source population.}
+\item{treatment_model_type}{Character string specifying how the treatment model is estimated. Options include "\code{separate}" (default) and "\code{joint}". If "\code{separate}", the treatment model (i.e., \eqn{P(A=1|X, S=s)}) is estimated by regressing \eqn{A} on \eqn{X} within each specific internal population \eqn{S=s}. If "\code{joint}", the treatment model is estimated by regressing \eqn{A} on \eqn{X} and \eqn{S} using the multi-source population.}
 
 \item{treatment_model_args}{List specifying the arguments for the treatment model (in \pkg{SuperLearner}).}
 
@@ -66,7 +66,7 @@ Doubly-robust and efficient estimator for the ATE in an external target populati
 \details{
 \strong{Data structure:}
 
-The multi-source dataset consists the outcome \code{Y}, source \code{S}, treatment \code{A}, and covariates \code{X} (\eqn{n \times p}) in the nested populations. The data sources can be trials, observational studies, or a combination of both.
+The multi-source dataset consists the outcome \code{Y}, source \code{S}, treatment \code{A}, and covariates \code{X} (\eqn{n \times p}) in the internal populations. The data sources can be trials, observational studies, or a combination of both.
 
 The external dataset contains only covariates \code{X_external} (\eqn{n_0 \times p}).
 
@@ -74,7 +74,7 @@ The external dataset contains only covariates \code{X_external} (\eqn{n_0 \times
 
 The following models are fit:
 \itemize{
-\item External model: \eqn{q(X)=P(R=1|X)}, where \eqn{R} takes value 1 if the subject belongs to any of the nested dataset and 0 if the subject belongs to the external dataset
+\item External model: \eqn{q(X)=P(R=1|X)}, where \eqn{R} takes value 1 if the subject belongs to any of the internal dataset and 0 if the subject belongs to the external dataset
 \item Propensity score model: \eqn{\eta_a(X)=P(A=a|X)}. We perform the decomposition \eqn{P(A=a|X)=\sum_{s} P(A=a|X, S=s)P(S=s|X)} and estimate \eqn{P(A=1|X, S=s)} (i.e., the treatment model) and \eqn{P(S=s|X)} (i.e., the source model).
 \item Outcome model: \eqn{\mu_a(X)=E(Y|X, A=a)}
 }

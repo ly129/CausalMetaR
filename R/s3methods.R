@@ -1,20 +1,20 @@
-#' Plot method for objects of class "STE_nested"
+#' Plot method for objects of class "STE_internal"
 #'
-#' This function creates forest plots of objects of class "STE_nested".
+#' This function creates forest plots of objects of class "STE_internal".
 #'
 #' Note that users may need to custom set the argument \code{ilab.xpos} which specifies the position (along the x-axis) of the effect modifier header and subgroup labels. See \code{\link[metafor]{forest.rma}} for further details.
 #'
-#' @param x Object of class "STE_nested".
+#' @param x Object of class "STE_internal".
 #' @param use_scb logical scalar specifying whether the intervals in the forest plot should be simultaneous confidence bands (rather than confidence intervals). The default is \code{FALSE}.
 #' @param header optional, vector of character strings of length 3, headers for the source, effect modifier subgroup and the estimates in the forest plot.
-#' @param source_names optional, vector of character strings specifying the names of the sources. Defaults are the values in \code{S} provided by the user to \code{\link{STE_nested}}.
-#' @param subgroup_names optional, vector of character strings specifying the names of the effect modifier subgroups. Defaults are the values in \code{EM} provided by the user to \code{\link{STE_nested}}.
+#' @param source_names optional, vector of character strings specifying the names of the sources. Defaults are the values in \code{S} provided by the user to \code{\link{STE_internal}}.
+#' @param subgroup_names optional, vector of character strings specifying the names of the effect modifier subgroups. Defaults are the values in \code{EM} provided by the user to \code{\link{STE_internal}}.
 #' @param ... Other arguments, which are passed to \code{\link[metafor]{forest.rma}}.
 #' @return No value is returned.
-#' @seealso \code{\link{STE_nested}}
+#' @seealso \code{\link{STE_internal}}
 #'
 #' @examples
-#' sn <- STE_nested(
+#' sn <- STE_internal(
 #'   X = dat_multisource[, 2:10],
 #'   Y = dat_multisource$Y,
 #'   EM = dat_multisource$EM,
@@ -39,7 +39,7 @@
 #'
 #' @export
 
-plot.STE_nested <- function(x,
+plot.STE_internal <- function(x,
                             use_scb = FALSE,
                             header = c("Source",
                                        "Subgroup",
@@ -49,8 +49,8 @@ plot.STE_nested <- function(x,
                             source_names,
                             subgroup_names,
                             ...){
-  if (!inherits(x, "STE_nested")){
-    stop("Argument 'x' must be an object of class \"STE_nested\".")
+  if (!inherits(x, "STE_internal")){
+    stop("Argument 'x' must be an object of class \"STE_internal\".")
   }
   all_args <- as.list(match.call())[-1]
   args <- all_args[!names(all_args) %in% c('x', 'use_scb', 'source_names', 'subgroup_names')]
@@ -118,18 +118,18 @@ plot.STE_nested <- function(x,
 }
 
 
-#' Plot method for objects of class "ATE_nested"
+#' Plot method for objects of class "ATE_internal"
 #'
-#' This function creates forest plots of objects of class "ATE_nested".
+#' This function creates forest plots of objects of class "ATE_internal".
 #'
-#' @param x Object of class "ATE_nested".
-#' @param source_names optional, vector of character strings specifying the names of the sources. Defaults are the values in \code{S} provided by the user to \code{\link{ATE_nested}}.
+#' @param x Object of class "ATE_internal".
+#' @param source_names optional, vector of character strings specifying the names of the sources. Defaults are the values in \code{S} provided by the user to \code{\link{ATE_internal}}.
 #' @param ... Other arguments, which are passed to \code{\link[metafor]{forest.rma}}.
 #' @return No value is returned.
-#' @seealso \code{\link{ATE_nested}}
+#' @seealso \code{\link{ATE_internal}}
 #'
 #' @examples
-#' an <- ATE_nested(
+#' an <- ATE_internal(
 #'   X = dat_multisource[, 1:10],
 #'   Y = dat_multisource$Y,
 #'   S = dat_multisource$S,
@@ -152,11 +152,11 @@ plot.STE_nested <- function(x,
 #'
 #' @export
 
-plot.ATE_nested <- function(x,
+plot.ATE_internal <- function(x,
                             source_names,
                             ...){
-  if (!inherits(x, "ATE_nested")){
-    stop("Argument 'x' must be an object of class \"ATE_nested\".")
+  if (!inherits(x, "ATE_internal")){
+    stop("Argument 'x' must be an object of class \"ATE_internal\".")
   }
 
   all_args = as.list(match.call())[-1]
@@ -193,18 +193,18 @@ plot.ATE_nested <- function(x,
 
 
 
-#' Print method for objects of class "ATE_nested", "ATE_external", "STE_nested", or "STE_external"
+#' Print method for objects of class "ATE_internal", "ATE_external", "STE_internal", or "STE_external"
 #'
-#' Print method for objects of class "ATE_nested", "ATE_external", "STE_nested", or "STE_external"
+#' Print method for objects of class "ATE_internal", "ATE_external", "STE_internal", or "STE_external"
 #'
-#' @param x Object of class "ATE_nested", "ATE_external", "STE_nested", or "STE_external".
+#' @param x Object of class "ATE_internal", "ATE_external", "STE_internal", or "STE_external".
 #' @param digits Integer specifying the number of decimal places to display.
 #' @param ... Other arguments (ignored).
 #' @return No value is returned.
-#' @seealso \code{\link{ATE_nested}}, \code{\link{ATE_external}}, \code{\link{STE_nested}}, \code{\link{STE_external}}
+#' @seealso \code{\link{ATE_internal}}, \code{\link{ATE_external}}, \code{\link{STE_internal}}, \code{\link{STE_external}}
 #'
 #' @examples
-#' sn <- STE_nested(
+#' sn <- STE_internal(
 #'   X = dat_multisource[, 2:10],
 #'   Y = dat_multisource$Y,
 #'   EM = dat_multisource$EM,
@@ -229,9 +229,9 @@ plot.ATE_nested <- function(x,
 #'
 #' @export
 
-print.STE_nested <- function(x, digits = 4, ...){
-  if (!inherits(x, "STE_nested")){
-    stop("Argument 'x' must be an object of class \"STE_nested\".")
+print.STE_internal <- function(x, digits = 4, ...){
+  if (!inherits(x, "STE_internal")){
+    stop("Argument 'x' must be an object of class \"STE_internal\".")
   }
 
   no_S <- length(x$source_names)
@@ -244,27 +244,27 @@ print.STE_nested <- function(x, digits = 4, ...){
   df_dif <- x$df_dif
   df_dif$Source <- source_lab
 
-  cat('SUBGROUP TREATMENT EFFECT ESTIMATES IN NESTED POPULATIONS\n\n')
+  cat('SUBGROUP TREATMENT EFFECT ESTIMATES IN INTERNAL POPULATIONS\n\n')
   cat('Treatment effect (mean difference) estimates:\n')
   cat("---------------------------------------------\n")
   my_print(df_dif, digits = digits, ATE = FALSE, internal = TRUE)
 }
 
-#' @rdname print.STE_nested
+#' @rdname print.STE_internal
 #' @export
-print.ATE_nested <- function(x, digits = 4, ...){
-  if (!inherits(x, "ATE_nested")){
-    stop("Argument 'x' must be an object of class \"ATE_nested\".")
+print.ATE_internal <- function(x, digits = 4, ...){
+  if (!inherits(x, "ATE_internal")){
+    stop("Argument 'x' must be an object of class \"ATE_internal\".")
   }
 
-  cat('AVERAGE TREATMENT EFFECT ESTIMATES IN NESTED POPULATIONS\n\n')
+  cat('AVERAGE TREATMENT EFFECT ESTIMATES IN INTERNAL POPULATIONS\n\n')
   cat('Treatment effect (mean difference) estimates:\n')
   cat("---------------------------------------------\n")
   my_print(x$df_dif, digits = digits, ATE = TRUE, internal = TRUE)
 }
 
 
-#' @rdname print.STE_nested
+#' @rdname print.STE_internal
 #' @export
 print.STE_external <- function(x, digits = 4, ...){
   if (!inherits(x, "STE_external")){
@@ -277,7 +277,7 @@ print.STE_external <- function(x, digits = 4, ...){
   my_print(x$df_dif, digits = digits, ATE = FALSE, internal = FALSE)
 }
 
-#' @rdname print.STE_nested
+#' @rdname print.STE_internal
 #' @export
 print.ATE_external <- function(x, digits = 4, ...){
   if (!inherits(x, "ATE_external")){
@@ -290,18 +290,18 @@ print.ATE_external <- function(x, digits = 4, ...){
   my_print(x$df_dif, digits = digits, ATE = TRUE, internal = FALSE)
 }
 
-#' Summary method for objects of class "ATE_nested", "ATE_external", "STE_nested", or "STE_external"
+#' Summary method for objects of class "ATE_internal", "ATE_external", "STE_internal", or "STE_external"
 #'
-#' Summary method for objects of class "ATE_nested", "ATE_external", "STE_nested", or "STE_external"
+#' Summary method for objects of class "ATE_internal", "ATE_external", "STE_internal", or "STE_external"
 #'
-#' @param object Object of class "ATE_nested", "ATE_external", "STE_nested", or "STE_external".
+#' @param object Object of class "ATE_internal", "ATE_external", "STE_internal", or "STE_external".
 #' @param digits Integer specifying the number of decimal places to display.
 #' @param ... Other arguments.
 #' @return No value is returned.
-#' @seealso \code{\link{ATE_nested}}, \code{\link{ATE_external}}, \code{\link{STE_nested}}, \code{\link{STE_external}}
+#' @seealso \code{\link{ATE_internal}}, \code{\link{ATE_external}}, \code{\link{STE_internal}}, \code{\link{STE_external}}
 #'
 #' @examples
-#' sn <- STE_nested(
+#' sn <- STE_internal(
 #'   X = dat_multisource[, 2:10],
 #'   Y = dat_multisource$Y,
 #'   EM = dat_multisource$EM,
@@ -326,9 +326,9 @@ print.ATE_external <- function(x, digits = 4, ...){
 #'
 #' @export
 
-summary.STE_nested <- function(object, digits = 4, ...){
-  if (!inherits(object, "STE_nested")){
-    stop("Argument 'object' must be an object of class \"STE_nested\".")
+summary.STE_internal <- function(object, digits = 4, ...){
+  if (!inherits(object, "STE_internal")){
+    stop("Argument 'object' must be an object of class \"STE_internal\".")
   }
 
   no_S <- length(object$source_names)
@@ -342,7 +342,7 @@ summary.STE_nested <- function(object, digits = 4, ...){
   df_A0 <- object$df_A0; df_A0$Source <- source_lab
   df_A1 <- object$df_A1; df_A1$Source <- source_lab
 
-  cat('SUBGROUP TREATMENT EFFECT ESTIMATES IN NESTED POPULATIONS\n\n')
+  cat('SUBGROUP TREATMENT EFFECT ESTIMATES IN INTERNAL POPULATIONS\n\n')
   cat('Treatment effect (mean difference) estimates:\n')
   cat("---------------------------------------------\n")
   my_print(df_dif, digits = digits, ATE = FALSE, internal = TRUE)
@@ -363,7 +363,7 @@ summary.STE_nested <- function(object, digits = 4, ...){
 }
 
 
-#' @rdname summary.STE_nested
+#' @rdname summary.STE_internal
 #' @export
 summary.STE_external <- function(object, digits = 4, ...){
   if (!inherits(object, "STE_external")){
@@ -391,7 +391,7 @@ summary.STE_external <- function(object, digits = 4, ...){
   cat(paste0('External model: ', paste0(object$external_model_args$SL.library, collapse = ', '), '\n'))
 }
 
-#' @rdname summary.STE_nested
+#' @rdname summary.STE_internal
 #' @export
 summary.ATE_external <- function(object, digits = 4, ...){
   if (!inherits(object, "ATE_external")){
@@ -419,14 +419,14 @@ summary.ATE_external <- function(object, digits = 4, ...){
   cat(paste0('External model: ', paste0(object$external_model_args$SL.library, collapse = ', '), '\n'))
 }
 
-#' @rdname summary.STE_nested
+#' @rdname summary.STE_internal
 #' @export
-summary.ATE_nested <- function(object, digits = 4, ...){
-  if (!inherits(object, "ATE_nested")){
-    stop("Argument 'object' must be an object of class \"ATE_nested\".")
+summary.ATE_internal <- function(object, digits = 4, ...){
+  if (!inherits(object, "ATE_internal")){
+    stop("Argument 'object' must be an object of class \"ATE_internal\".")
   }
 
-  cat('AVERAGE TREATMENT EFFECT ESTIMATES IN NESTED POPULATIONS\n\n')
+  cat('AVERAGE TREATMENT EFFECT ESTIMATES IN INTERNAL POPULATIONS\n\n')
   cat('Treatment effect (mean difference) estimates:\n')
   cat("---------------------------------------------\n")
   my_print(object$df_dif, digits = digits, ATE = TRUE, internal = TRUE)

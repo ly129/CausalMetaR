@@ -1,7 +1,7 @@
-#' Estimating the Average Treatment Effect (ATE) in a nested target population using multi-source data
+#' Estimating the Average Treatment Effect (ATE) in an internal target population using multi-source data
 #'
 #' @description
-#' Doubly-robust and efficient estimator for the ATE in each nested target population using multi-source data.
+#' Doubly-robust and efficient estimator for the ATE in each internal target population using multi-source data.
 #'
 #' @param X Data frame (or matrix) containing the covariate data in the multi-source data. It should have \eqn{n} rows and \eqn{p} columns. Character variables will be converted to factors.
 #' @param Y Vector of length \eqn{n} containing the outcome.
@@ -11,7 +11,7 @@
 #' @param replications Integer specifying the number of sample splitting and cross fitting replications to perform, if \code{cross_fitting = TRUE}. The default is \code{10L}.
 #' @param source_model Character string specifying the (penalized) multinomial logistic regression for estimating the source model. It has two options: "\code{MN.glmnet}" (default) and "\code{MN.nnet}", which use \pkg{glmnet} and \pkg{nnet} respectively.
 #' @param source_model_args List specifying the arguments for the source model (in \pkg{glmnet} or \pkg{nnet}).
-#' @param treatment_model_type Character string specifying how the treatment model is estimated. Options include "\code{separate}" (default) and "\code{joint}". If "\code{separate}", the treatment model (i.e., \eqn{P(A=1|X, S=s)}) is estimated by regressing \eqn{A} on \eqn{X} within each specific nested population \eqn{S=s}. If "\code{joint}", the treatment model is estimated by regressing \eqn{A} on \eqn{X} and \eqn{S} using the multi-source population.
+#' @param treatment_model_type Character string specifying how the treatment model is estimated. Options include "\code{separate}" (default) and "\code{joint}". If "\code{separate}", the treatment model (i.e., \eqn{P(A=1|X, S=s)}) is estimated by regressing \eqn{A} on \eqn{X} within each specific internal population \eqn{S=s}. If "\code{joint}", the treatment model is estimated by regressing \eqn{A} on \eqn{X} and \eqn{S} using the multi-source population.
 #' @param treatment_model_args List specifying the arguments for the treatment model (in \pkg{SuperLearner}).
 #' @param outcome_model_args List specifying the arguments for the outcome model  (in \pkg{SuperLearner}).
 #' @param show_progress Logical specifying whether to print a progress bar for the cross-fit replicates completed, if \code{cross_fitting = TRUE}.
@@ -19,7 +19,7 @@
 #' @details
 #' \strong{Data structure:}
 #'
-#' The multi-source dataset consists the outcome \code{Y}, source \code{S}, treatment \code{A}, and covariates \code{X} (\eqn{n \times p}) in the nested populations. The data sources can be trials, observational studies, or a combination of both.
+#' The multi-source dataset consists the outcome \code{Y}, source \code{S}, treatment \code{A}, and covariates \code{X} (\eqn{n \times p}) in the internal populations. The data sources can be trials, observational studies, or a combination of both.
 #'
 #' \strong{Estimation of nuissance parameters:}
 #'
@@ -45,10 +45,10 @@
 #'
 #' When a data source is a randomized trial, it is still recommended to estimate the propensity score for optimal efficiency.
 #'
-#' @return An object of class "ATE_nested". This object is a list with the following elements:
-#'   \item{df_dif}{A data frame containing the treatment effect (mean difference) estimates for the nested populations.}
-#'   \item{df_A0}{A data frame containing the potential outcome mean estimates under A = 0 for the nested populations.}
-#'   \item{df_A1}{A data frame containing the potential outcome mean estimates under A = 1 for the nested populations.}
+#' @return An object of class "ATE_internal". This object is a list with the following elements:
+#'   \item{df_dif}{A data frame containing the treatment effect (mean difference) estimates for the internal populations.}
+#'   \item{df_A0}{A data frame containing the potential outcome mean estimates under A = 0 for the internal populations.}
+#'   \item{df_A1}{A data frame containing the potential outcome mean estimates under A = 1 for the internal populations.}
 #'   \item{fit_outcome}{Fitted outcome model.}
 #'   \item{fit_source}{Fitted source model.}
 #'   \item{fit_treatment}{Fitted treatment model(s).}
@@ -56,7 +56,7 @@
 #' @references Robertson, S.E., Steingrimsson, J.A., Joyce, N.R., Stuart, E.A., & Dahabreh, I.J. (2021). \emph{Center-specific causal inference with multicenter trials: Reinterpreting trial evidence in the context of each participating center}. arXiv preprint arXiv:2104.05905.
 #'
 #' @examples
-#' an <- ATE_nested(
+#' an <- ATE_internal(
 #'   X = dat_multisource[, 1:10],
 #'   Y = dat_multisource$Y,
 #'   S = dat_multisource$S,
@@ -77,7 +77,7 @@
 #' )
 #' @export
 
-ATE_nested <- function(
+ATE_internal <- function(
     X, # predictor matrix
     Y, # outcome
     S, # source
@@ -286,9 +286,9 @@ ATE_nested <- function(
                                 FUN = mean),
                           MARGIN = 1:2,
                           FUN = median)
-    # end of ATE_nested with cross-fitting
+    # end of ATE_internal with cross-fitting
   } else {
-    # start of regular ATE_nested
+    # start of regular ATE_internal
     if (source_model %in% c("MN.glmnet", "MN.nnet")) {
       source_model_args$Y <- S
       source_model_args$X <- X
@@ -418,7 +418,7 @@ ATE_nested <- function(
 
   res$source_names <- unique_S
 
-  class(res) <- 'ATE_nested'
+  class(res) <- 'ATE_internal'
 
   return(res)
 }
