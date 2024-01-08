@@ -14,7 +14,7 @@
 #' @seealso \code{\link{STE_internal}}
 #'
 #' @examples
-#' sn <- STE_internal(
+#' si <- STE_internal(
 #'   X = dat_multisource[, 2:10],
 #'   Y = dat_multisource$Y,
 #'   EM = dat_multisource$EM,
@@ -35,7 +35,7 @@
 #'     cvControl = list(V = 5L)
 #'   )
 #' )
-#' plot(sn)
+#' plot(si)
 #'
 #' @export
 
@@ -129,7 +129,7 @@ plot.STE_internal <- function(x,
 #' @seealso \code{\link{ATE_internal}}
 #'
 #' @examples
-#' an <- ATE_internal(
+#' ai <- ATE_internal(
 #'   X = dat_multisource[, 1:10],
 #'   Y = dat_multisource$Y,
 #'   S = dat_multisource$S,
@@ -148,7 +148,7 @@ plot.STE_internal <- function(x,
 #'     cvControl = list(V = 5L)
 #'   )
 #' )
-#' plot(an)
+#' plot(ai)
 #'
 #' @export
 
@@ -204,7 +204,7 @@ plot.ATE_internal <- function(x,
 #' @seealso \code{\link{ATE_internal}}, \code{\link{ATE_external}}, \code{\link{STE_internal}}, \code{\link{STE_external}}
 #'
 #' @examples
-#' sn <- STE_internal(
+#' si <- STE_internal(
 #'   X = dat_multisource[, 2:10],
 #'   Y = dat_multisource$Y,
 #'   EM = dat_multisource$EM,
@@ -225,7 +225,7 @@ plot.ATE_internal <- function(x,
 #'     cvControl = list(V = 5L)
 #'   )
 #' )
-#' print(sn)
+#' print(si)
 #'
 #' @export
 
@@ -301,7 +301,7 @@ print.ATE_external <- function(x, digits = 4, ...){
 #' @seealso \code{\link{ATE_internal}}, \code{\link{ATE_external}}, \code{\link{STE_internal}}, \code{\link{STE_external}}
 #'
 #' @examples
-#' sn <- STE_internal(
+#' si <- STE_internal(
 #'   X = dat_multisource[, 2:10],
 #'   Y = dat_multisource$Y,
 #'   EM = dat_multisource$EM,
@@ -322,7 +322,7 @@ print.ATE_external <- function(x, digits = 4, ...){
 #'     cvControl = list(V = 5L)
 #'   )
 #' )
-#' summary(sn)
+#' summary(si)
 #'
 #' @export
 

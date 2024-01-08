@@ -20,7 +20,7 @@ No value is returned.
 This function creates forest plots of objects of class "ATE_internal".
 }
 \examples{
-an <- ATE_internal(
+ai <- ATE_internal(
   X = dat_multisource[, 1:10],
   Y = dat_multisource$Y,
   S = dat_multisource$S,
@@ -39,7 +39,7 @@ an <- ATE_internal(
     cvControl = list(V = 5L)
   )
 )
-plot(an)
+plot(ai)
 
 }
 \seealso{

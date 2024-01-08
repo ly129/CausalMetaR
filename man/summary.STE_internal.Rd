@@ -29,7 +29,7 @@ No value is returned.
 Summary method for objects of class "ATE_internal", "ATE_external", "STE_internal", or "STE_external"
 }
 \examples{
-sn <- STE_internal(
+si <- STE_internal(
   X = dat_multisource[, 2:10],
   Y = dat_multisource$Y,
   EM = dat_multisource$EM,
@@ -50,7 +50,7 @@ sn <- STE_internal(
     cvControl = list(V = 5L)
   )
 )
-summary(sn)
+summary(si)
 
 }
 \seealso{

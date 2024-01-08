@@ -56,7 +56,7 @@
 #' @references Robertson, S.E., Steingrimsson, J.A., Joyce, N.R., Stuart, E.A., & Dahabreh, I.J. (2021). \emph{Center-specific causal inference with multicenter trials: Reinterpreting trial evidence in the context of each participating center}. arXiv preprint arXiv:2104.05905.
 #'
 #' @examples
-#' an <- ATE_internal(
+#' ai <- ATE_internal(
 #'   X = dat_multisource[, 1:10],
 #'   Y = dat_multisource$Y,
 #'   S = dat_multisource$S,

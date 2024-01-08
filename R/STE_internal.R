@@ -56,7 +56,7 @@
 #'   \item{...}{Some additional elements.}
 #'
 #' @examples
-#' sn <- STE_internal(
+#' si <- STE_internal(
 #'   X = dat_multisource[, 2:10],
 #'   Y = dat_multisource$Y,
 #'   EM = dat_multisource$EM,
