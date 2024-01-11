@@ -1,12 +1,12 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# CMetafoR
+# CausalMetaR
 
 <!-- badges: start -->
 <!-- badges: end -->
 
-The `CMetafoR` package provides robust and efficient methods for
+The `CausalMetaR` package provides robust and efficient methods for
 estimating causal effects in a target population using a multi-source
 dataset. The multi-source data can be a collection of trials,
 observational studies, or a combination of both, which have the same
@@ -17,10 +17,10 @@ are average treatment effects and subgroup treatment effects.
 
 ## Installation
 
-You can install the development version of `CMetafoR` from
+You can install the development version of `CausalMetaR` from
 [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("ly129/CMetafoR")
+devtools::install_github("ly129/CausalMetaR")
 ```

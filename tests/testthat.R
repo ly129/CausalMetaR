@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/reference/test_package.html#special-files
 
 library(testthat)
-library(CMetafoR)
+library(CausalMetaR)
 
-test_check("CMetafoR")
+test_check("CausalMetaR")
