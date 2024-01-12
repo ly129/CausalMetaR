@@ -56,6 +56,7 @@
 #'   \item{...}{Some additional elements.}
 #'
 #' @examples
+#' \donttest{
 #' si <- STE_internal(
 #'   X = dat_multisource[, 2:10],
 #'   Y = dat_multisource$Y,
@@ -77,6 +78,8 @@
 #'     cvControl = list(V = 5L)
 #'   )
 #' )
+#' }
+#'
 #' @export
 STE_internal <- function(
     X, # predictor matrix

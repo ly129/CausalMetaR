@@ -101,6 +101,7 @@ In addition, sample splitting and cross-fitting can be performed to avoid the Do
 When a data source is a randomized trial, it is still recommended to estimate the propensity score for optimal efficiency.
 }
 \examples{
+\donttest{
 se <- STE_external(
   X = dat_multisource[, 2:10],
   Y = dat_multisource$Y,
@@ -129,4 +130,6 @@ se <- STE_external(
     cvControl = list(V = 5L)
   )
 )
+}
+
 }

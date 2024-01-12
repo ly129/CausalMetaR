@@ -62,6 +62,7 @@
 #'   \item{fit_external}{Fitted external model.}
 #'
 #' @examples
+#' \donttest{
 #' se <- STE_external(
 #'   X = dat_multisource[, 2:10],
 #'   Y = dat_multisource$Y,
@@ -90,6 +91,8 @@
 #'     cvControl = list(V = 5L)
 #'   )
 #' )
+#' }
+#'
 #' @export
 
 STE_external <- function(

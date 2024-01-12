@@ -20,6 +20,7 @@ No value is returned.
 This function creates forest plots of objects of class "ATE_internal".
 }
 \examples{
+\donttest{
 ai <- ATE_internal(
   X = dat_multisource[, 1:10],
   Y = dat_multisource$Y,
@@ -40,6 +41,7 @@ ai <- ATE_internal(
   )
 )
 plot(ai)
+}
 
 }
 \seealso{

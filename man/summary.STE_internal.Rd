@@ -29,6 +29,7 @@ No value is returned.
 Summary method for objects of class "ATE_internal", "ATE_external", "STE_internal", or "STE_external"
 }
 \examples{
+\donttest{
 si <- STE_internal(
   X = dat_multisource[, 2:10],
   Y = dat_multisource$Y,
@@ -51,6 +52,7 @@ si <- STE_internal(
   )
 )
 summary(si)
+}
 
 }
 \seealso{

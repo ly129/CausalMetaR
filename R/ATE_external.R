@@ -64,6 +64,7 @@
 #' interpretable meta‐analysis: Transporting inferences from multiple randomized trials to a target population}, Biometrics.
 #'
 #' @examples
+#' \donttest{
 #' ae <- ATE_external(
 #'   X = dat_multisource[, 1:10],
 #'   Y = dat_multisource$Y,
@@ -89,6 +90,8 @@
 #'     cvControl = list(V = 5L)
 #'   )
 #' )
+#' }
+#'
 #' @import metafor
 #' @import SuperLearner
 #' @importFrom stats model.matrix predict qnorm quantile rnorm median

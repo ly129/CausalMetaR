@@ -86,6 +86,7 @@ In addition, sample splitting and cross-fitting can be performed to avoid the Do
 When a data source is a randomized trial, it is still recommended to estimate the propensity score for optimal efficiency.
 }
 \examples{
+\donttest{
 ai <- ATE_internal(
   X = dat_multisource[, 1:10],
   Y = dat_multisource$Y,
@@ -105,6 +106,8 @@ ai <- ATE_internal(
     cvControl = list(V = 5L)
   )
 )
+}
+
 }
 \references{
 Robertson, S.E., Steingrimsson, J.A., Joyce, N.R., Stuart, E.A., & Dahabreh, I.J. (2021). \emph{Center-specific causal inference with multicenter trials: Reinterpreting trial evidence in the context of each participating center}. arXiv preprint arXiv:2104.05905.

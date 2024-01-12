@@ -14,6 +14,7 @@
 #' @seealso \code{\link{STE_internal}}
 #'
 #' @examples
+#' \donttest{
 #' si <- STE_internal(
 #'   X = dat_multisource[, 2:10],
 #'   Y = dat_multisource$Y,
@@ -36,6 +37,7 @@
 #'   )
 #' )
 #' plot(si)
+#' }
 #'
 #' @export
 
@@ -129,6 +131,7 @@ plot.STE_internal <- function(x,
 #' @seealso \code{\link{ATE_internal}}
 #'
 #' @examples
+#' \donttest{
 #' ai <- ATE_internal(
 #'   X = dat_multisource[, 1:10],
 #'   Y = dat_multisource$Y,
@@ -149,6 +152,7 @@ plot.STE_internal <- function(x,
 #'   )
 #' )
 #' plot(ai)
+#' }
 #'
 #' @export
 
@@ -204,6 +208,7 @@ plot.ATE_internal <- function(x,
 #' @seealso \code{\link{ATE_internal}}, \code{\link{ATE_external}}, \code{\link{STE_internal}}, \code{\link{STE_external}}
 #'
 #' @examples
+#' \donttest{
 #' si <- STE_internal(
 #'   X = dat_multisource[, 2:10],
 #'   Y = dat_multisource$Y,
@@ -226,6 +231,7 @@ plot.ATE_internal <- function(x,
 #'   )
 #' )
 #' print(si)
+#' }
 #'
 #' @export
 
@@ -301,6 +307,7 @@ print.ATE_external <- function(x, digits = 4, ...){
 #' @seealso \code{\link{ATE_internal}}, \code{\link{ATE_external}}, \code{\link{STE_internal}}, \code{\link{STE_external}}
 #'
 #' @examples
+#' \donttest{
 #' si <- STE_internal(
 #'   X = dat_multisource[, 2:10],
 #'   Y = dat_multisource$Y,
@@ -323,6 +330,7 @@ print.ATE_external <- function(x, digits = 4, ...){
 #'   )
 #' )
 #' summary(si)
+#' }
 #'
 #' @export
 

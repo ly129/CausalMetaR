@@ -96,6 +96,7 @@ In addition, sample splitting and cross-fitting can be performed to avoid the Do
 When a data source is a randomized trial, it is still recommended to estimate the propensity score for optimal efficiency.
 }
 \examples{
+\donttest{
 ae <- ATE_external(
   X = dat_multisource[, 1:10],
   Y = dat_multisource$Y,
@@ -121,6 +122,8 @@ ae <- ATE_external(
     cvControl = list(V = 5L)
   )
 )
+}
+
 }
 \references{
 Dahabreh, I.J., Robertson, S.E., Petito, L.C., Hernán, M.A. and Steingrimsson, J.A.. (2019) \emph{Efficient and robust methods for causally
