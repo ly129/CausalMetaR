@@ -268,7 +268,7 @@ ATE_internal <- function(
           tmp1[I_xs, 1] <- pred_Y1[I_xs] - phi[s, 1]
           tmp1[I_xs, 2] <- pred_Y0[I_xs] - phi[s, 2]
 
-          phi_var[s, ] <- kappa/nrow(X_test)^2 * colSums((tmp1 + tmp2)^2)
+          phi_var[s, ] <- kappa^2/nrow(X_test)^2 * colSums((tmp1 + tmp2)^2)
         }
 
         phi_array_cf[, , k, r] <- cbind(phi, phi[, 1] - phi[, 2])
@@ -370,7 +370,7 @@ ATE_internal <- function(
       tmp1[I_xs, 1] <- pred_Y1[I_xs] - phi[s, 1]
       tmp1[I_xs, 2] <- pred_Y0[I_xs] - phi[s, 2]
 
-      phi_var[s, ] <- kappa/n^2 * colSums((tmp1 + tmp2)^2)
+      phi_var[s, ] <- kappa^2/n^2 * colSums((tmp1 + tmp2)^2)
     }
 
     phi_array[, ] <- cbind(phi, phi[, 1] - phi[, 2])

@@ -352,7 +352,7 @@ STE_external <- function(
           psi <- gamma/n_kr * tmp
 
           tmp1[I_xr, ] <- tmp1[I_xr, ] - rep(psi, each = length(I_xr))
-          psi_var <- gamma/n_kr^2 * colSums(rbind(tmp1, tmp2)^2)
+          psi_var <- gamma^2/n_kr^2 * colSums(rbind(tmp1, tmp2)^2)
 
           psi_array_cf[em, , k, r] <- c(psi, psi[1] - psi[2])
           psi_se_array_cf[em, , k, r] <- sqrt(c(psi_var, psi_var[2] + psi_var[2]))
@@ -470,7 +470,7 @@ STE_external <- function(
       psi[em, ] <- gamma/n * tmp
 
       tmp1[I_xr, ] <- tmp1[I_xr, ] - rep(psi[em, ], each = length(I_xr))
-      psi_var[em, ] <- gamma/n^2 * colSums(rbind(tmp1, tmp2)^2)
+      psi_var[em, ] <- gamma^2/n^2 * colSums(rbind(tmp1, tmp2)^2)
     }
 
     psi_array[, ] <- cbind(psi, psi[, 1] - psi[, 2])
