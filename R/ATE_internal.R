@@ -53,7 +53,8 @@
 #'   \item{fit_source}{Fitted source model.}
 #'   \item{fit_treatment}{Fitted treatment model(s).}
 #'
-#' @references Robertson, S.E., Steingrimsson, J.A., Joyce, N.R., Stuart, E.A., & Dahabreh, I.J. (2021). \emph{Center-specific causal inference with multicenter trials: Reinterpreting trial evidence in the context of each participating center}. arXiv preprint arXiv:2104.05905.
+#' @references Robertson, S.E., Steingrimsson, J.A., Joyce, N.R., Stuart, E.A. and Dahabreh, I.J. (2021). \emph{Center-specific causal inference with multicenter trials: Reinterpreting trial evidence in the context of each participating center}. arXiv preprint arXiv:2104.05905.
+#' @references Wang, G., McGrath, S., Lian, Y. and Dahabreh, I. (2024) \emph{CausalMetaR: An R package for performing causally interpretable meta-analyses}, arXiv preprint arXiv:2402.04341.
 #'
 #' @examples
 #' \donttest{

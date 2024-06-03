@@ -3,6 +3,7 @@
 * Fixed an error in the variance calculation in the `ATE_external`, `ATE_internal`,
 `STE_external`, and `STE_internal` functions
 * Added a `NEWS.md` file to track changes to the package
+* Updated references
 
 ### CausalMetaR version 0.1.1 (2024-01-15)
 

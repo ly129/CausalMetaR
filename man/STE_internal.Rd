@@ -114,3 +114,8 @@ si <- STE_internal(
 }
 
 }
+\references{
+Wang, G., Levis, A., Steingrimsson, J. and Dahabreh, I. (2024) \emph{Efficient estimation of subgroup treatment effects using multi-source data}, arXiv preprint arXiv:2402.02684.
+
+Wang, G., McGrath, S., Lian, Y. and Dahabreh, I. (2024) \emph{CausalMetaR: An R package for performing causally interpretable meta-analyses}, arXiv preprint arXiv:2402.04341.
+}

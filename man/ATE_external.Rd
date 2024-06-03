@@ -126,6 +126,8 @@ ae <- ATE_external(
 
 }
 \references{
-Dahabreh, I.J., Robertson, S.E., Petito, L.C., Hernán, M.A. and Steingrimsson, J.A.. (2019) \emph{Efficient and robust methods for causally
+Dahabreh, I.J., Robertson, S.E., Petito, L.C., Hernán, M.A. and Steingrimsson, J.A. (2019) \emph{Efficient and robust methods for causally
 interpretable meta‐analysis: Transporting inferences from multiple randomized trials to a target population}, Biometrics.
+
+Wang, G., McGrath, S., Lian, Y. and Dahabreh, I. (2024) \emph{CausalMetaR: An R package for performing causally interpretable meta-analyses}, arXiv preprint arXiv:2402.04341.
 }
