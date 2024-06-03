@@ -7,7 +7,7 @@ Authors@R: c(person("Yi", "Lian", role = "aut", email = "yi.lian@pennmedicine.up
              person("Sean", "McGrath", role = c("aut", "cre"), email = "sean_mcgrath@g.harvard.edu", 
                     comment = c(ORCID = "0000-0002-7281-3516")),
              person("Issa", "Dahabreh", role = "aut"))
-Description: Provides robust and efficient methods for estimating causal effects in a target population using a multi-source dataset, including those of Dahabreh et al. (2019) <doi:10.1111/biom.13716> and Robertson et al. (2021) <arXiv:2104.05905>. The multi-source data can be a collection of trials, observational studies, or a combination of both, which have the same data structure (outcome, treatment, and covariates). The target population can be based on an internal dataset or an external dataset where only covariate information is available. The causal estimands available are average treatment effects and subgroup treatment effects.  
+Description: Provides robust and efficient methods for estimating causal effects in a target population using a multi-source dataset, including those of Dahabreh et al. (2019) <doi:10.1111/biom.13716> and Robertson et al. (2021) <doi:10.48550/arXiv.2402.04341>. The multi-source data can be a collection of trials, observational studies, or a combination of both, which have the same data structure (outcome, treatment, and covariates). The target population can be based on an internal dataset or an external dataset where only covariate information is available. The causal estimands available are average treatment effects and subgroup treatment effects.  
 License: GPL (>=3)
 Encoding: UTF-8
 LazyData: true

@@ -1,4 +1,4 @@
-### CausalMetaR version 0.1.2 (TBD)
+### CausalMetaR version 0.1.2 (2024-06-03)
 
 * Fixed an error in the variance calculation in the `ATE_external`, `ATE_internal`,
 `STE_external`, and `STE_internal` functions
