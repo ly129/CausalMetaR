@@ -18,14 +18,118 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The `CausalMetaR` package provides robust and efficient methods for estimating causal effects in a target population using a multi-source dataset. The multi-source data can be a collection of trials, observational studies, or a combination of both, which have the same data structure (outcome, treatment, and covariates). The target population can be based on an internal dataset or an external dataset where only covariate information is available. The causal estimands available are average treatment effects and subgroup treatment effects.
+The `CausalMetaR` package provides robust and efficient methods for estimating causal effects in a target population using a multi-source dataset. The multi-source data can be a collection of trials, observational studies, or a combination of both, which have the same data structure (outcome, treatment, and covariates). The target population can be based on an internal dataset or an external dataset where only covariate information is available. The causal estimands available are average treatment effects (ATEs) and subgroup treatment effects (STEs).
 
 ## Installation
 
-You can install the development version of `CausalMetaR` from [GitHub](https://github.com/) with:
+You can install the released version of `CausalMetaR` from [CRAN](https://CRAN.R-project.org/package=CausalMetaR) with:
+
+``` r
+install.packages("CausalMetaR")
+```
+
+You can install the development version of `CausalMetaR` from [GitHub](https://github.com/ly129/CausalMetaR) with:
 
 ``` r
 # install.packages("devtools")
 devtools::install_github("ly129/CausalMetaR")
 ```
 
+## Usage
+
+Refer to [Wang et al. (2024)](https://doi.org/10.48550/arXiv.2402.04341) for a detailed guide on using the package. Below, we include the code used in the examples in the paper. The examples are based on the multi-source dataset `dat_multisource` included in the package. 
+
+Loading the package:
+```{r}
+library(CausalMetaR)
+```
+
+Specifying the working models:
+```{r}
+outcome_model_args <- list(family = gaussian(),
+                           SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"))
+treatment_model_args <- list(family = binomial(),
+                             SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"))
+external_model_args = list(family = binomial(),
+                           SL.library = c("SL.glmnet", "SL.nnet", "SL.glm"))
+```
+
+Setting a random number seed for reproducibility:
+```{r}
+set.seed(1234)
+```
+
+The examples below estimate ATEs and STEs in external and internal target populations. Each example may take a few minutes to run on standard laptop.
+
+### Example 1: Estimating the ATE in the external target population
+
+```{r}
+result_ae <- ATE_external(
+  Y = dat_multisource$Y,
+  S = dat_multisource$S,
+  A = dat_multisource$A,
+  X = dat_multisource[, 1:10],
+  X_external = dat_external[, 1:10],
+  outcome_model_args = outcome_model_args,
+  treatment_model_args = treatment_model_args,
+  external_model_args = external_model_args,
+  cross_fitting = TRUE,
+  replications = 5)
+result_ae
+```
+
+### Example 2: Estimating ATEs in the internal target populations
+
+```{r}
+result_ai <- ATE_internal(
+  Y = dat_multisource$Y,
+  S = dat_multisource$S,
+  A = dat_multisource$A,
+  X = dat_multisource[, 1:10],
+  outcome_model_args = outcome_model_args,
+  treatment_model_args = treatment_model_args,
+  cross_fitting = TRUE,
+  replications = 5)
+result_ai
+```
+
+### Example 3: Estimating STEs in the external target population
+
+```{r}
+result_se <- STE_external(
+  Y = dat_multisource$Y, 
+  S = dat_multisource$S, 
+  A = dat_multisource$A, 
+  X = dat_multisource[, 2:10], 
+  EM = dat_multisource$EM,
+  X_external = dat_external[, 2:10], 
+  EM_external = dat_external$EM, 
+  outcome_model_args = outcome_model_args, 
+  treatment_model_args = treatment_model_args, 
+  external_model_args = external_model_args,
+  cross_fitting = TRUE,
+  replications = 5)
+result_se
+```
+
+### Example 4: Estimating STEs in the internal target populations
+
+```{r}
+result_si <- STE_internal(
+  Y = dat_multisource$Y, 
+  S = dat_multisource$S, 
+  A = dat_multisource$A, 
+  X = dat_multisource[, 2:10], 
+  EM = dat_multisource$EM,
+  outcome_model_args = outcome_model_args, 
+  treatment_model_args = treatment_model_args,
+  cross_fitting = TRUE,
+  replications = 5)
+result_si
+```
+
+## Reference
+
+To cite this package, use: 
+
+> Wang G, McGrath S, Lian Y. CausalMetaR: An R package for performing causally interpretable meta-analyses. *Research Synthesis Methods*. In press. 
