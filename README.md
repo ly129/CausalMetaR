@@ -4,6 +4,10 @@
 # CausalMetaR
 
 <!-- badges: start -->
+
+[![CRAN
+status](https://www.r-pkg.org/badges/version/CausalMetaR)](https://CRAN.R-project.org/package=CausalMetaR)
+[![R-CMD-check](https://github.com/ly129/CMetafoR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ly129/CMetafoR/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The `CausalMetaR` package provides robust and efficient methods for
@@ -119,15 +123,15 @@ result_ai
 
 ``` r
 result_se <- STE_external(
-  Y = dat_multisource$Y, 
-  S = dat_multisource$S, 
-  A = dat_multisource$A, 
-  X = dat_multisource[, 2:10], 
+  Y = dat_multisource$Y,
+  S = dat_multisource$S,
+  A = dat_multisource$A,
+  X = dat_multisource[, 2:10],
   EM = dat_multisource$EM,
-  X_external = dat_external[, 2:10], 
-  EM_external = dat_external$EM, 
-  outcome_model_args = outcome_model_args, 
-  treatment_model_args = treatment_model_args, 
+  X_external = dat_external[, 2:10],
+  EM_external = dat_external$EM,
+  outcome_model_args = outcome_model_args,
+  treatment_model_args = treatment_model_args,
   external_model_args = external_model_args,
   cross_fitting = TRUE,
   replications = 5)
@@ -148,12 +152,12 @@ result_se
 
 ``` r
 result_si <- STE_internal(
-  Y = dat_multisource$Y, 
-  S = dat_multisource$S, 
-  A = dat_multisource$A, 
-  X = dat_multisource[, 2:10], 
+  Y = dat_multisource$Y,
+  S = dat_multisource$S,
+  A = dat_multisource$A,
+  X = dat_multisource[, 2:10],
   EM = dat_multisource$EM,
-  outcome_model_args = outcome_model_args, 
+  outcome_model_args = outcome_model_args,
   treatment_model_args = treatment_model_args,
   cross_fitting = TRUE,
   replications = 5)
