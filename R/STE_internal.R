@@ -56,7 +56,7 @@
 #'   \item{...}{Some additional elements.}
 #'
 #' @references Wang, G., Levis, A., Steingrimsson, J. and Dahabreh, I. (2024) \emph{Efficient estimation of subgroup treatment effects using multi-source data}, arXiv preprint arXiv:2402.02684.
-#' @references Wang, G., McGrath, S., Lian, Y. and Dahabreh, I. (2024) \emph{CausalMetaR: An R package for performing causally interpretable meta-analyses}, arXiv preprint arXiv:2402.04341.
+#' @references Wang, G., McGrath, S., and Lian, Y. (In press) \emph{CausalMetaR: An R package for performing causally interpretable meta-analyses}, Research Synthesis Methods.
 #'
 #' @examples
 #' \donttest{
