@@ -1,4 +1,4 @@
-### CausalMetaR version 0.1.3 (TBD)
+### CausalMetaR version 0.1.3 (2025-04-10)
 
 * Updated documentation
 

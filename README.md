@@ -7,7 +7,7 @@
 
 [![CRAN
 status](https://www.r-pkg.org/badges/version/CausalMetaR)](https://CRAN.R-project.org/package=CausalMetaR)
-[![R-CMD-check](https://github.com/ly129/CMetafoR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ly129/CMetafoR/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/ly129/CausalMetaR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ly129/CausalMetaR/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The `CausalMetaR` package provides robust and efficient methods for
