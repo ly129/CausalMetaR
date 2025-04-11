@@ -39,7 +39,7 @@ devtools::install_github("ly129/CausalMetaR")
 
 ## Usage
 
-Refer to [Wang et al. (2024)](https://doi.org/10.48550/arXiv.2402.04341) for a detailed guide on using the package. Below, we include the code used in the examples in the paper. The examples are based on the multi-source dataset `dat_multisource` included in the package. 
+Refer to [Wang et al. (2025)](https://doi.org/10.1017/rsm.2025.5) for a detailed guide on using the package. Below, we include the code used in the examples in the paper. The examples are based on the multi-source dataset `dat_multisource` included in the package. 
 
 Loading the package:
 ```{r}
